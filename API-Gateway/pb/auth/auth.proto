@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "./pb/auth";
+
+service AuthService{
+    rpc Login(UserLoginReq) returns (UserLoginRes) {};
+    rpc Signup(UserSignupReq) returns (UserSignupRes) {};
+    rpc Verify(VerifyReq) returns (VerifyRes) {};
+    rpc ForgotPassword(FPreq) returns (FPres) {};
+    rpc ResetPassword(RPreq) returns (RPres) {};
+    rpc AddProfileDescription(APDReq) returns (APDRes) {};
+    rpc UpdateProfileDescription (UPDReq) returns (UPDRes) {};
+    rpc AddEducation(AddEducationReq) returns (AddEducationRes) {};
+    rpc UpdateEducation(UpdateEducationReq) returns (UpdateEducationRes) {};
+    rpc DeleteEducation(DeleteEducationReq) returns (DeleteEducationRes) {};
+    rpc GetProfile(GetProfileReq) returns (GetProfileRes) {};
+}
+
+message UserLoginReq{
+    string email = 1;
+    string password = 2;
+}
+
+message UserLoginRes{
+    int64 status = 1;
+    string error = 2;
+    string message = 3;
+    string token = 4;
+}
+
+message UserSignupReq{
+    string firstname = 1;
+    string lastname = 2; 
+    string phone = 3;
+    string email = 4;
+    string password = 5;
+    string country = 6;
+    string role =7;
+}
+
+message UserSignupRes{
+    int64 status = 1;
+    string error = 2;
+    string message = 3;
+    string token = 4;
+}
+
+message VerifyReq{
+    int64 OTP = 1;
+    string token = 2;
+}
+
+message VerifyRes{
+    int64 status = 1;
+    string error = 2;
+    string message = 3;
+}
+
+message FPreq{
+    string email = 1;
+}
+
+message FPres{
+    int64 status = 1;
+    string error = 2;
+    string response =3; 
+}
+
+message RPreq{
+    int64 OTP = 1;
+    string password = 2; 
+}
+
+message RPres{
+    int32 status = 1;
+    string error = 2;
+    string response = 3; 
+}
+message profile{
+    string Title = 1;
+    string Description = 2;
+    int64 Hourly_rate = 3;
+}
+
+message APDReq{
+    string Title = 1;
+    string Description = 2;
+    int64 Hourly_rate = 3;
+    string user_id = 4;
+}
+
+message APDRes{
+    int64 status = 1;
+    string error = 2;
+    string message =3; 
+    profile Profile = 4;
+}
+
+message UPDReq{
+    string Title = 1;
+    string Description = 2;
+    int64 Hourly_rate = 3;
+    string user_id = 4;
+}
+
+message UPDRes{
+    int64 status = 1;
+    string error = 2;
+    string message =3; 
+    profile Profile = 4;
+}
+
+message AddEducationReq{
+    string school =1;
+    string user_id = 2;
+    string course = 3;
+    string Date_Started = 4;
+    string Date_Ended = 5;
+    string Description = 6;
+    string Area_of_study = 7;
+}
+
+message AddEducationRes{
+    int64 Status = 1;
+    string message = 2;
+    string Error = 3;
+    Education body = 4;
+}
+
+message Education {
+    int64 Education_id = 1;
+    string school =2;
+    string course = 3;
+    string Date_Started = 4;
+    string Date_Ended = 5;
+    string Description = 6;
+    string Area_of_study = 7;
+}
+
+message UpdateEducationReq{
+    string school =1;
+    string user_id = 2;
+    string course = 3;
+    string Date_Started = 4;
+    string Date_Ended = 5;
+    string Description = 6;
+    string Area_of_study = 7;
+    string EducationId = 8;
+}
+
+message UpdateEducationRes{
+    int64 Status = 1;
+    string message = 2;
+    string Error = 3;
+    Education body = 4;
+}
+
+message DeleteEducationReq{
+    string user_id = 1;
+    string education_id = 2; 
+}
+
+message DeleteEducationRes{
+    int64 Status = 1;
+    string message = 2;
+    string Error = 3;
+}
+
+message GetProfileReq{}
+
+message GetProfileRes{
+    
+}
