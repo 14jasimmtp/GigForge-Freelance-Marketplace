@@ -33,6 +33,7 @@ type AuthServiceClient interface {
 	UpdateEducation(ctx context.Context, in *UpdateEducationReq, opts ...grpc.CallOption) (*UpdateEducationRes, error)
 	DeleteEducation(ctx context.Context, in *DeleteEducationReq, opts ...grpc.CallOption) (*DeleteEducationRes, error)
 	GetProfile(ctx context.Context, in *GetProfileReq, opts ...grpc.CallOption) (*GetProfileRes, error)
+	EditSkill(ctx context.Context, in *EditSkillReq, opts ...grpc.CallOption) (*EditSkillRes, error)
 }
 
 type authServiceClient struct {
@@ -142,6 +143,15 @@ func (c *authServiceClient) GetProfile(ctx context.Context, in *GetProfileReq, o
 	return out, nil
 }
 
+func (c *authServiceClient) EditSkill(ctx context.Context, in *EditSkillReq, opts ...grpc.CallOption) (*EditSkillRes, error) {
+	out := new(EditSkillRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/EditSkill", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -157,6 +167,7 @@ type AuthServiceServer interface {
 	UpdateEducation(context.Context, *UpdateEducationReq) (*UpdateEducationRes, error)
 	DeleteEducation(context.Context, *DeleteEducationReq) (*DeleteEducationRes, error)
 	GetProfile(context.Context, *GetProfileReq) (*GetProfileRes, error)
+	EditSkill(context.Context, *EditSkillReq) (*EditSkillRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -196,6 +207,9 @@ func (UnimplementedAuthServiceServer) DeleteEducation(context.Context, *DeleteEd
 }
 func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileReq) (*GetProfileRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (UnimplementedAuthServiceServer) EditSkill(context.Context, *EditSkillReq) (*EditSkillRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditSkill not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -408,6 +422,24 @@ func _AuthService_GetProfile_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_EditSkill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditSkillReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).EditSkill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/EditSkill",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).EditSkill(ctx, req.(*EditSkillReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -458,6 +490,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfile",
 			Handler:    _AuthService_GetProfile_Handler,
+		},
+		{
+			MethodName: "EditSkill",
+			Handler:    _AuthService_EditSkill_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

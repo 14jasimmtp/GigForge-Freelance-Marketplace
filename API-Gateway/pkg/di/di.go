@@ -3,7 +3,7 @@ package di
 import (
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/client"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/config"
-	handler "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/server/handlers/auth"
+	handler "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/server/handlers"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/server/routes"
 	"github.com/gofiber/fiber/v2"
 )

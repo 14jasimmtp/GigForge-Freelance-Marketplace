@@ -16,6 +16,7 @@ service AuthService{
     rpc UpdateEducation(UpdateEducationReq) returns (UpdateEducationRes) {};
     rpc DeleteEducation(DeleteEducationReq) returns (DeleteEducationRes) {};
     rpc GetProfile(GetProfileReq) returns (GetProfileRes) {};
+    rpc EditSkill(EditSkillReq) returns (EditSkillRes) {};
 }
 
 message UserLoginReq{
@@ -163,6 +164,17 @@ message DeleteEducationReq{
 }
 
 message DeleteEducationRes{
+    int64 Status = 1;
+    string message = 2;
+    string Error = 3;
+}
+
+message EditSkillReq{
+    repeated int64 skills = 1;
+    int64 user_id = 2;
+}
+
+message EditSkillRes{
     int64 Status = 1;
     string message = 2;
     string Error = 3;

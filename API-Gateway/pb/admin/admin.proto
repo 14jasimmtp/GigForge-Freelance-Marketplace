@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package admin;
+
+option go_package = "./pb/admin";
+
+service AdminService{
+    rpc AdminLogin(LoginReq) returns (LoginRes) {};
+    rpc BlockUser(BlockReq) returns (BlockRes) {};
+    rpc UnBlockUser(BlockReq) returns (BlockRes) {};
+    rpc AddSkill(AddSkillReq) returns (AddSkillRes) {};
+}
+
+message LoginReq{
+    string email = 1;
+    string password = 2;
+}
+
+message LoginRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+    string Token = 4;
+}
+
+message BlockReq{
+    int64 user_id = 1;
+}
+
+message BlockRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message AddSkillReq{
+    string skill = 1;
+    string description = 2;
+}
+
+message AddSkillRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}

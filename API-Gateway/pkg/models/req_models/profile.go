@@ -14,3 +14,7 @@ type Profile struct{
 	Description string `json:"description"`
 	Hourly_rate int64 `json:"hourly_rate"`
 }
+
+type Skills struct {
+	Skills []int64 `json:"skills"`
+}

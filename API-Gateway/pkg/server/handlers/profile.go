@@ -7,6 +7,7 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/auth"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
 	res "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/res_models"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/utils/validation"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,8 +21,8 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 
 func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	var req req.Education
-	user_id,_ := c.Locals("User_id").(string)
-	fmt.Println("user",user_id)
+	user_id, _ := c.Locals("User_id").(string)
+	fmt.Println("user", user_id)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -31,6 +32,11 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 				Body:    nil,
 			},
 		)
+	}
+
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
 	}
 
 	res, err := h.profile.AddEducation(context.Background(), &auth.AddEducationReq{
@@ -62,6 +68,11 @@ func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 				Body:    nil,
 			},
 		)
+	}
+
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
 	}
 
 	res, err := h.profile.UpdateEducation(context.Background(), &auth.UpdateEducationReq{
@@ -96,6 +107,11 @@ func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
 		)
 	}
 
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	}
+
 	res, err := h.profile.DeleteEducation(context.Background(), &auth.DeleteEducationReq{
 		UserId:      user_id,
 		EducationId: e_id,
@@ -119,6 +135,11 @@ func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 				Body:    nil,
 			},
 		)
+	}
+
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
 	}
 
 	res, err := h.profile.AddProfileDescription(context.Background(), &auth.APDReq{
@@ -148,6 +169,11 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 		)
 	}
 
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	}
+
 	res, err := h.profile.UpdateProfileDescription(context.Background(), &auth.UPDReq{
 		Title:       req.Title,
 		Description: req.Description,
@@ -161,10 +187,97 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-// func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error{
+func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
+	var skill req.Skills
+	user_id:=c.Locals("user_id").(int64)
+	if err := c.BodyParser(&skill); err != nil {
+		return c.Status(400).JSON(
+			res.CommonRes{
+				Status:  "failed",
+				Message: "Error validating request body",
+				Error:   err.Error(),
+				Body:    nil,
+			},
+		)
+	}
 
-// }
+	Error, err := validation.Validation(skill)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	}
 
-// func (h *ProfileHandler) GetProfileClient(c *fiber.Ctx) error{
+	res, err := h.profile.EditSkill(context.Background(), &auth.EditSkillReq{
+		Skills: skill.Skills,
+		UserId: user_id,
+	})
+	if err != nil {
+		return c.Status(403).JSON(err.Error())
+	}
 
-// }
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error{
+	var req req.Profile
+	user_id := c.Get("user_id")
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(
+			res.CommonRes{
+				Status:  "failed",
+				Message: "Error validating request body",
+				Error:   err.Error(),
+				Body:    nil,
+			},
+		)
+	}
+
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	}
+
+	res, err := h.profile.UpdateProfileDescription(context.Background(), &auth.UPDReq{
+		Title:       req.Title,
+		Description: req.Description,
+		HourlyRate:  req.Hourly_rate,
+		UserId:      user_id,
+	})
+	if err != nil {
+		return c.Status(403).JSON(err.Error())
+	}
+
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *ProfileHandler) GetProfileClient(c *fiber.Ctx) error{
+	var req req.Profile
+	user_id := c.Get("user_id")
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(
+			res.CommonRes{
+				Status:  "failed",
+				Message: "Error validating request body",
+				Error:   err.Error(),
+				Body:    nil,
+			},
+		)
+	}
+
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	}
+
+	res, err := h.profile.UpdateProfileDescription(context.Background(), &auth.UPDReq{
+		Title:       req.Title,
+		Description: req.Description,
+		HourlyRate:  req.Hourly_rate,
+		UserId:      user_id,
+	})
+	if err != nil {
+		return c.Status(403).JSON(err.Error())
+	}
+
+	return c.Status(int(res.Status)).JSON(res)
+}
+

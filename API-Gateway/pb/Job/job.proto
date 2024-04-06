@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package job;
+
+option go_package = "./pb/Job/";
+
+service JobService{
+    rpc PostJob(postjobReq) returns (postjobRes) {};
+    rpc SendProposal(ProposalReq) returns (ProposalRes) {};
+    rpc SendOffer(SendOfferReq) returns (SendOfferRes) {};
+    rpc AcceptOffer(AcceptOfferReq) returns (AcceptOfferRes) {};
+    rpc ViewContract(ContractReq) returns (ViewContractRes) {};
+}
+
+message postjobReq{
+    string Title = 1;
+    string Description = 2;
+    int64 category = 3;
+    repeated int64 skills =4;
+    string timePeriod = 5;
+    string freelancerLevel = 6;
+    string budget = 7;
+    int64 user_id = 8;
+}
+
+message postjobRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message ProposalReq{
+    string Budget = 1;
+    string coverLetter = 2;
+    repeated bytes attachments = 3;
+    int64 user_id = 4;
+    string job_id = 5;
+}
+
+message ProposalRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message SendOfferReq{
+
+}
+
+message SendOfferRes{
+
+}
+
+message AcceptOfferReq{
+
+}
+
+message AcceptOfferRes{
+
+}
+
+message ContractReq{
+
+}
+
+message ViewContractRes{
+
+}
