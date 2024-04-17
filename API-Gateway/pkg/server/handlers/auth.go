@@ -32,7 +32,6 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 			},
 		)
 	}
-
 	Error, err := validation.Validation(Login)
 	if err != nil {
 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
@@ -47,7 +46,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 
-	return c.Status(int(res.Status)).JSON(res, "logged in ")
+	return c.Status(int(res.Status)).JSON(res)
 
 }
 
@@ -100,7 +99,6 @@ func (h *Handler) ForgotPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
 	}
-
 	res, err := h.auth.ForgotPassword(context.Background(), &auth.FPreq{
 		Email: req.Email,
 	})
@@ -123,10 +121,12 @@ func (h *Handler) ResetPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
 	}
+	token:=c.Get("Authorization")
 
 	res, err := h.auth.ResetPassword(context.Background(), &auth.RPreq{
 		Password: req.NewPassword,
 		OTP:      req.OTP,
+		Token: token,
 	})
 	if err != nil {
 		return c.Status(500).JSON(err, "rpc error")

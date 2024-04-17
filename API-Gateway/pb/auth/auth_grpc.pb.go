@@ -34,6 +34,14 @@ type AuthServiceClient interface {
 	DeleteEducation(ctx context.Context, in *DeleteEducationReq, opts ...grpc.CallOption) (*DeleteEducationRes, error)
 	GetProfile(ctx context.Context, in *GetProfileReq, opts ...grpc.CallOption) (*GetProfileRes, error)
 	EditSkill(ctx context.Context, in *EditSkillReq, opts ...grpc.CallOption) (*EditSkillRes, error)
+	AddExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error)
+	UpdateExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error)
+	DeleteExperience(ctx context.Context, in *DltExpReq, opts ...grpc.CallOption) (*DltExpRes, error)
+	GetProfileClient(ctx context.Context, in *ClientProfileReq, opts ...grpc.CallOption) (*ClientProfileRes, error)
+	BlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
+	UnBlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
+	AddSkill(ctx context.Context, in *AddSkillReq, opts ...grpc.CallOption) (*AddSkillRes, error)
+	UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error)
 }
 
 type authServiceClient struct {
@@ -152,6 +160,78 @@ func (c *authServiceClient) EditSkill(ctx context.Context, in *EditSkillReq, opt
 	return out, nil
 }
 
+func (c *authServiceClient) AddExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error) {
+	out := new(ExpRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/AddExperience", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error) {
+	out := new(ExpRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateExperience", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) DeleteExperience(ctx context.Context, in *DltExpReq, opts ...grpc.CallOption) (*DltExpRes, error) {
+	out := new(DltExpRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/DeleteExperience", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetProfileClient(ctx context.Context, in *ClientProfileReq, opts ...grpc.CallOption) (*ClientProfileRes, error) {
+	out := new(ClientProfileRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/GetProfileClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) BlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error) {
+	out := new(BlockRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/BlockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UnBlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error) {
+	out := new(BlockRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UnBlockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) AddSkill(ctx context.Context, in *AddSkillReq, opts ...grpc.CallOption) (*AddSkillRes, error) {
+	out := new(AddSkillRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/AddSkill", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error) {
+	out := new(PhotoRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateProfilePhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -168,6 +248,14 @@ type AuthServiceServer interface {
 	DeleteEducation(context.Context, *DeleteEducationReq) (*DeleteEducationRes, error)
 	GetProfile(context.Context, *GetProfileReq) (*GetProfileRes, error)
 	EditSkill(context.Context, *EditSkillReq) (*EditSkillRes, error)
+	AddExperience(context.Context, *ExpReq) (*ExpRes, error)
+	UpdateExperience(context.Context, *ExpReq) (*ExpRes, error)
+	DeleteExperience(context.Context, *DltExpReq) (*DltExpRes, error)
+	GetProfileClient(context.Context, *ClientProfileReq) (*ClientProfileRes, error)
+	BlockUser(context.Context, *BlockReq) (*BlockRes, error)
+	UnBlockUser(context.Context, *BlockReq) (*BlockRes, error)
+	AddSkill(context.Context, *AddSkillReq) (*AddSkillRes, error)
+	UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -210,6 +298,30 @@ func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileReq
 }
 func (UnimplementedAuthServiceServer) EditSkill(context.Context, *EditSkillReq) (*EditSkillRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditSkill not implemented")
+}
+func (UnimplementedAuthServiceServer) AddExperience(context.Context, *ExpReq) (*ExpRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddExperience not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateExperience(context.Context, *ExpReq) (*ExpRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateExperience not implemented")
+}
+func (UnimplementedAuthServiceServer) DeleteExperience(context.Context, *DltExpReq) (*DltExpRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteExperience not implemented")
+}
+func (UnimplementedAuthServiceServer) GetProfileClient(context.Context, *ClientProfileReq) (*ClientProfileRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfileClient not implemented")
+}
+func (UnimplementedAuthServiceServer) BlockUser(context.Context, *BlockReq) (*BlockRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
+func (UnimplementedAuthServiceServer) UnBlockUser(context.Context, *BlockReq) (*BlockRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnBlockUser not implemented")
+}
+func (UnimplementedAuthServiceServer) AddSkill(context.Context, *AddSkillReq) (*AddSkillRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddSkill not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -440,6 +552,150 @@ func _AuthService_EditSkill_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AddExperience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExpReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AddExperience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/AddExperience",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AddExperience(ctx, req.(*ExpReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateExperience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExpReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateExperience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateExperience",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateExperience(ctx, req.(*ExpReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_DeleteExperience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DltExpReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).DeleteExperience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/DeleteExperience",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).DeleteExperience(ctx, req.(*DltExpReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetProfileClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClientProfileReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetProfileClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/GetProfileClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetProfileClient(ctx, req.(*ClientProfileReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/BlockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).BlockUser(ctx, req.(*BlockReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UnBlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UnBlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UnBlockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UnBlockUser(ctx, req.(*BlockReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_AddSkill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddSkillReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AddSkill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/AddSkill",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AddSkill(ctx, req.(*AddSkillReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhotoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateProfilePhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateProfilePhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateProfilePhoto(ctx, req.(*PhotoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -494,6 +750,38 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditSkill",
 			Handler:    _AuthService_EditSkill_Handler,
+		},
+		{
+			MethodName: "AddExperience",
+			Handler:    _AuthService_AddExperience_Handler,
+		},
+		{
+			MethodName: "UpdateExperience",
+			Handler:    _AuthService_UpdateExperience_Handler,
+		},
+		{
+			MethodName: "DeleteExperience",
+			Handler:    _AuthService_DeleteExperience_Handler,
+		},
+		{
+			MethodName: "GetProfileClient",
+			Handler:    _AuthService_GetProfileClient_Handler,
+		},
+		{
+			MethodName: "BlockUser",
+			Handler:    _AuthService_BlockUser_Handler,
+		},
+		{
+			MethodName: "UnBlockUser",
+			Handler:    _AuthService_UnBlockUser_Handler,
+		},
+		{
+			MethodName: "AddSkill",
+			Handler:    _AuthService_AddSkill_Handler,
+		},
+		{
+			MethodName: "UpdateProfilePhoto",
+			Handler:    _AuthService_UpdateProfilePhoto_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

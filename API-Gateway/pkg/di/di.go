@@ -8,11 +8,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func InitializeAuth(app *fiber.App, cfg *config.Config) {
-	client := client.InitAuthClient(cfg)
+func InitializeAPI(app *fiber.App, cfg *config.Config) {
+	Authclient := client.InitAuthClient(cfg)
 
-	user := handler.NewAuthHandler(client)
+	user := handler.NewAuthHandler(Authclient)
 	routes.Auth(app.Group("/auth"), user)
-	profile := handler.NewProfilehandler(client)
+	profile := handler.NewProfilehandler(Authclient)
 	routes.Profile(app.Group("/profile"), profile)
+
+	JobsClient := client.InitJobClient()
+	jobs:= handler.NewJobsHandler(JobsClient)
+	routes.Job(app.Group("/job"),jobs)
+
+	adminClient:=client.InitAdminClient()
+
+	admin:=handler.NewAdminHandler(adminClient,Authclient)
+	routes.Admin(app.Group("/admin"),&admin)
 }

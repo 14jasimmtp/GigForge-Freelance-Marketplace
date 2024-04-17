@@ -16,7 +16,7 @@ func main() {
 	}
 
 	app := fiber.New()
-	di.InitializeAuth(app, cfg)
+	di.InitializeAPI(app, cfg)
 	fmt.Println("listening on port 3000")
 	app.Listen(":3000")
 	fmt.Println("started")

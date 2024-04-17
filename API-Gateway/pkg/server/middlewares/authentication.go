@@ -3,6 +3,7 @@ package middlewares
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	jwttoken "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/utils/jwt"
@@ -27,8 +28,9 @@ func AuthClient(c *fiber.Ctx) error {
 	if User_role != "client" {
 		return c.Status(http.StatusForbidden).JSON("In wrong way")
 	}
+	u_id,_:=strconv.Atoi(User_id)
 
-	c.Locals("User_id",User_id)
+	c.Locals("User_id",int64(u_id))
 	c.Locals("User_role",User_role)
 
 	log.Println("MW: User Authorized")
@@ -52,6 +54,7 @@ func AuthFreelancer(c *fiber.Ctx) error{
 	if User_role != "freelancer" {
 		return c.Status(http.StatusForbidden).JSON("In wrong way")
 	}
+
 
 	c.Locals("User_id", User_id)
 	c.Locals("User_role",User_role)
@@ -78,7 +81,7 @@ func AuthAdmin(c *fiber.Ctx) error{
 		return c.Status(http.StatusForbidden).JSON("In wrong way")
 	}
 
-	c.Set("user_id", user_id+"1")
+	c.Set("user_id", user_id)
 	c.Set("user_role",user_role)
 
 	log.Println("MW: User Authorized")

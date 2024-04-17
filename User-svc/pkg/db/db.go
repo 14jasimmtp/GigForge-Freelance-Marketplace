@@ -6,6 +6,7 @@ import (
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pkg/domain"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -44,6 +45,22 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.OtpInfo{})
 	db.AutoMigrate(&domain.Freelancer_Education{})
 	db.AutoMigrate(&domain.Freelancer_skills{})
+	db.AutoMigrate(&domain.Skill{})
+	db.AutoMigrate(&domain.Freelancer_Experiences{})
+	db.AutoMigrate(&domain.Admin{})
+	createAdmin(db)
 	log.Println("migrated table")
 	return db
+}
+
+func createAdmin(db *gorm.DB) {
+	email := "admin@gigforge.com"
+	password := "admin@123"
+
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
+
+	err := db.FirstOrCreate(&domain.Admin{Email: email, Password: string(hashed)}).Error
+	if err != nil {
+		fmt.Print("failed to create admin")
+	}
 }

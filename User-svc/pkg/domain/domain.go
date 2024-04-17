@@ -16,6 +16,7 @@ type User struct {
 	Country   string `gorm:"country"`
 	Role      string `json:"role" gorm:"role"`
 	Is_active bool   `gorm:"is_active" default:"true"`
+	Profile_URL string `gorm:"profile_url"`
 }
 
 type UserModel struct {
@@ -27,7 +28,7 @@ type UserModel struct {
 	Password  string `gorm:"password"`
 	Country   string `gorm:"country"`
 	Role      string `json:"role" gorm:"role"`
-	Is_active bool   `gorm:"is_active" default:"true"`
+	Is_active bool   `gorm:"is_active"`
 }
 
 type Freelancer_Description struct {
@@ -35,7 +36,7 @@ type Freelancer_Description struct {
 	User_id     int
 	Title       string
 	Description string
-	Hourly_rate string
+	Hourly_rate int
 }
 
 type Freelancer_Education struct {
@@ -49,6 +50,18 @@ type Freelancer_Education struct {
 	Description   string `gorm:"description"`
 }
 
+type Freelancer_Experiences struct{
+	gorm.Model
+	Company string
+	City string
+	Country string
+	Title string
+	FromDate string
+	ToDate string
+	Description string
+	User_id int64
+}
+
 type Client struct {
 	gorm.Model
 	User_id         int
@@ -59,12 +72,14 @@ type Client struct {
 	Contact_person  string
 }
 
-type Skills struct {
+type Skill struct {
 	gorm.Model
-	Name string
+	Skill       string
+	Description string
 }
 
 type Freelancer_skills struct {
+	ID            uint `gorm:"primarykey"`
 	Freelancer_id int
 	Skill_id      int
 }
@@ -74,4 +89,10 @@ type OtpInfo struct {
 	Email      string
 	OTP        int
 	Expiration time.Time
+}
+
+type Admin struct{
+	gorm.Model
+	Email string 
+	Password string
 }

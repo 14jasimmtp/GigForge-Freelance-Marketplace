@@ -20,7 +20,7 @@ func main() {
 
 	svc := di.InitializeAPI(c)
 	grpcServer := grpc.NewServer()
-	auth.RegisterAuthServiceServer(grpcServer, &svc)
+	auth.RegisterAuthServiceServer(grpcServer, svc)
 	fmt.Println(lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)

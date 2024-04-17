@@ -1,21 +1,21 @@
 package req
 
 type LoginRequest struct{
-	Email string `json:"email" `
-	Password string `json:"password"`
+	Email string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type SignupRequest struct{
-	FirstName string `json:"firstname"`
-	LastName string `json:"lastname"`
-	Password string `json:"password"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
-	Country string `json:"country"`
+	FirstName string `json:"firstname" validate:"required"`
+	LastName string `json:"lastname" validate:"required"`
+	Password string `json:"password" validate:"required"`
+	Phone string `json:"phone" validate:"required,number,len=10"`
+	Email string `json:"email" validate:"required,email"`
+	Country string `json:"country" validate:"required"`
 }
 
 type ForgotPassword struct{
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 type ResetPassword struct{
@@ -24,6 +24,6 @@ type ResetPassword struct{
 }
 
 type Verify struct{
-	OTP int64 `json:"otp"`
+	OTP int64 `json:"otp" validate:"required"`
 }
 

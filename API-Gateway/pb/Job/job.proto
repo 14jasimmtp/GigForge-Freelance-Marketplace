@@ -33,7 +33,7 @@ message ProposalReq{
     string Budget = 1;
     string coverLetter = 2;
     repeated bytes attachments = 3;
-    int64 user_id = 4;
+    string user_id = 4;
     string job_id = 5;
 }
 

@@ -28,7 +28,7 @@ func (r *Repo) CreateUser(user *auth.UserSignupReq) (*domain.User, error) {
 		Password:  user.Password,
 		Country:   user.Country,
 		Role:      user.Role,
-		Is_active: false,
+		Is_active: true,
 	}
 	query := r.db.Create(&User).Scan(&User)
 	if query.Error != nil {
@@ -39,13 +39,16 @@ func (r *Repo) CreateUser(user *auth.UserSignupReq) (*domain.User, error) {
 
 }
 
-func (r *Repo) CheckIsUserActive(email string) domain.User {
-	var res domain.User
-	query := r.db.Where(&domain.User{Email: email}).Scan(&res)
+func (r *Repo) CheckIsUserActive(email string) (error) {
+	var res bool
+	query := r.db.Raw(`select is_active from users where email = ?`,email).Scan(&res)
 	if query.Error != nil {
-		return domain.User{}
+		return query.Error
 	}
-	return res
+	if !res{
+		return errors.New("user is blocked")
+	}
+	return nil
 }
 
 func (r *Repo) CheckUserExist(email, phone string) error {
@@ -114,7 +117,7 @@ func (r *Repo) DeleteOTP() error {
 func (r *Repo) AddEducation(edu *auth.AddEducationReq) (*domain.Freelancer_Education, error) {
 	var res domain.Freelancer_Education
 	query := `INSERT INTO freelancer_educations(created_at,updated_at,school,course,area_of_study,year_started,year_ended,description,user_id) Values(?,?,?,?,?,?,?,?,?)`
-	err := r.db.Raw(query,time.Now(),time.Now(), edu.School, edu.Course, edu.AreaOfStudy, edu.Date_Started, edu.Date_Ended, edu.Description, edu.UserId).Scan(&res).Error
+	err := r.db.Raw(query, time.Now(), time.Now(), edu.School, edu.Course, edu.AreaOfStudy, edu.Date_Started, edu.Date_Ended, edu.Description, edu.UserId).Scan(&res).Error
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +127,8 @@ func (r *Repo) AddEducation(edu *auth.AddEducationReq) (*domain.Freelancer_Educa
 func (r *Repo) UpdateEducation(edu *auth.UpdateEducationReq) (*domain.Freelancer_Education, error) {
 	var res domain.Freelancer_Education
 
-	query := `UPDATE freelancer_educations SET updated_at = ? school = ?,course = ?,area_of_study = ?,year_started = ?,year_ended = ?,description ? WHERE user_id = ? AND e_id = ?`
-	err := r.db.Exec(query, time.Now() ,edu.School, edu.Course, edu.AreaOfStudy, edu.Date_Started, edu.Date_Ended, edu.Description, edu.UserId, edu.EducationId).Scan(&res).Error
+	query := `UPDATE freelancer_educations SET updated_at = ?, school = ?,course = ?,area_of_study = ?,year_started = ?,year_ended = ?,description = ? WHERE user_id = ? AND id = ?`
+	err := r.db.Raw(query, time.Now(), edu.School, edu.Course, edu.AreaOfStudy, edu.Date_Started, edu.Date_Ended, edu.Description, edu.UserId, edu.EducationId).Scan(&res).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, errors.New("no education found to update with this id")
@@ -137,7 +140,7 @@ func (r *Repo) UpdateEducation(edu *auth.UpdateEducationReq) (*domain.Freelancer
 
 func (r *Repo) DeleteEducation(edu *auth.DeleteEducationReq) error {
 
-	query := `DELETE FROM freelancer_educations WHERE user_id = ? AND e_id = ?`
+	query := `DELETE FROM freelancer_educations WHERE user_id = ? AND id = ?`
 	err := r.db.Exec(query, edu.UserId, edu.EducationId).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -150,8 +153,12 @@ func (r *Repo) DeleteEducation(edu *auth.DeleteEducationReq) error {
 
 func (r *Repo) AddProfileDescription(req *auth.APDReq) (*domain.Freelancer_Description, error) {
 	var res domain.Freelancer_Description
-	query := `INSERT INTO freelancer_descriptions(created_at,updated_at,Title,description,Hourly_rate,user_id) VALUES(?,?,?,?)`
-	err := r.db.Exec(query, time.Now(), time.Now(), req.Title, req.Description, req.HourlyRate, req.UserId).Scan(&res).Error
+	q := `SELECT * FROM freelancers_descriptions where user_id = ?`
+	if r.db.Raw(q, req.UserId).RowsAffected != 0 {
+		return nil, errors.New("profile description already exist. update if you want to change")
+	}
+	query := `INSERT INTO freelancer_descriptions(created_at,updated_at,Title,description,Hourly_rate,user_id) VALUES(?,?,?,?,?,?)`
+	err := r.db.Raw(query, time.Now(), time.Now(), req.Title, req.Description, req.HourlyRate, req.UserId).Scan(&res).Error
 	if err != nil {
 		return nil, err
 	}
@@ -169,4 +176,194 @@ func (r *Repo) UpdateProfileDescription(req *auth.UPDReq) (*domain.Freelancer_De
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (r *Repo) AddExperience(edu *auth.ExpReq) error {
+	var res domain.Freelancer_Experiences
+	query := `INSERT INTO freelancer_experiences(created_at,updated_at,company,city,country,title,from_date,to_date,description,user_id) Values(?,?,?,?,?,?,?,?,?,?)`
+	err := r.db.Raw(query, time.Now(), time.Now(), edu.Company, edu.City, edu.Country, edu.Title, edu.FromDate, edu.ToDate, edu.Description, edu.UserId).Scan(&res).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repo) UpdateExperience(edu *auth.ExpReq) error {
+	var res domain.Freelancer_Education
+
+	query := `UPDATE freelancer_experiences SET updated_at = ?, company = ?,city = ?,country = ?,title = ?,from_date = ?,to_date = ?,description = ? WHERE user_id = ? AND id = ?`
+	err := r.db.Raw(query, time.Now(), edu.Company, edu.City, edu.Country, edu.Title, edu.FromDate, edu.ToDate, edu.Description, edu.UserId, edu.ExpId).Scan(&res).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("no education found to update with this id")
+		}
+		return err
+	}
+	return nil
+}
+
+func (r *Repo) DeleteExperience(edu *auth.DltExpReq) error {
+
+	query := `DELETE FROM freelancer_experiences WHERE user_id = ? AND id = ?`
+	err := r.db.Exec(query, edu.UserId, edu.ExperienceId).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("no experience found to update with this id")
+		}
+		return err
+	}
+	return nil
+}
+
+func (r *Repo) GetUserWithId(id string) (*auth.User, error) {
+	var user domain.User
+	query := `SELECT * FROM users WHERE id = ?`
+	err := r.db.Raw(query, id).Scan(&user).Error
+	if err != nil {
+		return nil, errors.New("something went wrong")
+	}
+	return &auth.User{
+		Firstname: user.FirstName,
+		Lastname:  user.LastName,
+		Phone:     user.Phone,
+		Email:     user.Email,
+		Country:   user.Country,
+	}, nil
+}
+
+func (r *Repo) GetProfileDescription(id string) (*auth.UPDReq, error) {
+	var pd domain.Freelancer_Description
+	query := `SELECT * FROM freelancer_descriptions WHERE user_id = ?`
+	err := r.db.Raw(query, id).Scan(&pd).Error
+	if err != nil {
+		return nil, errors.New("something went wrong")
+	}
+	return &auth.UPDReq{
+		Title:       pd.Title,
+		Description: pd.Description,
+		HourlyRate:  int64(pd.Hourly_rate),
+	}, nil
+}
+
+func (r *Repo) GetEducations(id string) ([]*auth.Education, error) {
+	var educations []domain.Freelancer_Education
+	query := `SELECT * FROM freelancer_educations where user_id = ?`
+	err := r.db.Raw(query, id).Scan(&educations).Error
+	if err != nil {
+		return nil, errors.New("something went wrong")
+	}
+	var edu []*auth.Education
+	for _, l := range educations {
+		res := &auth.Education{
+			EducationId:  int64(l.ID),
+			School:       l.School,
+			Description:  l.Description,
+			AreaOfStudy:  l.Area_Of_Study,
+			Course:       l.Course,
+			Date_Started: l.Year_Started,
+			Date_Ended:   l.Year_Ended,
+		}
+		edu = append(edu, res)
+	}
+
+	return edu, nil
+}
+
+func (r *Repo) GetExperience(id string) ([]*auth.ExpReq, error) {
+	var educations []domain.Freelancer_Experiences
+	query := `SELECT * FROM freelancer_experiences where user_id = ?`
+	err := r.db.Raw(query, id).Scan(&educations).Error
+	if err != nil {
+		return nil, errors.New("something went wrong")
+	}
+	var exp []*auth.ExpReq
+	for _, l := range educations {
+		res := &auth.ExpReq{
+			Company:     l.Company,
+			City:        l.City,
+			Country:     l.Country,
+			Title:       l.Title,
+			FromDate:    l.FromDate,
+			ToDate:      l.ToDate,
+			Description: l.Description,
+		}
+		exp = append(exp, res)
+	}
+
+	return exp, nil
+}
+
+func (r *Repo) UpdatePassword(password, email string) error {
+	query := `UPDATE users SET password = ? WHERE email = ?`
+	err := r.db.Exec(query, password, email).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("no user found ")
+		}
+		return err
+	}
+	return nil
+}
+
+func (r *Repo) AddSkill(req *auth.AddSkillReq) (int, error) {
+	query := `INSERT INTO skills(skill,description) VALUES(?,?)`
+	err := r.db.Exec(query, req.Skill, req.Description).Error
+	if err != nil {
+		return 500, err
+	}
+	return 200, nil
+}
+
+func (r *Repo) BlockUser(userID string) (int, error) {
+	var active bool
+	query := `SELECT is_active FROM users where id = ?`
+	err := r.db.Raw(query, userID).Scan(&active).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return 404, errors.New("user not found with this id")
+		}
+		return 500, errors.New("something went wrong")
+	}
+	if !active {
+		return 409, errors.New("user already blocked")
+	}
+	query = `UPDATE users SET is_active = false WHERE id = ?`
+	err = r.db.Raw(query, userID).Scan(&active).Error
+	if err != nil {
+		return 500, errors.New("something went wrong")
+	}
+
+	return 200, nil
+
+}
+
+func (r *Repo) UnBlockUser(userID string) (int, error) {
+	var active bool
+	query := `SELECT is_active FROM users where id = ?`
+	err := r.db.Raw(query, userID).Scan(&active).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return 404, errors.New("user not found with this id")
+		}
+		return 500, errors.New("something went wrong")
+	}
+	if active {
+		return 409, errors.New("user already Unblocked")
+	}
+	query = `UPDATE users SET is_active = true WHERE id = ?`
+	err = r.db.Raw(query, userID).Scan(&active).Error
+	if err != nil {
+		return 500, errors.New("something went wrong")
+	}
+
+	return 200, nil
+}
+
+func (r *Repo) UpdateProfilePhoto(userID,url string) error{
+	query := `UPDATE users SET profile_url = ? WHERE id = ?`
+	err:=r.db.Raw(query,url,userID).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

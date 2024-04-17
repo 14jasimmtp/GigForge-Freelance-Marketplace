@@ -8,11 +8,10 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func InitializeAPI(c *config.Config) service.Service {
+func InitializeAPI(c *config.Config) service.ServiceIfc {
 	db := db.ConnectToDB()
 	repo := repository.NewRepo(db)
 	service := service.NewService(repo)
-
 	cron := cron.New()
 	_, err := cron.AddFunc("@every 2m", func() { repo.DeleteOTP() })
 	if err != nil {

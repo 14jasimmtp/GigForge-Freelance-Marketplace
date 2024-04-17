@@ -17,6 +17,25 @@ service AuthService{
     rpc DeleteEducation(DeleteEducationReq) returns (DeleteEducationRes) {};
     rpc GetProfile(GetProfileReq) returns (GetProfileRes) {};
     rpc EditSkill(EditSkillReq) returns (EditSkillRes) {};
+    rpc AddExperience(ExpReq) returns (ExpRes) {};
+    rpc UpdateExperience(ExpReq) returns (ExpRes) {};
+    rpc DeleteExperience(DltExpReq) returns (DltExpRes) {};
+    rpc GetProfileClient(ClientProfileReq) returns(ClientProfileRes) {};
+    rpc BlockUser(BlockReq) returns (BlockRes) {};
+    rpc UnBlockUser(BlockReq) returns (BlockRes) {};
+    rpc AddSkill(AddSkillReq) returns (AddSkillRes) {};
+    rpc UpdateProfilePhoto(PhotoReq) returns (PhotoRes) {};
+}
+
+message PhotoReq{
+    string user_id = 1;
+    bytes image = 2;
+}
+
+message PhotoRes{
+    int64 status = 1;
+    string error = 2;
+    string response = 3;
 }
 
 message UserLoginReq{
@@ -39,6 +58,14 @@ message UserSignupReq{
     string password = 5;
     string country = 6;
     string role =7;
+}
+
+message User{
+    string firstname = 1;
+    string lastname = 2; 
+    string phone = 3;
+    string email = 4;
+    string country = 5;
 }
 
 message UserSignupRes{
@@ -72,6 +99,7 @@ message FPres{
 message RPreq{
     int64 OTP = 1;
     string password = 2; 
+    string Token = 3;
 }
 
 message RPres{
@@ -171,7 +199,7 @@ message DeleteEducationRes{
 
 message EditSkillReq{
     repeated int64 skills = 1;
-    int64 user_id = 2;
+    string user_id = 2;
 }
 
 message EditSkillRes{
@@ -180,8 +208,75 @@ message EditSkillRes{
     string Error = 3;
 }
 
-message GetProfileReq{}
+message GetProfileReq{
+   string user_id = 1;
+}
 
 message GetProfileRes{
-    
+    User user = 1;
+    UPDReq Description = 2;
+    repeated Education education = 3;
+    repeated ExpReq experience = 4;
+    string Error = 5;
+    int64 Status = 6;
+    // repeated Experience experience = 3;
+}
+
+message ExpReq{
+    string Company =1;
+    string Country = 2;
+    string City = 3;
+    string Title = 4;
+    string FromDate =5;
+    string ToDate = 6;
+    string Description = 7;
+    string user_id = 8;
+    string exp_id = 9;
+
+}
+
+message ExpRes{
+    string Response = 1;
+    int64 Status = 2;
+    string Error = 3;
+}
+
+message DltExpReq{
+    string user_id =1;
+    string experience_id = 2;
+}
+
+message DltExpRes{
+    string Response = 1;
+    int64 Status = 2;
+    string Error = 3;
+}
+
+message ClientProfileReq{
+
+}
+
+message ClientProfileRes{
+
+}
+
+message BlockReq{
+    string user_id = 1;
+}
+
+message BlockRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message AddSkillReq{
+    string skill = 1;
+    string description = 2;
+}
+
+message AddSkillRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
 }

@@ -1,44 +1,46 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
-	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/config"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/domain"
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func ConnectToDB(c *config.Config) *gorm.DB {
-	sql, err := sql.Open("postgres", c.DB_URL)
+func ConnectToDB() *gorm.DB {
+	db, err := gorm.Open(postgres.Open(viper.GetString("DB_URL")), &gorm.Config{})
+
 	if err != nil {
-		log.Println("Error : ", err)
-		return nil
+		log.Fatal(err)
 	}
 
-	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = '" + "gigforge_job_svc_db" + "'")
-	if err != nil {
-		log.Println("something went wrong", err)
-	}
-	defer rows.Close()
+	dbName := "gigforge_jobs_db"
 
-	if rows.Next() {
-		fmt.Println("Database" + "gigforge_user_db" + " already exists.")
-	} else {
-		_, err = sql.Exec("CREATE DATABASE " + "gigforge_job_svc_db")
+	var exists bool
+	err = db.Raw("SELECT EXISTS (SELECT FROM pg_database WHERE datname = ?)", dbName).Scan(&exists).Error
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if !exists {
+		err = db.Exec("CREATE DATABASE gigforge_jobs_db").Error
 		if err != nil {
-			fmt.Println("Error creating database:", err)
+			log.Fatal(err)
 		}
+		log.Println("created database " + dbName)
 	}
 
-	db, err := gorm.Open(postgres.Open(c.DB_URL+"/gigforge_job_svc_db"), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(viper.GetString("DB_URL")+"/"+dbName), &gorm.Config{})
 	if err != nil {
-		log.Fatal("error while connecting to db : ", err)
+		log.Fatal(err)
 	}
 
-	// db.AutoMigrate(&domain.User{})
-	// db.AutoMigrate(&domain.Client{})
-	// db.AutoMigrate(&domain.Freelancer{})
+	db.AutoMigrate(&domain.Jobs{})
+	db.AutoMigrate(&domain.Proposals{})
+	db.AutoMigrate(&domain.JobSkills{})
+
 	return db
 }

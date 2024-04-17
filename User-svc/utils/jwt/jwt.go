@@ -17,6 +17,11 @@ type TempTokenClaims struct {
 	jwt.RegisteredClaims
 }
 
+type ResTokenClaims struct {
+	Email string
+	jwt.RegisteredClaims
+}
+
 type AccessTokenClaims struct {
 	jwt.RegisteredClaims
 	User_id int
@@ -74,6 +79,23 @@ func GenerateTemporaryTokenToVerify(secret string, user *auth.UserSignupReq) (st
 	return tokenstring, nil
 }
 
+func GenerateTemporaryTokenToResetPwd(secret string, email string) (string, error) {
+	claims := &ResTokenClaims{
+		Email: email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Minute)),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenstring, err := token.SignedString([]byte(secret))
+	fmt.Println(secret)
+	if err != nil {
+		return "", err
+	}
+	return tokenstring, nil
+}
+
 func FetchUserVerifyDetailsFromToken(token string) (*auth.UserSignupReq, error) {
 	tokenString := strings.TrimPrefix(token, "Bearer ")
 	TokenUnpacked, err := jwt.ParseWithClaims(tokenString, &TempTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -92,4 +114,25 @@ func FetchUserVerifyDetailsFromToken(token string) (*auth.UserSignupReq, error) 
 	}
 
 	return nil, nil
+}
+
+
+func FetchEmailFromToken(tokens string) (string, error) {
+	tokenString := strings.TrimPrefix(tokens, "Bearer ")
+	TokenUnpacked, err := jwt.ParseWithClaims(tokenString, &ResTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(viper.GetString("ATokenSecret")), nil
+	})
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	if claims, ok := TokenUnpacked.Claims.(*ResTokenClaims); ok && TokenUnpacked.Valid {
+		return claims.Email, nil
+	}
+
+	return "", nil
 }

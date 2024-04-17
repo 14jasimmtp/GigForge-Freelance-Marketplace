@@ -15,7 +15,7 @@ type PostJob struct {
 }
 
 type Proposal struct {
-	Budget      string `json:"budget"`
-	Coverletter string `json:"cover_letter"`
-	Attachments []*multipart.FileHeader `form:"attachments"`
+	Budget      string `json:"budget" validate:"required"`
+	Coverletter string `json:"cover_letter" validate:"required"`
+	Attachments []*multipart.FileHeader `form:"attachments" `
 }
