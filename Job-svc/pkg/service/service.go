@@ -54,6 +54,14 @@ func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.
 	},nil
 }
 
-func (s *Service) AcceptProposal(ctx context.Context, req *job.AcceptOfferReq) (*job.AcceptOfferRes, error) {
-	err:=
+func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq)(*job.SendOfferRes,error){
+	err := 
 }
+
+func (s *Service) AcceptOffer()
+
+
+
+// func (s *Service) AcceptProposal(ctx context.Context, req *job.AcceptOfferReq) (*job.AcceptOfferRes, error) {
+// 	err:=
+// }

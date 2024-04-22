@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/domain"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -37,9 +38,8 @@ func ConnectToDB() *gorm.DB {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&domain.{})
-	db.AutoMigrate(&domain.Proposals{})
-	db.AutoMigrate(&domain.JobSkills{})
+	db.AutoMigrate(&domain.Project{})
+	db.AutoMigrate(&domain.Tiers{})
 
 	return db
 }

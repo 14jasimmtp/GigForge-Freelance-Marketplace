@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/aws/aws-sdk-go v1.51.21
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/google/uuid v1.6.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.18.0
