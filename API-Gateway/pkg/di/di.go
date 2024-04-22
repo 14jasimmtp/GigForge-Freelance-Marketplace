@@ -24,4 +24,8 @@ func InitializeAPI(app *fiber.App, cfg *config.Config) {
 
 	admin:=handler.NewAdminHandler(adminClient,Authclient)
 	routes.Admin(app.Group("/admin"),&admin)
+
+	ProjectClient:=client.InitProjectClient()
+	projecthandler:=handler.NewProjectHandler(ProjectClient)
+	routes.Project(app.Group("/project"),projecthandler)
 }

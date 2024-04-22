@@ -6,6 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/gofiber/fiber/v2 v2.52.3
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/jinzhu/copier v0.4.0
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0

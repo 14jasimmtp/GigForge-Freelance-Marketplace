@@ -1,0 +1,37 @@
+syntax="proto3";
+
+package project;
+
+option go_package="./pb/project";
+
+service ProjectService {
+    rpc AddProject(AddProjectReq) returns (AddProjectRes) {};
+}
+
+message AddProjectReq {
+    string title = 1;
+    string description = 2;
+    int32 category = 3;
+    string type = 4;
+    double price = 5;
+    int64 delivery_days = 6;
+    int64 number_of_revisions = 7;
+    CustomTier starter = 8;
+    CustomTier standard = 9;
+    CustomTier advanced = 10;
+}
+
+message CustomTier {
+    string title = 1;
+    string description = 2;
+    int64 delivery_days = 3;
+    int64 number_of_revisions = 4;
+    double price = 5;
+}
+
+message AddProjectRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
