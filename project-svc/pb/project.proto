@@ -2,7 +2,7 @@ syntax="proto3";
 
 package project;
 
-option go_package="./pb/project";
+option go_package="./pb";
 
 service ProjectService {
     rpc AddProject(AddSingleProjectReq) returns (AddSingleProjectRes) {};

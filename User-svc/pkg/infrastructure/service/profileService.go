@@ -207,14 +207,14 @@ func (s *Service) UpdateProfilePhoto(ctx context.Context, req *auth.PhotoReq) (*
 	}, nil
 }
 
-func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UPDCompanyDetailsReq) (*auth.UPDCompanyDetailsRes, error){
-	err:=s.repo.UpdateCmpDtails(req)
-	if err != nil{
-		return nil,nil
-	}
-	return &auth.UPDCompanyDetails{},nil
-}
+// func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UPDCompanyDetailsReq) (*auth.UPDCompanyDetailsRes, error){
+// 	err:=s.repo.UpdateCmpDtails(req)
+// 	if err != nil{
+// 		return nil,nil
+// 	}
+// 	return &auth.UPDCompanyDetails{},nil
+// }
 
-func (s *Service) GetClientProfileForFreelancer(ctx context.Context){}
+// func (s *Service) GetClientProfileForFreelancer(ctx context.Context){}
 
-func (s *Service) GetFreelancerProfileForClient(ctx context.Context){}
+// func (s *Service) GetFreelancerProfileForClient(ctx context.Context){}

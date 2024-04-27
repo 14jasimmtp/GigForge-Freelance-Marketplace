@@ -95,4 +95,3 @@ func (r *Repo) ViewProposalsForClients(client_id int) error{
 }
 
 
-func (r *Repo) 

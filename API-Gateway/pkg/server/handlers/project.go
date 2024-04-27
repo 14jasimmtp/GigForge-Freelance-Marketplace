@@ -19,9 +19,9 @@ func NewProjectHandler(p project.ProjectServiceClient) *ProjectHandler {
 	return &ProjectHandler{project: p}
 }
 
-func (h *ProjectHandler) AddProject(c *fiber.Ctx) error {
-	var req req.AddProject
-
+func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
+	var req req.AddSingleProject
+	// user_id:=c.Locals("User_id").(string)
 	if err:=c.BodyParser(&req);err != nil {
 		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
 	}
@@ -30,10 +30,10 @@ func (h *ProjectHandler) AddProject(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(401).JSON(fiber.Map{"error": Errors})
 	}
-	grpcReq := &project.AddProjectReq{}
+	grpcReq := &project.AddSingleProjectReq{}
 	copier.Copy(grpcReq, &req)
 	fmt.Println(grpcReq)
-	
+
 	res, err := h.project.AddProject(context.Background(), grpcReq)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error":err.Error()})
@@ -42,14 +42,36 @@ func (h *ProjectHandler) AddProject(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *ProfileHandler) EditProject(c *fiber.Ctx) error {
+func (h *ProjectHandler) AddTieredProject(c *fiber.Ctx) error {
+	var req req.AddSingleProject
+	// user_id:=c.Locals("User_id").(string)
+	if err:=c.BodyParser(&req);err != nil {
+		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
+	}
+
+	Errors, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(401).JSON(fiber.Map{"error": Errors})
+	}
+	grpcReq := &project.AddSingleProjectReq{}
+	copier.Copy(grpcReq, &req)
+	fmt.Println(grpcReq)
+
+	res, err := h.project.AddProject(context.Background(), grpcReq)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error":err.Error()})
+	}
+
+	return c.Status(int(res.Status)).JSON(res)}
+
+func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 	return nil
 }
 
-func (h *ProfileHandler) RemoveProject(c *fiber.Ctx) error {
+func (h *ProjectHandler) RemoveProject(c *fiber.Ctx) error {
 	return nil
 }
 
-func (h *ProfileHandler) BuyProduct(c *fiber.Ctx) error {
+func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	return nil
 }

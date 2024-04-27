@@ -34,7 +34,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	}
 	Error, err := validation.Validation(Login)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error":Error})
 	}
 
 	res, err := h.auth.Login(context.Background(), &auth.UserLoginReq{

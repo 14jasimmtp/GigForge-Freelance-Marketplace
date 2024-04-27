@@ -301,7 +301,7 @@ func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error {
 }
 
 // func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{
-// 	var req req.Company
+// 	// var req req.
 // 	user_id:=c.Locals("User_id").(string)
 // 	if err := c.BodyParser(&req); err != nil{
 // 		return c.Status(400).JSON("error while parsing body.Check syntax")
@@ -350,4 +350,9 @@ func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error {
 // 	}
 
 // 	return c.Status(int(res.Status)).JSON(res)
+// }
+
+
+// func (h *ProfileHandler) GetPaymentHistory(c *fiber.Ctx) error{
+	
 // }

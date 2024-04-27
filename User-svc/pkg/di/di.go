@@ -8,7 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func InitializeAPI(c *config.Config) service.ServiceIfc {
+func InitializeAPI(c *config.Config) *service.Service {
 	db := db.ConnectToDB()
 	repo := repository.NewRepo(db)
 	service := service.NewService(repo)

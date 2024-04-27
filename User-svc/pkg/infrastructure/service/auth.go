@@ -20,7 +20,7 @@ type Service struct {
 	auth.UnimplementedAuthServiceServer
 }
 
-func NewService(repo repository.RepoIfc) ServiceIfc {
+func NewService(repo repository.RepoIfc) *Service {
 	return &Service{repo: repo}
 }
 

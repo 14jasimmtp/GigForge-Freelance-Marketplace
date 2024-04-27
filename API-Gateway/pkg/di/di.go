@@ -9,23 +9,22 @@ import (
 )
 
 func InitializeAPI(app *fiber.App, cfg *config.Config) {
+	//clients
 	Authclient := client.InitAuthClient(cfg)
-
-	user := handler.NewAuthHandler(Authclient)
-	routes.Auth(app.Group("/auth"), user)
-	profile := handler.NewProfilehandler(Authclient)
-	routes.Profile(app.Group("/profile"), profile)
-
 	JobsClient := client.InitJobClient()
-	jobs:= handler.NewJobsHandler(JobsClient)
-	routes.Job(app.Group("/job"),jobs)
-
 	adminClient:=client.InitAdminClient()
-
-	admin:=handler.NewAdminHandler(adminClient,Authclient)
-	routes.Admin(app.Group("/admin"),&admin)
-
 	ProjectClient:=client.InitProjectClient()
-	projecthandler:=handler.NewProjectHandler(ProjectClient)
-	routes.Project(app.Group("/project"),projecthandler)
+
+	//handler
+	auth := handler.NewAuthHandler(Authclient)
+	profile := handler.NewProfilehandler(Authclient)
+	jobs:= handler.NewJobsHandler(JobsClient)
+	admins:=handler.NewAdminHandler(adminClient,Authclient)
+	project:=handler.NewProjectHandler(ProjectClient)
+
+	//routes
+	routes.Freelancer(app.Group("/freelancer"),profile,project,jobs)
+	routes.Admin(app.Group("/admin"),&admins)
+	routes.Client(app.Group("/client"),profile,project,jobs)
+	routes.Auth(app.Group("/auth"),auth)
 }

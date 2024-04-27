@@ -16,6 +16,10 @@ func Profile(profile fiber.Router,h *handler.ProfileHandler){
 	profile.Put("/experience/:id",middlewares.AuthFreelancer,h.UpdateExperience)
 	profile.Post("/experience",middlewares.AuthFreelancer,h.AddExperience)
 	profile.Delete("/experience/:id",middlewares.AuthFreelancer,h.RemoveExperience)
-	profile.Get("/freelancer",middlewares.AuthFreelancer,h.GetProfile)
-	// profile.Get("/client",middlewares.AuthClient,h.GetProfileClient)
+	
+	profile.Get("",middlewares.AuthFreelancer,h.GetProfile)
+	profile.Get("/freelancer/:id")
+	profile.Get("/client")
+	profile.Get("/")
+
 }
