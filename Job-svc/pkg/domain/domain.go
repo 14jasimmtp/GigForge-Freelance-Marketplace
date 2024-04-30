@@ -7,9 +7,9 @@ type Jobs struct{
 	Title       string  `json:"title"`
 	Description string  `json:"Description"`
 	TimePeriod  string  `json:"time-period"`
-	Level       string  `json:"freelancer_level"`
+	Type       	string  `json:"type"`
 	Category    int64   `json:"category"`
-	Budget      string  `json:"budget"`
+	Budget      float32  `json:"budget"`
 	Client_id int
 }
 
@@ -22,7 +22,7 @@ type JobSkills struct{
 type Proposals struct{
 	gorm.Model
 	Cover_letter string `json:"cover_letter"`
-	Budget string
+	Budget float32
 	JobId int
 	User_id int
 }

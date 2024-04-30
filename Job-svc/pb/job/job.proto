@@ -10,6 +10,64 @@ service JobService{
     rpc SendOffer(SendOfferReq) returns (SendOfferRes) {};
     rpc AcceptOffer(AcceptOfferReq) returns (AcceptOfferRes) {};
     rpc ViewContract(ContractReq) returns (ViewContractRes) {};
+    rpc AddCategory(AddCategoryReq) returns (AddCategoryRes) {};
+    rpc GetCategory(NoParam) returns (GetCategoryRes) {};
+    rpc GetMyJobs(GetMyJobsReq) returns (GetMyJobsRes) {};
+    rpc GetJob(GetJobReq) returns (GetJobRes) {};
+}
+
+message GetJobRes{
+    job Job =1;
+    int64 Status = 2;
+    string error = 3;
+    string response =4;
+}
+
+message GetJobReq{
+    string job_id = 1;
+}
+
+message job{
+    int64 ID =1;
+    string Title = 2;
+    string Description = 3;
+    repeated string skills = 4;
+    string TimePeriod = 5;
+    string Type = 6;
+    string Category = 7;
+    float Budget = 8;
+}
+message GetMyJobsRes{
+    repeated job Jobs = 1;
+    int64 status =2;
+    string Error =3;
+    string response = 4;
+}
+
+message GetMyJobsReq{
+   string user_id = 1;
+}
+
+message NoParam{}
+
+message category{
+    int64 ID = 1;
+    string Category = 2;
+}
+message GetCategoryRes{
+    int64 status = 1;
+    string Error = 2;
+    repeated category Categories = 3;
+}
+
+message AddCategoryReq{
+    string category = 1;
+}
+
+message AddCategoryRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
 }
 
 message postjobReq{
@@ -18,8 +76,8 @@ message postjobReq{
     int64 category = 3;
     repeated int64 skills =4;
     string timePeriod = 5;
-    string freelancerLevel = 6;
-    string budget = 7;
+    string Type = 6;
+    float budget = 7;
     int64 user_id = 8;
 }
 
@@ -30,10 +88,10 @@ message postjobRes{
 }
 
 message ProposalReq{
-    string Budget = 1;
+    float Budget = 1;
     string coverLetter = 2;
     repeated bytes attachments = 3;
-    int64 user_id = 4;
+    string user_id = 4;
     string job_id = 5;
 }
 

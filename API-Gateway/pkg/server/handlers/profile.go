@@ -36,7 +36,7 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	}
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"Error":Error})
 	}
 	res, err := h.profile.AddEducation(context.Background(), &auth.AddEducationReq{
 		School:       req.School,

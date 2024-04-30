@@ -27,6 +27,10 @@ type JobServiceClient interface {
 	SendOffer(ctx context.Context, in *SendOfferReq, opts ...grpc.CallOption) (*SendOfferRes, error)
 	AcceptOffer(ctx context.Context, in *AcceptOfferReq, opts ...grpc.CallOption) (*AcceptOfferRes, error)
 	ViewContract(ctx context.Context, in *ContractReq, opts ...grpc.CallOption) (*ViewContractRes, error)
+	AddCategory(ctx context.Context, in *AddCategoryReq, opts ...grpc.CallOption) (*AddCategoryRes, error)
+	GetCategory(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetCategoryRes, error)
+	GetMyJobs(ctx context.Context, in *GetMyJobsReq, opts ...grpc.CallOption) (*GetMyJobsRes, error)
+	GetJob(ctx context.Context, in *GetJobReq, opts ...grpc.CallOption) (*GetJobRes, error)
 }
 
 type jobServiceClient struct {
@@ -82,6 +86,42 @@ func (c *jobServiceClient) ViewContract(ctx context.Context, in *ContractReq, op
 	return out, nil
 }
 
+func (c *jobServiceClient) AddCategory(ctx context.Context, in *AddCategoryReq, opts ...grpc.CallOption) (*AddCategoryRes, error) {
+	out := new(AddCategoryRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/AddCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) GetCategory(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetCategoryRes, error) {
+	out := new(GetCategoryRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) GetMyJobs(ctx context.Context, in *GetMyJobsReq, opts ...grpc.CallOption) (*GetMyJobsRes, error) {
+	out := new(GetMyJobsRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetMyJobs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) GetJob(ctx context.Context, in *GetJobReq, opts ...grpc.CallOption) (*GetJobRes, error) {
+	out := new(GetJobRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -91,6 +131,10 @@ type JobServiceServer interface {
 	SendOffer(context.Context, *SendOfferReq) (*SendOfferRes, error)
 	AcceptOffer(context.Context, *AcceptOfferReq) (*AcceptOfferRes, error)
 	ViewContract(context.Context, *ContractReq) (*ViewContractRes, error)
+	AddCategory(context.Context, *AddCategoryReq) (*AddCategoryRes, error)
+	GetCategory(context.Context, *NoParam) (*GetCategoryRes, error)
+	GetMyJobs(context.Context, *GetMyJobsReq) (*GetMyJobsRes, error)
+	GetJob(context.Context, *GetJobReq) (*GetJobRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -112,6 +156,18 @@ func (UnimplementedJobServiceServer) AcceptOffer(context.Context, *AcceptOfferRe
 }
 func (UnimplementedJobServiceServer) ViewContract(context.Context, *ContractReq) (*ViewContractRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewContract not implemented")
+}
+func (UnimplementedJobServiceServer) AddCategory(context.Context, *AddCategoryReq) (*AddCategoryRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCategory not implemented")
+}
+func (UnimplementedJobServiceServer) GetCategory(context.Context, *NoParam) (*GetCategoryRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
+}
+func (UnimplementedJobServiceServer) GetMyJobs(context.Context, *GetMyJobsReq) (*GetMyJobsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyJobs not implemented")
+}
+func (UnimplementedJobServiceServer) GetJob(context.Context, *GetJobReq) (*GetJobRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -216,6 +272,78 @@ func _JobService_ViewContract_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_AddCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCategoryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).AddCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/AddCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).AddCategory(ctx, req.(*AddCategoryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetCategory(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_GetMyJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMyJobsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetMyJobs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetMyJobs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetMyJobs(ctx, req.(*GetMyJobsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_GetJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJobReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetJob(ctx, req.(*GetJobReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +370,22 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ViewContract",
 			Handler:    _JobService_ViewContract_Handler,
+		},
+		{
+			MethodName: "AddCategory",
+			Handler:    _JobService_AddCategory_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _JobService_GetCategory_Handler,
+		},
+		{
+			MethodName: "GetMyJobs",
+			Handler:    _JobService_GetMyJobs_Handler,
+		},
+		{
+			MethodName: "GetJob",
+			Handler:    _JobService_GetJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

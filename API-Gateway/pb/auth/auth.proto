@@ -25,6 +25,18 @@ service AuthService{
     rpc UnBlockUser(BlockReq) returns (BlockRes) {};
     rpc AddSkill(AddSkillReq) returns (AddSkillRes) {};
     rpc UpdateProfilePhoto(PhotoReq) returns (PhotoRes) {};
+    rpc AdminLogin(LoginReq) returns (LoginRes) {};
+}
+message LoginReq{
+    string email = 1;
+    string password = 2;
+}
+
+message LoginRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+    string Token = 4;
 }
 
 message PhotoReq{

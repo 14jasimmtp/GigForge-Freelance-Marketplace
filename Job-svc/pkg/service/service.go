@@ -31,6 +31,18 @@ func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq)(*job.Postjob
 	},nil
 }
 
+func (s *Service) GetMyJobs(ctx context.Context,req *job.GetMyJobsReq) (*job.GetMyJobsRes,error){
+	res,err:=s.repo.GetMyJobs(req.UserId)
+	if err != nil {
+		return &job.GetMyJobsRes{Status: 400,Error: err.Error()},nil
+	}
+	return &job.GetMyJobsRes{Status: 200,Jobs: res},nil
+}
+
+// func (s *Service) ViewJobs(ctx context.Context)
+
+// func (s *Service) GetJob(ctx context.Context)
+
 func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.ProposalRes,error){
 	err:=s.repo.FindJob(req.JobId)
 	if err != nil {
@@ -54,15 +66,23 @@ func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.
 	},nil
 }
 
+// func (s *Service) ViewProposals(ctx context.Context, req *job.ViewProposalsReq) (*job.ViewProposalsRes,error){
+
+// }
+
 // func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq)(*job.SendOfferRes,error){
-// 	err := 
 // }
 
-// func (s *Service) AcceptOffer()
+//  func (s *Service) AcceptOffer(ctx context.Context,req *job.AcceptOfferReq) (*job.AcceptOfferRes,error){
+// 	//freelancer accepts offer
+// 	//creates a contract
+// 	//if the contract is fixed creates a payment route with jobid
+// 	//if the contract is hourly based calculate the hours every week and creates a payment method 
 
-// 1
+//  }
 
+// func (s *Service)SendWeeklyUpdates(context.Context)
 
-// func (s *Service) AcceptProposal(ctx context.Context, req *job.AcceptOfferReq) (*job.AcceptOfferRes, error) {
-// 	err:=
-// }
+// func (s *Service) EndContract(context.Context)
+
+// func (s *Service) GetContracts(context.Context)

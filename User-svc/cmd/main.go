@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	c, err := config.LoadConfig()
+	c, _ := config.LoadConfig()
 	lis, err := net.Listen("tcp", c.PORT)
 	if err != nil {
 		log.Fatal("error", err)

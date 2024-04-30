@@ -18,15 +18,15 @@ func AuthClient(c *fiber.Ctx) error {
 
 	isValid, _ := jwttoken.IsValidAccessToken(secretKey, tokenString)
 	if !isValid {
-		return c.Status(http.StatusUnauthorized).JSON("Not Authorised")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"access token expired"})
 	}
 
 	User_id,User_role,err := jwttoken.GetRoleAndIDFromToken(tokenString)
 	if err != nil{
-		return c.Status(http.StatusUnauthorized).JSON("jwt token tampered")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"token tampered"})
 	}
 	if User_role != "client" {
-		return c.Status(http.StatusForbidden).JSON("In wrong way")
+		return c.Status(http.StatusForbidden).JSON(fiber.Map{"error":"Unauthorised User"})
 	}
 	u_id,_:=strconv.Atoi(User_id)
 
@@ -44,7 +44,7 @@ func AuthFreelancer(c *fiber.Ctx) error{
 
 	isValid, _ := jwttoken.IsValidAccessToken(secretKey, tokenString)
 	if !isValid {
-		return c.Status(http.StatusUnauthorized).JSON("Not Authorised")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"Not Authorised"})
 	}
 
 	User_id,User_role,err := jwttoken.GetRoleAndIDFromToken(tokenString)
@@ -52,7 +52,7 @@ func AuthFreelancer(c *fiber.Ctx) error{
 		return c.Status(http.StatusUnauthorized).JSON("jwt token tampered")
 	}
 	if User_role != "freelancer" {
-		return c.Status(http.StatusForbidden).JSON("In wrong way")
+		return c.Status(http.StatusForbidden).JSON(fiber.Map{"error":"unauthorized user"})
 	}
 
 
@@ -70,15 +70,15 @@ func AuthAdmin(c *fiber.Ctx) error{
 
 	isValid, _ := jwttoken.IsValidAccessToken(secretKey, tokenString)
 	if !isValid {
-		return c.Status(http.StatusUnauthorized).JSON("Not Authorised")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"Not Authorised"})
 	}
 
 	user_id,user_role,err := jwttoken.GetRoleAndIDFromToken(tokenString)
 	if err != nil{
-		return c.Status(http.StatusUnauthorized).JSON("jwt token tampered")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"jwt token tampered"})
 	}
 	if user_role != "admin" {
-		return c.Status(http.StatusForbidden).JSON("In wrong way")
+		return c.Status(http.StatusForbidden).JSON(fiber.Map{"error":"unauthorized user"})
 	}
 
 	c.Set("user_id", user_id)

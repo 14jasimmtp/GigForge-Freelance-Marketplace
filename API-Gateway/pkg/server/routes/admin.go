@@ -7,7 +7,7 @@ import (
 )
 
 func Admin(admin fiber.Router, handler *handler.AdminHandler) {
-	admin.Post("/login", handler.AdminLogin)
+	// admin.Post("/login", handler.AdminLogin)
 	admin.Post("/skills",middlewares.AuthAdmin, handler.AddSkill)
 	admin.Post("/user/block",middlewares.AuthAdmin, handler.BlockUser)
 	admin.Post("/user/unblock",middlewares.AuthAdmin, handler.UnBlockUser)
