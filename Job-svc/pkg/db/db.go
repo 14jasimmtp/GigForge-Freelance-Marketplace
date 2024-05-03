@@ -41,6 +41,8 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.Jobs{})
 	db.AutoMigrate(&domain.Proposals{})
 	db.AutoMigrate(&domain.JobSkills{})
-
+	db.AutoMigrate(&domain.Offer{})
+	db.AutoMigrate(&domain.Invoice{})
+	db.AutoMigrate(&domain.Contract{})
 	return db
 }

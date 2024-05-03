@@ -1,0 +1,18 @@
+syntax="proto3";
+
+package job;
+
+option go_package="./pb/user/";
+
+service Jobservice{
+    rpc GetJobsSkills(req) returns (res) {};
+}
+
+message req {
+    repeated int64 skill = 1;
+}
+
+message res {
+    repeated string skill = 1;
+}
+

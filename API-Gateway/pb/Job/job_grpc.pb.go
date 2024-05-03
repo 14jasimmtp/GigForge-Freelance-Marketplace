@@ -31,6 +31,8 @@ type JobServiceClient interface {
 	GetCategory(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetCategoryRes, error)
 	GetMyJobs(ctx context.Context, in *GetMyJobsReq, opts ...grpc.CallOption) (*GetMyJobsRes, error)
 	GetJob(ctx context.Context, in *GetJobReq, opts ...grpc.CallOption) (*GetJobRes, error)
+	GetJobs(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetJobsRes, error)
+	SendWeeklyInvoice(ctx context.Context, in *InvoiceReq, opts ...grpc.CallOption) (*InvoiceRes, error)
 }
 
 type jobServiceClient struct {
@@ -122,6 +124,24 @@ func (c *jobServiceClient) GetJob(ctx context.Context, in *GetJobReq, opts ...gr
 	return out, nil
 }
 
+func (c *jobServiceClient) GetJobs(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetJobsRes, error) {
+	out := new(GetJobsRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetJobs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) SendWeeklyInvoice(ctx context.Context, in *InvoiceReq, opts ...grpc.CallOption) (*InvoiceRes, error) {
+	out := new(InvoiceRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/SendWeeklyInvoice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -135,6 +155,8 @@ type JobServiceServer interface {
 	GetCategory(context.Context, *NoParam) (*GetCategoryRes, error)
 	GetMyJobs(context.Context, *GetMyJobsReq) (*GetMyJobsRes, error)
 	GetJob(context.Context, *GetJobReq) (*GetJobRes, error)
+	GetJobs(context.Context, *NoParam) (*GetJobsRes, error)
+	SendWeeklyInvoice(context.Context, *InvoiceReq) (*InvoiceRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -168,6 +190,12 @@ func (UnimplementedJobServiceServer) GetMyJobs(context.Context, *GetMyJobsReq) (
 }
 func (UnimplementedJobServiceServer) GetJob(context.Context, *GetJobReq) (*GetJobRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
+}
+func (UnimplementedJobServiceServer) GetJobs(context.Context, *NoParam) (*GetJobsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobs not implemented")
+}
+func (UnimplementedJobServiceServer) SendWeeklyInvoice(context.Context, *InvoiceReq) (*InvoiceRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendWeeklyInvoice not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -344,6 +372,42 @@ func _JobService_GetJob_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_GetJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetJobs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetJobs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetJobs(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_SendWeeklyInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InvoiceReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).SendWeeklyInvoice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/SendWeeklyInvoice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).SendWeeklyInvoice(ctx, req.(*InvoiceReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -386,6 +450,14 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJob",
 			Handler:    _JobService_GetJob_Handler,
+		},
+		{
+			MethodName: "GetJobs",
+			Handler:    _JobService_GetJobs_Handler,
+		},
+		{
+			MethodName: "SendWeeklyInvoice",
+			Handler:    _JobService_SendWeeklyInvoice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

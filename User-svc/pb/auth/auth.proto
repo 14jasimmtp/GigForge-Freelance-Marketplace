@@ -27,6 +27,7 @@ service AuthService{
     rpc UpdateProfilePhoto(PhotoReq) returns (PhotoRes) {};
 }
 
+
 message PhotoReq{
     string user_id = 1;
     bytes image = 2;

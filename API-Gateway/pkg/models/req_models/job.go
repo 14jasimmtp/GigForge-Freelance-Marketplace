@@ -2,7 +2,6 @@ package req
 
 import (
 	"mime/multipart"
-	"time"
 )
 
 type PostJob struct {
@@ -22,9 +21,15 @@ type Proposal struct {
 }
 
 type SendOffer struct {
-	Budget        float32
-	Offer_letter  string
-	Starting_time time.Time
-	Job_id int
-	Freelancer_id int
+	Budget        float32 `json:"budget"`
+	Offer_letter  string  `json:"offer_letter"`
+	Starting_time string `json:"starting_time"`
+	Job_id        int `json:"job_id"`
+	Freelancer_id int `json:"freelancer_id"`
+}
+
+type SendInvoice struct{
+	ContractId int `json:"contractID"`
+	TotalHoursWorked int `json:"Hours_worked"`
+
 }

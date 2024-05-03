@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/Job"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
@@ -95,7 +96,7 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 
 func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int64)
-	id:=strconv.Itoa(int(user_id))
+	id := strconv.Itoa(int(user_id))
 	res, err := h.job.GetMyJobs(context.Background(), &Job.GetMyJobsReq{UserId: id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
@@ -161,7 +162,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *JobsHandler) SendOffer(c *fiber.Ctx) error{
+func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	var req req.SendOffer
 	user_id := c.Locals("User_id").(int64)
 
@@ -175,39 +176,79 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error{
 			},
 		)
 	}
+	startDate, err := time.Parse("2-1-2006", req.Starting_time)
+	if err != nil {
+		c.Status(400).JSON(fiber.Map{"error": err.Error()})
+	}
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":Error})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": Error})
 	}
-	res,err:=h.job.SendOffer(context.Background(),&Job.SendOfferReq{})
+	res, err := h.job.SendOffer(context.Background(), &Job.SendOfferReq{
+		Budget:       req.Budget,
+		OfferLetter:  req.Offer_letter,
+		StartingTime: startDate.Format("2-1-2006"),
+		JobId:        int32(req.Job_id),
+		FreelancerId: int32(req.Freelancer_id),
+		ClientId:     int32(user_id),
+	})
 	if err != nil {
 		println(err)
-		return c.Status(500).JSON(fiber.Map{"error":"error in rpc connection"})
+		return c.Status(500).JSON(fiber.Map{"error": "error in rpc connection"})
 	}
-	return c.Status(res.Status).JSON(res)
+	return c.Status(int(res.Status)).JSON(res)
 }
-// 	
 
+func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error{
+	user_id := c.Locals("User_id").(string)
+	of_id:=c.Params("offer_id")
+	// if err := c.BodyParser(&req); err != nil {
+	// 	return c.Status(400).JSON(
+	// 		res.CommonRes{
+	// 			Status:  "failed",
+	// 			Message: "Error validating request body",
+	// 			Error:   err.Error(),
+	// 			Body:    nil,
+	// 		},
+	// 	)
+	// }
 
-// func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error{
-// 	var req req.AcceptOffer
-// 	user_id := c.Locals("User_id").(string)
+	// Error, err := validation.Validation(req)
+	// if err != nil {
+	// 	return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+	// }
+	res,err:=h.job.AcceptOffer(context.Background(),&Job.AcceptOfferReq{UserId: user_id,OfferID: of_id})
+	if err != nil {
+		print(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"something went wrong"})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return c.Status(400).JSON(
-// 			res.CommonRes{
-// 				Status:  "failed",
-// 				Message: "Error validating request body",
-// 				Error:   err.Error(),
-// 				Body:    nil,
-// 			},
-// 		)
-// 	}
+func (h *JobsHandler) GetJobs(c *fiber.Ctx) error{
+	res, err := h.job.GetJobs(context.Background(), &Job.NoParam{})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// 	Error, err := validation.Validation(req)
-// 	if err != nil {
-// 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
-// 	}
-// 	res,err:=h.job.AcceptOffer(context.Background(),&Job.AcceptOfferReq{})
-// 	return c.Status(res.Status).JSON(res)
-// }
+func (h *JobsHandler) GetJob(c *fiber.Ctx) error{
+	job_id:=c.Params("id")
+	println(job_id)
+	res, err := h.job.GetJob(context.Background(), &Job.GetJobReq{JobId: job_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error{
+	var req req.SendInvoice
+	user_id := c.Locals("User_id").(string)
+	res,err:=h.job.SendWeeklyInvoice(context.Background(),&Job.InvoiceReq{ContractID:int32(req.ContractId),TotalHourWorked: float32(req.TotalHoursWorked),SuserId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err}) 
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}

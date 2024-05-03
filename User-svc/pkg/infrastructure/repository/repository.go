@@ -1,21 +1,24 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/job"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pkg/domain"
 	"gorm.io/gorm"
 )
 
 type Repo struct {
 	db *gorm.DB
+	job.UnimplementedJobserviceServer
 }
 
-func NewRepo(db *gorm.DB) RepoIfc {
+func NewRepo(db *gorm.DB) *Repo {
 	return &Repo{db: db}
 }
 
@@ -366,4 +369,18 @@ func (r *Repo) UpdateProfilePhoto(userID,url string) error{
 		return err
 	}
 	return nil
+}
+
+func (r *Repo) GetJobsSkills(ctx context.Context,req *job.Req) (*job.Res,error){
+	var skill []string
+	query:=`SELECT skill FROM skills WHERE id = ?`
+	for _,id:=range req.Skill{
+		var skil string
+		err:=r.db.Raw(query,id).Scan(&skil).Error
+		if err != nil {
+			return nil,err
+		}
+		skill = append(skill, skil)
+	}
+	return &job.Res{Skill: skill},nil
 }

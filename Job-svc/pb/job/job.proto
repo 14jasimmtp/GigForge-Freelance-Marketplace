@@ -14,6 +14,27 @@ service JobService{
     rpc GetCategory(NoParam) returns (GetCategoryRes) {};
     rpc GetMyJobs(GetMyJobsReq) returns (GetMyJobsRes) {};
     rpc GetJob(GetJobReq) returns (GetJobRes) {};
+    rpc GetJobs(NoParam) returns (GetJobsRes) {};
+    rpc SendWeeklyInvoice(InvoiceReq) returns (InvoiceRes) {};
+}
+
+message InvoiceReq{
+    float total_hour_worked = 1;
+    int32 contractID = 2;
+    string suser_id = 3;
+}
+
+message InvoiceRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message GetJobsRes{
+    repeated job Job =1;
+    int64 Status = 2;
+    string error = 3;
+    string response =4;
 }
 
 message GetJobRes{
@@ -102,19 +123,29 @@ message ProposalRes{
 }
 
 message SendOfferReq{
-
+   float budget = 1;
+   string offer_letter = 2;
+   string starting_time = 3;
+   int32 Job_id = 4;
+   int32 Freelancer_id = 5;
+   int32 client_id = 6;
 }
 
 message SendOfferRes{
-
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
 }
 
 message AcceptOfferReq{
-
+    string offerID = 1;
+    string user_id = 2;
 }
 
 message AcceptOfferRes{
-
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
 }
 
 message ContractReq{

@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/job"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pkg/config"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pkg/di"
 	"google.golang.org/grpc"
@@ -18,9 +19,11 @@ func main() {
 		log.Fatal("error", err)
 	}
 
-	svc := di.InitializeAPI(c)
+	svc,repo := di.InitializeAPI(c)
 	grpcServer := grpc.NewServer()
 	auth.RegisterAuthServiceServer(grpcServer, svc)
+	job.RegisterJobserviceServer(grpcServer,repo)
+
 	fmt.Println(lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)

@@ -8,7 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func InitializeAPI(c *config.Config) *service.Service {
+func InitializeAPI(c *config.Config) (*service.Service,*repository.Repo) {
 	db := db.ConnectToDB()
 	repo := repository.NewRepo(db)
 	service := service.NewService(repo)
@@ -19,5 +19,5 @@ func InitializeAPI(c *config.Config) *service.Service {
 	}
 
 	cron.Start()
-	return service
+	return service,repo
 }

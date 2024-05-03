@@ -13,7 +13,7 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 		jobs.Post("",middlewares.AuthClient,job.PostJob)
 		jobs.Put("",middlewares.AuthClient,job.EditJob)
 		jobs.Get("",middlewares.AuthClient,job.GetMyJobs)
-		// jobs.Post("send-offer",job.SendOffer)
+		jobs.Post("send-offer",middlewares.AuthClient,job.SendOffer)
 		// jobs.Get("/proposal/:jobID",job.GetProposals)
 		// jobs.Get("",job.)
 
