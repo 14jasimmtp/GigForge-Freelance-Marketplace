@@ -7,7 +7,7 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/service"
 )
 
-func InitializeAPI() service.Service {
+func InitializeAPI() *service.Service {
 	jobClient:=client.InitJobClient()
 	db := db.ConnectToDB()
 	repo := repository.NewJobRepo(db,jobClient)

@@ -1,0 +1,35 @@
+syntax="proto3";
+
+package chat;
+
+option go_package="./pb/chat";
+
+service ChatService{
+    rpc GetChats(GetChatReq) returns (GetChatRes) {};
+    rpc SendChats(SendChatReq) returns (SendChatRes) {};
+}
+
+message chat{
+    int32 ID = 1;
+    int32 sender_id =2;
+    int32 recepient_id=3;
+    string message = 4;
+    bool read = 5;
+    
+}
+
+message GetChatReq{
+
+}
+
+message GetChatRes{
+
+}
+
+message SendChatReq{
+
+}
+
+message SendChatRes{
+
+}

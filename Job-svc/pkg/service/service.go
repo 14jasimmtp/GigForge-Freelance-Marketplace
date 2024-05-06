@@ -14,8 +14,8 @@ type Service struct{
 	repo repository.Repo
 }
 
-func NewJobService(repo repository.Repo) Service{
-	return Service{repo: repo}
+func NewJobService(repo repository.Repo) *Service{
+	return &Service{repo: repo}
 }
 
 func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq)(*job.PostjobRes,error){

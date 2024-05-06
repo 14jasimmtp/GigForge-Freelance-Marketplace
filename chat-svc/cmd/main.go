@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+
 	"log"
 	"net"
 
-	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/job"
-	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/config"
-	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/di"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pkg/config"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pkg/di"
 	"google.golang.org/grpc"
 )
 
@@ -21,9 +21,9 @@ func main() {
 		log.Fatal("error", err)
 	}
 
-	svc := di.InitializeAPI()
+	svc := di.InjectDependencies()
 	grpcServer := grpc.NewServer()
-	job.RegisterJobServiceServer(grpcServer, svc)
+	
 	fmt.Println(lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)
