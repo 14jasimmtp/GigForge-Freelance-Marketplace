@@ -33,3 +33,7 @@ type SendInvoice struct{
 	TotalHoursWorked int `json:"Hours_worked"`
 
 }
+
+type PrepaidInvoices struct{
+
+}

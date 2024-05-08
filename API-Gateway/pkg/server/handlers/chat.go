@@ -1,20 +1,20 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/chat"
+	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ChatHandler struct {
-	chat chat.ChatServiceClient
 }
 
-func NewChatHandler(chat chat.ChatServiceClient) ChatHandler {
-	return ChatHandler{chat: chat}
+func NewChatHandler() ChatHandler {
+	return ChatHandler{}
 
 }
 
@@ -25,93 +25,66 @@ type Client struct {
 }
 
 var (
-	connections = make(map[*websocket.Conn]*Client)
-	users       = make(map[uint]*websocket.Conn)
+	// connections = make(map[*websocket.Conn]*Client)
+	users= make(map[string]*websocket.Conn)
 )
 
 func (h *ChatHandler) Chat(c *websocket.Conn) {
-	userId, ok := 1, true
-	if !ok {
-		errRes := MakeResponse(fiber.StatusUnauthorized, "unauthorised", nil, "error in retrieving user id")
-		c.WriteJSON(errRes)
-		c.Close()
-		return
-	}
+	defer delete(users, c.Locals("User_id").(string))
+	defer c.Close()
 
-	chatId, err := primitive.ObjectIDFromHex(c.Params("chatid"))
-	if err != nil {
-		errRes := MakeResponse(fiber.StatusBadRequest, "string conversion failed", nil, err.Error())
-		c.WriteJSON(errRes)
-		c.Close()
-		return
-	}
-
-	client := &Client{Conn: c, ChatId: chatId, UserId: uint(userId)}
-	connections[c] = client
-	users[uint(userId)] = c
-
-	go handleConnection(client)
-}
-
-func handleConnection(client *Client) {
-	defer func() {
-		client.Conn.Close()
-		delete(connections, client.Conn)
-		delete(users, client.UserId)
-	}()
+	users[c.Locals("User_id").(string)] = c
 
 	for {
-		_, msg, err := client.Conn.ReadMessage()
+		fmt.Println("loop starts", c.Locals("User_id"), users)
+
+		_, msg, err := c.ReadMessage()
 		if err != nil {
-			break
+			c.WriteJSON(fiber.Map{"Error":err.Error()})
 		}
 
-		// Save message to the database
-		_, err = SaveMessage(client.ChatId, client.UserId, string(msg))
-		if err != nil {
-			fmt.Println("error in saving message")
-			break
-		}
-
-		// Broadcast the message to the recipient
-		client.Conn.WriteMessage(websocket.TextMessage, msg)
-
-		recipient, err := FetchRecipient(client.ChatId, client.UserId)
-		if err != nil {
-			fmt.Println("error in fetching recipient id")
-			break
-		}
-
-		if recipientConn, ok := users[recipient]; ok {
-			err = recipientConn.WriteMessage(websocket.TextMessage, msg)
-			if err != nil {
-				delete(connections, recipientConn)
-				delete(users, recipient)
-			}
-		}
+		SendMessageToUser(users, msg, c.Locals("User_id").(string))
 	}
 }
 
-func MakeResponse(status int, message string, data interface{}, error string) fiber.Map {
-	return fiber.Map{
-		"status":  status,
-		"message": message,
-		"data":    data,
-		"error":   error,
+func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
+	senderConn, ok := User[userID]
+
+	var message req.Message
+	if err := json.Unmarshal([]byte(msg), &message); err != nil {
+		if ok {
+			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
+		return
+	}
+	fmt.Println("==", message)
+	
+
+	message.Status = "send"
+	message.SenderID = userID
+
+	recipientConn, ok := User[message.RecipientID]
+	if !ok {
+		message.Status = "pending"
+		delete(User, message.RecipientID)
+
+		// err := r.KafkaProducer(message)
+		// if err != nil {
+		// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		// }
+		return
+	}
+
+	// err := r.KafkaProducer(message)
+	// if err != nil {sugano
+	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	// }
+
+	err := recipientConn.WriteMessage(websocket.TextMessage, msg)
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		delete(User, message.RecipientID)
 	}
 }
 
-// SaveMessage is a placeholder function to save the message to the database
-func SaveMessage(chatID primitive.ObjectID, userID uint, message string) (interface{}, error) {
-	// Implement your logic to save the message to the database
-	fmt.Printf("Saving message: %s to chat %s from user %d\n", message, chatID.Hex(), userID)
-	return nil, nil
-}
 
-// FetchRecipient is a placeholder function to fetch the recipient's ID
-func FetchRecipient(chatID primitive.ObjectID, userID uint) (uint, error) {
-	// Implement your logic to fetch the recipient's ID from the database
-	fmt.Printf("Fetching recipient for chat %s and user %d\n", chatID.Hex(), userID)
-	recipientID := uint(0) // Replace with the actual recipient ID
-	return recipientID, nil
-}

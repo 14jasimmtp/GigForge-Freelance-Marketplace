@@ -252,3 +252,15 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error{
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
+
+func (h *JobsHandler) PayForInvoice(c *fiber.Ctx) error{
+	invoiceID:=c.Params("invoice_id")
+	user_id:=c.Locals("user_id")
+
+	res,err:=h.job.ExecutePayment(context.Background(),&Job.AcceptOfferReq{})
+	if err != nil {
+		return c.Status(res.Status).JSON(fiber.Map{"error":err.Error()})
+	}
+
+	return c.Render("index.html",res)
+}
