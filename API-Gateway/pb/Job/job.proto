@@ -16,6 +16,47 @@ service JobService{
     rpc GetJob(GetJobReq) returns (GetJobRes) {};
     rpc GetJobs(NoParam) returns (GetJobsRes) {};
     rpc SendWeeklyInvoice(InvoiceReq) returns (InvoiceRes) {};
+    rpc GetJobProposals(GJPReq) returns (GJPRes) {};
+    rpc GetOfferByClient(GFCReq) returns (GFCRes) {};
+}
+
+message GFCReq{
+    string user_id = 1;
+}
+
+message offer{
+    string client_id = 1;
+    string job_id = 2;
+    float budget = 3;
+    string payment_type = 4;
+    string offer_letter = 5;
+    string Starting_time = 6;
+}
+
+message GFCRes{
+    int32 Status = 1;
+    string Error = 2;
+    string Response = 3;
+    repeated offer offers = 4; 
+}
+
+message GJPReq{
+    string user_id = 1;
+    string job_id = 2;
+}
+
+message proposals{
+    string user_id = 1;
+    float budget = 2;
+    string coverletter = 3;
+}
+
+message GJPRes{
+    int32 Status = 1;
+    string Error = 2;
+    string Response = 3;
+    repeated proposals prop = 4;
+
 }
 
 message InvoiceReq{

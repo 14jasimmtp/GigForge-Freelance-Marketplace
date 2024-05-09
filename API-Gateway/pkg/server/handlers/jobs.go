@@ -99,32 +99,29 @@ func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	id := strconv.Itoa(int(user_id))
 	res, err := h.job.GetMyJobs(context.Background(), &Job.GetMyJobsReq{UserId: id})
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-// func (h *JobsHandler) GetMyProposals(c *fiber.Ctx) error {
-// 	user_id := c.Locals("User_id").(string)
-// 	res, err := h.job.GetMyProposals(context.Background(), &Job.ProposalReq{})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
-// 	}
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
+func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
+	jobID:=c.Params("job_id")
+	user_id := c.Locals("User_id").(string)
+	res, err := h.job.GetJobProposals(context.Background(), &Job.GJPReq{JobId: jobID,UserId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// func (h *JobsHandler) GetProposals(c *fiber.Ctx)  error{
-
-// }
-
-// func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
-// 	id := c.Params("id")
-// 	res, err := h.job.GetJob(context.Background(), &Job.GetJobReq{})
-// 	if err != nil {
-// 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
-// 	}
-// 	return c.Status(res.Status).JSON(res)
-// }
+func (h *JobsHandler) GetOffersForJobByClient(c *fiber.Ctx) error {
+	user_id:=c.Locals("User_id").(string)
+	res,err:=h.job.GetOfferByClient(context.Background(), &Job.GFCReq{UserId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
 func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	var req req.PostJob
@@ -202,21 +199,7 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error{
 	user_id := c.Locals("User_id").(string)
 	of_id:=c.Params("offer_id")
-	// if err := c.BodyParser(&req); err != nil {
-	// 	return c.Status(400).JSON(
-	// 		res.CommonRes{
-	// 			Status:  "failed",
-	// 			Message: "Error validating request body",
-	// 			Error:   err.Error(),
-	// 			Body:    nil,
-	// 		},
-	// 	)
-	// }
-
-	// Error, err := validation.Validation(req)
-	// if err != nil {
-	// 	return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
-	// }
+	
 	res,err:=h.job.AcceptOffer(context.Background(),&Job.AcceptOfferReq{UserId: user_id,OfferID: of_id})
 	if err != nil {
 		print(err)
@@ -243,6 +226,8 @@ func (h *JobsHandler) GetJob(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+
+
 func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error{
 	var req req.SendInvoice
 	user_id := c.Locals("User_id").(string)
@@ -264,3 +249,13 @@ func (h *JobsHandler) PayForInvoice(c *fiber.Ctx) error{
 
 	return c.Render("index.html",res)
 }
+
+func (h *JobsHandler) CloseJobPost(){
+
+}
+
+func (h *JobsHandler) GetContractDetails(){
+	
+}
+
+

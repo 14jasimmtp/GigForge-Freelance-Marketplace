@@ -137,3 +137,8 @@ func (s *Service)SendWeeklyInvoice(ctx context.Context,req *job.InvoiceReq) (*jo
 // func (s *Service) EndContract(context.Context)
 
 // func (s *Service) GetContracts(context.Context)
+
+func (s *Service) ExecutePayment(ctx context.Context){
+	helper.GetPaymentDetails()
+	helper.GetContractDetails()
+}

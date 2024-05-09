@@ -68,23 +68,24 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 		message.Status = "pending"
 		delete(User, message.RecipientID)
 
-		// err := r.KafkaProducer(message)
-		// if err != nil {
-		// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-		// }
+		err := r.KafkaProducer(message)
+		if err != nil {
+			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
 		return
 	}
 
-	// err := r.KafkaProducer(message)
-	// if err != nil {sugano
-	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-	// }
+	err := r.KafkaProducer(message)
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	}
 
-	err := recipientConn.WriteMessage(websocket.TextMessage, msg)
+	err = recipientConn.WriteMessage(websocket.TextMessage, msg)
 	if err != nil {
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		delete(User, message.RecipientID)
 	}
 }
+
 
 
