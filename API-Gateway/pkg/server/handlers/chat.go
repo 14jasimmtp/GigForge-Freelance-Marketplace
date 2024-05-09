@@ -68,7 +68,7 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 		message.Status = "pending"
 		delete(User, message.RecipientID)
 
-		err := r.KafkaProducer(message)
+		err := r.RabbitMQ(message)
 		if err != nil {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
@@ -87,5 +87,33 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 	}
 }
 
+
+func RabbitmqSender(req.Message) error{
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	if err != nil {
+		log.Fatalf("Failed to connect to RabbitMQ: %s", err)
+	}
+	defer conn.Close()
+
+	// Create a channel
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Fatalf("Failed to open a channel: %s", err)
+	}
+	defer ch.Close()
+
+	// Declare a queue
+	q, err := ch.QueueDeclare(
+		"hello", // name
+		false,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		log.Fatalf("Failed to declare a queue: %s", err)
+	}
+}
 
 
