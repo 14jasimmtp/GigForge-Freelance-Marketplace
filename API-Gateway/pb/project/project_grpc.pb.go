@@ -23,6 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProjectServiceClient interface {
 	AddProject(ctx context.Context, in *AddSingleProjectReq, opts ...grpc.CallOption) (*AddSingleProjectRes, error)
+	EditProject(ctx context.Context, in *EditSingleProjectReq, opts ...grpc.CallOption) (*EditSingleProjectRes, error)
+	RemoveProject(ctx context.Context, in *RemProjectReq, opts ...grpc.CallOption) (*RemProjectRes, error)
+	ListProjects(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*ListProjectsRes, error)
+	ListOneProject(ctx context.Context, in *ListOneProjectReq, opts ...grpc.CallOption) (*ListOneProjectRes, error)
+	ListMyProjects(ctx context.Context, in *ListMyProjectReq, opts ...grpc.CallOption) (*ListMyProjectRes, error)
+	BuyProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error)
+	PaymentForProject(ctx context.Context, in *ProjectPaymentReq, opts ...grpc.CallOption) (*ProjectPaymentRes, error)
 }
 
 type projectServiceClient struct {
@@ -42,11 +49,81 @@ func (c *projectServiceClient) AddProject(ctx context.Context, in *AddSingleProj
 	return out, nil
 }
 
+func (c *projectServiceClient) EditProject(ctx context.Context, in *EditSingleProjectReq, opts ...grpc.CallOption) (*EditSingleProjectRes, error) {
+	out := new(EditSingleProjectRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/EditProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) RemoveProject(ctx context.Context, in *RemProjectReq, opts ...grpc.CallOption) (*RemProjectRes, error) {
+	out := new(RemProjectRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/RemoveProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) ListProjects(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*ListProjectsRes, error) {
+	out := new(ListProjectsRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/ListProjects", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) ListOneProject(ctx context.Context, in *ListOneProjectReq, opts ...grpc.CallOption) (*ListOneProjectRes, error) {
+	out := new(ListOneProjectRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/ListOneProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) ListMyProjects(ctx context.Context, in *ListMyProjectReq, opts ...grpc.CallOption) (*ListMyProjectRes, error) {
+	out := new(ListMyProjectRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/ListMyProjects", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) BuyProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error) {
+	out := new(BuyProjectRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/BuyProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) PaymentForProject(ctx context.Context, in *ProjectPaymentReq, opts ...grpc.CallOption) (*ProjectPaymentRes, error) {
+	out := new(ProjectPaymentRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/PaymentForProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProjectServiceServer is the server API for ProjectService service.
 // All implementations must embed UnimplementedProjectServiceServer
 // for forward compatibility
 type ProjectServiceServer interface {
 	AddProject(context.Context, *AddSingleProjectReq) (*AddSingleProjectRes, error)
+	EditProject(context.Context, *EditSingleProjectReq) (*EditSingleProjectRes, error)
+	RemoveProject(context.Context, *RemProjectReq) (*RemProjectRes, error)
+	ListProjects(context.Context, *NoParam) (*ListProjectsRes, error)
+	ListOneProject(context.Context, *ListOneProjectReq) (*ListOneProjectRes, error)
+	ListMyProjects(context.Context, *ListMyProjectReq) (*ListMyProjectRes, error)
+	BuyProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error)
+	PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error)
 	mustEmbedUnimplementedProjectServiceServer()
 }
 
@@ -56,6 +133,27 @@ type UnimplementedProjectServiceServer struct {
 
 func (UnimplementedProjectServiceServer) AddProject(context.Context, *AddSingleProjectReq) (*AddSingleProjectRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProject not implemented")
+}
+func (UnimplementedProjectServiceServer) EditProject(context.Context, *EditSingleProjectReq) (*EditSingleProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditProject not implemented")
+}
+func (UnimplementedProjectServiceServer) RemoveProject(context.Context, *RemProjectReq) (*RemProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveProject not implemented")
+}
+func (UnimplementedProjectServiceServer) ListProjects(context.Context, *NoParam) (*ListProjectsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProjects not implemented")
+}
+func (UnimplementedProjectServiceServer) ListOneProject(context.Context, *ListOneProjectReq) (*ListOneProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListOneProject not implemented")
+}
+func (UnimplementedProjectServiceServer) ListMyProjects(context.Context, *ListMyProjectReq) (*ListMyProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMyProjects not implemented")
+}
+func (UnimplementedProjectServiceServer) BuyProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyProject not implemented")
+}
+func (UnimplementedProjectServiceServer) PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentForProject not implemented")
 }
 func (UnimplementedProjectServiceServer) mustEmbedUnimplementedProjectServiceServer() {}
 
@@ -88,6 +186,132 @@ func _ProjectService_AddProject_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProjectService_EditProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditSingleProjectReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).EditProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/EditProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).EditProject(ctx, req.(*EditSingleProjectReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_RemoveProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemProjectReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).RemoveProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/RemoveProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).RemoveProject(ctx, req.(*RemProjectReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_ListProjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).ListProjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/ListProjects",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).ListProjects(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_ListOneProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOneProjectReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).ListOneProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/ListOneProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).ListOneProject(ctx, req.(*ListOneProjectReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_ListMyProjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMyProjectReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).ListMyProjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/ListMyProjects",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).ListMyProjects(ctx, req.(*ListMyProjectReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_BuyProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BuyProjectReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).BuyProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/BuyProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).BuyProject(ctx, req.(*BuyProjectReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_PaymentForProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProjectPaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).PaymentForProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/PaymentForProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).PaymentForProject(ctx, req.(*ProjectPaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProjectService_ServiceDesc is the grpc.ServiceDesc for ProjectService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +322,34 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddProject",
 			Handler:    _ProjectService_AddProject_Handler,
+		},
+		{
+			MethodName: "EditProject",
+			Handler:    _ProjectService_EditProject_Handler,
+		},
+		{
+			MethodName: "RemoveProject",
+			Handler:    _ProjectService_RemoveProject_Handler,
+		},
+		{
+			MethodName: "ListProjects",
+			Handler:    _ProjectService_ListProjects_Handler,
+		},
+		{
+			MethodName: "ListOneProject",
+			Handler:    _ProjectService_ListOneProject_Handler,
+		},
+		{
+			MethodName: "ListMyProjects",
+			Handler:    _ProjectService_ListMyProjects_Handler,
+		},
+		{
+			MethodName: "BuyProject",
+			Handler:    _ProjectService_BuyProject_Handler,
+		},
+		{
+			MethodName: "PaymentForProject",
+			Handler:    _ProjectService_PaymentForProject_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

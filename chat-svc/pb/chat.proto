@@ -2,7 +2,7 @@ syntax="proto3";
 
 package chat;
 
-option go_package="./pb/chat";
+option go_package="./pb";
 
 service ChatService{
     rpc GetChats(GetChatReq) returns (GetChatRes) {};

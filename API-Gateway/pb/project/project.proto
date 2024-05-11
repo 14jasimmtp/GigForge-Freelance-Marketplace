@@ -6,8 +6,105 @@ option go_package="./pb/project";
 
 service ProjectService {
     rpc AddProject(AddSingleProjectReq) returns (AddSingleProjectRes) {};
+    rpc EditProject(EditSingleProjectReq) returns (EditSingleProjectRes) {};
+    rpc RemoveProject(RemProjectReq) returns (RemProjectRes) {};
+    rpc ListProjects(NoParam) returns (ListProjectsRes) {};
+    rpc ListOneProject(ListOneProjectReq) returns (ListOneProjectRes) {};
+    rpc ListMyProjects(ListMyProjectReq) returns (ListMyProjectRes) {};
+    rpc BuyProject(BuyProjectReq) returns (BuyProjectRes) {};
+    rpc PaymentForProject(ProjectPaymentReq) returns (ProjectPaymentRes) {};
 }
 
+message ProjectPaymentRes{
+
+}
+
+message ProjectPaymentReq{
+
+}
+
+message BuyProjectRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message BuyProjectReq{
+    string user_id = 1;
+    string project_id = 2;
+}
+
+message ListMyProjectReq{
+    string user_id = 1;
+}
+
+message ListMyProjectRes{
+    repeated Project Project = 1;
+    int64 status = 2;
+    string Error = 3;
+    string Response = 4;
+}
+
+
+
+message RemProjectReq{
+    string user_id = 1;
+    string project_id = 2;
+}
+
+message RemProjectRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message ListOneProjectReq{
+    string project_id =1;
+}
+
+message ListOneProjectRes{
+    Project project = 1;
+    int64 status = 2;
+    string Error = 3;
+    string Response = 4;
+}
+
+message NoParam{}
+
+message Project{
+    int32 ID =1;
+    string Title = 2;
+    string Description = 3;
+    string Category =4;
+    double Price = 5;
+    int32 delivery_days = 6;
+    int32 number_of_revisions = 7;
+}
+
+message ListProjectsRes{
+    repeated Project project = 1;
+    int64 status = 2;
+    string Error = 3;
+    string Response = 4;
+}
+
+message EditSingleProjectReq {
+    string title = 1;
+    string description = 2;
+    int32 category = 3;
+    string type = 4;
+    double price = 5;
+    int64 delivery_days = 6;
+    int64 number_of_revisions = 7;
+    string user_id = 8;
+    string project_id = 9;
+}
+
+message EditSingleProjectRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
 message AddSingleProjectReq {
     string title = 1;
     string description = 2;
@@ -16,6 +113,7 @@ message AddSingleProjectReq {
     double price = 5;
     int64 delivery_days = 6;
     int64 number_of_revisions = 7;
+    string user_id = 8;
 }
 
 message CustomTier {

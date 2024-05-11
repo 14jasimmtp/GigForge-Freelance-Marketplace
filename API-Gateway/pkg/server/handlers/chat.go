@@ -1,32 +1,30 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"time"
 
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/chat"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type ChatHandler struct {
+	chat chat.ChatServiceClient
 }
 
-func NewChatHandler() ChatHandler {
-	return ChatHandler{}
+func NewChatHandler(chat chat.ChatServiceClient) ChatHandler {
+	return ChatHandler{chat: chat}
 
-}
-
-type Client struct {
-	Conn   *websocket.Conn
-	ChatId primitive.ObjectID
-	UserId uint
 }
 
 var (
-	// connections = make(map[*websocket.Conn]*Client)
-	users= make(map[string]*websocket.Conn)
+	users = make(map[string]*websocket.Conn)
 )
 
 func (h *ChatHandler) Chat(c *websocket.Conn) {
@@ -40,14 +38,18 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 
 		_, msg, err := c.ReadMessage()
 		if err != nil {
-			c.WriteJSON(fiber.Map{"Error":err.Error()})
+			c.WriteJSON(fiber.Map{"Error": err.Error()})
 		}
 
-		SendMessageToUser(users, msg, c.Locals("User_id").(string))
+		h.SendMessageToUser(users, msg, c.Locals("User_id").(string))
 	}
 }
 
-func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
+// func (h *ChatHandler) DeleteMessage(c *fiber.Ctx) error{
+
+// }
+
+func (h *ChatHandler) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
 	senderConn, ok := User[userID]
 
 	var message req.Message
@@ -58,7 +60,6 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 		return
 	}
 	fmt.Println("==", message)
-	
 
 	message.Status = "send"
 	message.SenderID = userID
@@ -68,14 +69,14 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 		message.Status = "pending"
 		delete(User, message.RecipientID)
 
-		err := r.RabbitMQ(message)
+		err := h.RabbitmqSender(message)
 		if err != nil {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
 		return
 	}
 
-	err := r.KafkaProducer(message)
+	err := h.RabbitmqSender(message)
 	if err != nil {
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 	}
@@ -87,15 +88,13 @@ func  SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID stri
 	}
 }
 
-
-func RabbitmqSender(req.Message) error{
+func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %s", err)
+		return err
 	}
 	defer conn.Close()
 
-	// Create a channel
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %s", err)
@@ -104,16 +103,49 @@ func RabbitmqSender(req.Message) error{
 
 	// Declare a queue
 	q, err := ch.QueueDeclare(
-		"hello", // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
+		"message", // name
+		false,     // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
 	)
 	if err != nil {
-		log.Fatalf("Failed to declare a queue: %s", err)
+		return err
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	msgbyte, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	err = ch.PublishWithContext(ctx,
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        msgbyte,
+		})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-
+func (h *ChatHandler) GetMessages(c *fiber.Ctx) error {
+	fmt.Println("0")
+	sender_id := c.Locals("User_id").(string)
+	fmt.Println("1")
+	receiver_id := c.Params("receiver_id")
+	fmt.Println("2")
+	res, err := h.chat.GetChats(context.Background(), &chat.GetChatReq{SenderId: sender_id, RecieverId: receiver_id})
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+	}
+	fmt.Println("3")
+	return c.Status(fiber.StatusOK).JSON(res)
+}

@@ -8,8 +8,8 @@ require (
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/copier v0.4.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/spf13/viper v1.18.2
-	go.mongodb.org/mongo-driver v1.15.0
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 )

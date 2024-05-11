@@ -3,14 +3,15 @@ package domain
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Messages struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty"`
-	Sender_id     int                `bson:"sender_id"`
-	Reciepient_id int                `bson:"recepient_id"`
-	Message       string             `bson:"message"`
-	Timestamp     time.Time          `bson:"timestamp"`
-	Read          bool               `bson:"read"`
+type Message struct {
+	SenderID    string    `json:"SenderID" validate:"required"`
+	RecipientID string    `json:"RecipientID" validate:"required"`
+	Content     string    `json:"Content" validate:"required"`
+	Timestamp   time.Time `json:"TimeStamp" validate:"required"`
+	Type        string    `json:"Type" validate:"required"`
+	Tag         string    `json:"Tag"`
+	Status      string    `json:"Status"`
 }
+

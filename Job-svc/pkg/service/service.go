@@ -56,9 +56,6 @@ func (s *Service) GetJob(ctx context.Context,req *job.GetJobReq) (*job.GetJobRes
 	}
 	return &job.GetJobRes{Status: 200,Job: res},nil
 }
-// func (s *Service) ViewJobs(ctx context.Context)
-
-// func (s *Service) GetJob(ctx context.Context)
 
 func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.ProposalRes,error){
 	err:=s.repo.FindJob(req.JobId)
@@ -82,10 +79,6 @@ func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.
 		Response: "proposal sent successfully",
 	},nil
 }
-
-// func (s *Service) ViewProposals(ctx context.Context, req *job.ViewProposalsReq) (*job.ViewProposalsRes,error){
-
-// }
 
 func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq)(*job.SendOfferRes,error){
 	res,err:=s.repo.SendOffer(req)
@@ -134,11 +127,11 @@ func (s *Service)SendWeeklyInvoice(ctx context.Context,req *job.InvoiceReq) (*jo
 	}
 	return &job.InvoiceRes{Status: 500,Error: "week is not completed to send invoice"},nil
 }
-// func (s *Service) EndContract(context.Context)
 
-// func (s *Service) GetContracts(context.Context)
 
-func (s *Service) ExecutePayment(ctx context.Context){
-	helper.GetPaymentDetails()
-	helper.GetContractDetails()
-}
+// func (s *Service) ExecutePayment(ctx context.Context){
+// 	helper.GetPaymentDetails()
+// 	helper.GetContractDetails()
+// 	helper.CreatePaymentOrder()
+
+// }

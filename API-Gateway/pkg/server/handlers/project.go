@@ -21,7 +21,7 @@ func NewProjectHandler(p project.ProjectServiceClient) *ProjectHandler {
 
 func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
 	var req req.AddSingleProject
-	// user_id:=c.Locals("User_id").(string)
+	user_id:=c.Locals("User_id").(string)
 	if err:=c.BodyParser(&req);err != nil {
 		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
 	}
@@ -32,7 +32,7 @@ func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
 	}
 	grpcReq := &project.AddSingleProjectReq{}
 	copier.Copy(grpcReq, &req)
-	fmt.Println(grpcReq)
+	grpcReq.UserId=user_id
 
 	res, err := h.project.AddProject(context.Background(), grpcReq)
 	if err != nil {
@@ -65,13 +65,86 @@ func (h *ProjectHandler) AddTieredProject(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)}
 
 func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
-	return nil
-}
+	var req req.AddSingleProject
+	prjt_id:=c.Params("id")
+	user_id:=c.Locals("User_id").(string)
+	if err:=c.BodyParser(&req);err != nil {
+		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
+	}
+
+	Errors, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(401).JSON(fiber.Map{"error": Errors})
+	}
+
+	res, err := h.project.EditProject(context.Background(), &project.EditSingleProjectReq{
+		Title: req.Title,
+		Description: req.Description,
+		Category: int32(req.Category),
+		Price: req.Price,
+		DeliveryDays: req.DeliveryDays,
+		NumberOfRevisions: req.NumberOfRevisions,
+		ProjectId: prjt_id,
+		UserId: user_id,
+	})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error":err.Error()})
+	}
+
+	return c.Status(int(res.Status)).JSON(res)}
 
 func (h *ProjectHandler) RemoveProject(c *fiber.Ctx) error {
-	return nil
+	prjt_id:=c.Params("id")
+	user_id:=c.Locals("User_id").(string)
+
+	res,err:=h.project.RemoveProject(context.Background(),&project.RemProjectReq{UserId: user_id,ProjectId: prjt_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *ProjectHandler) ListProjects(c *fiber.Ctx) error {
+	res,err:=h.project.ListProjects(context.Background(),&project.NoParam{})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+
+	}
+	return c.Status(int(res.Status)).JSON(res)
+
+}
+
+func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
+	prjt_id:=c.Params("id")
+	res,err:=h.project.ListOneProject(context.Background(),&project.ListOneProjectReq{ProjectId: prjt_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
+	user_id:=c.Locals("User_id").(string)
+	res,err:=h.project.ListMyProjects(context.Background(),&project.ListMyProjectReq{UserId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+
+	}
+	return c.Status(int(res.Status)).JSON(res)
 }
 
 func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
-	return nil
+	user_id:=c.Locals("User_id").(string)
+	prjt_id:=c.Params("id")
+	res,err:=h.project.BuyProject(context.Background(),&project.BuyProjectReq{UserId: user_id,ProjectId: prjt_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+
+	}
+	return c.Status(int(res.Status)).JSON(res)
 }
+
+// func (h *ProjectHandler) ExecutePaymentForProject(c *fiber.Ctx) error {
+	
+// }
