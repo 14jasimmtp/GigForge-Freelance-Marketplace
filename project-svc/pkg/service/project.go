@@ -84,6 +84,10 @@ func (s *ProjectService) ListMyProjects(ctx context.Context, req *pb.ListMyProje
 // }
 
 //  func (s *ProjectService) BuyProject(ctx context.Context,req *pb.BuyProjectReq) (*pb.BuyProjectRes,error){
+// 	err:=s.repo.OrderProject(req.ProjectId,req.UserId)
+// 	if err != nil {
+// 		return &pb.BuyProjectRes{Status: 400,Error: err.Error()},nil
+// 	}
 
 //  }
 

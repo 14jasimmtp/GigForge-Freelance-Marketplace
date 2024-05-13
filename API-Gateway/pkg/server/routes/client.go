@@ -26,6 +26,9 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	// contract.Post("/payment/:invoice_id",job.ExecutePaymentForContractWithInvoiceID)
 
 	projects:=api.Group("/project")
+	projects.Use(middlewares.AuthClient)
+	projects.Get("",project.ListProjects)
+	projects.Get("/:id",project.ListProjectWithID)
 	projects.Post("/buy/:id",project.BuyProject)
 	// projects.Post("/payment/:order_id",project.ExecutePaymentForProject)
 }

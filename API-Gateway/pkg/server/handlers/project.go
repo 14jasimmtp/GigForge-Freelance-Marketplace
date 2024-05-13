@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/project"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
@@ -135,9 +136,10 @@ func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 }
 
 func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
-	user_id:=c.Locals("User_id").(string)
+	user_id:=c.Locals("User_id").(int64)
+	user:=strconv.Itoa(int(user_id))
 	prjt_id:=c.Params("id")
-	res,err:=h.project.BuyProject(context.Background(),&project.BuyProjectReq{UserId: user_id,ProjectId: prjt_id})
+	res,err:=h.project.BuyProject(context.Background(),&project.BuyProjectReq{UserId: user,ProjectId: prjt_id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 

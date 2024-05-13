@@ -111,7 +111,7 @@ func (r *Repo) ListOneProject(id string) (*pb.Project,error){
 	if query.Error != nil {
 		return nil,errors.New(`something went wrong`)
 	}
-	query2:=r.db.Raw(`SELECT * from single_project where project_id = ?`,id).Scan(&singleProject)
+	query2:=r.db.Raw(`SELECT * from single_projects where project_id = ?`,id).Scan(&singleProject)
 		if query2.Error != nil {
 			return nil,errors.New(`something went wrong`)
 		}
@@ -154,3 +154,5 @@ func (r *Repo) ListMyProject(user_id string) ([]*pb.Project,error){
 	}
 	return res, nil
 }
+
+// func (r *Repo) OrderProject(req *pb.)

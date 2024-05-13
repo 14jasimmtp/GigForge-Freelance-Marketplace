@@ -40,7 +40,7 @@ func Freelancer(
 	projects := api.Group("/project")
 	projects.Use(middlewares.AuthFreelancer)
 	projects.Post("",project.AddSingleProject)
-	projects.Patch("",project.EditProject)
+	projects.Patch("/:id",project.EditProject)
 	projects.Delete("/:id",project.RemoveProject)
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)

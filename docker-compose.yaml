@@ -1,0 +1,91 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    networks:
+      - GigForge-Network
+    volumes:
+      - gigforge_volume:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo
+    restart: on-failure
+    networks:
+      - GigForge-Network
+    volumes:
+      - gigforge_volume:/data/db
+    ports:
+      - 27017:27017
+
+  api-gateway:
+    image: api-gateway
+    restart: on-failure
+    environment:
+      AUTH_SVC: "user-svc:30001"
+      JOB_SVC: "job-svc:30003"
+      Project_SVC: "project-svc:30004"
+      ATokenSecret: "Gig91234Forgeya51234ahnka234"
+    networks:
+      - GigForge-Network
+    ports:
+      - "3000:3000"
+
+  user-svc:
+    image: user-svc
+    restart: on-failure
+    environment:
+      DB_URL: "postgres://postgres:postgres@postgres:5432"
+    depends_on:
+      - postgres
+    networks:
+      - GigForge-Network
+    # ports:
+    #   - "30001:30001"
+
+  job-svc:
+    image: job-svc
+    restart: on-failure
+    environment:
+      DB_URL: "postgres://postgres:postgres@postgres:5432"
+    depends_on:
+      - postgres
+    networks:
+      - GigForge-Network
+    # ports:
+    #   - "30003:30003"    
+
+  project-svc:
+    image: project-svc
+    restart: on-failure
+    environment:
+      DB_URL: "postgres://postgres:postgres@postgres:5432"
+    depends_on:
+      - postgres
+    networks:
+      - GigForge-Network
+    # ports:
+    #   - "30004:30004"
+
+  # chat-svc:
+  #   image: chat-svc
+  #   restart: on-failure
+  #   environment:
+  #     DB_URL: "postgres://postgres:postgres@postgres:5432"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - mydb
+  #   ports:
+  #     - "30005:30005"
+
+volumes:
+  database-postgres:
+
+networks:
+  GigForge-Network:
+    driver: bridge
