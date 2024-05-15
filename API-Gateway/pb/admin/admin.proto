@@ -6,7 +6,6 @@ option go_package = "./pb/admin";
 
 service AdminService{
     rpc AdminLogin(LoginReq) returns (LoginRes) {};
-
 }
 
 message LoginReq{

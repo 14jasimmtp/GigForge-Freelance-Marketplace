@@ -402,3 +402,28 @@ func createPartnerReferralPayload(trackingID string) map[string]interface{} {
 // 	}
 // 	return c.Status(int(res.Status)).JSON(res)
 // }
+
+
+func (h *JobsHandler) Search(c *fiber.Ctx) error{
+	query:=c.Query("q")
+	PayType:=c.Query("t")
+	Hourly_rate:=c.Query("hourly_rate")
+	fixed_rate:=c.Query("fixed_rate")
+	category:=c.Query("c")
+
+	res,err:=h.job.SearchJobs(context.Background(),&Job.SearchJobsReq{Query: query,Paytype: PayType,HourlyRate: Hourly_rate,FixedRate: fixed_rate,Category: category})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+
+	return c.Status(int(res.Status)).JSON(res)
+
+}
+
+//contracts
+
+// func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx){
+// 	user_id:=c.Locals("User_id").(int64)
+// 	res,err:=h.job.GetAllContractsForClient(context.Background(),&J)
+// }
+

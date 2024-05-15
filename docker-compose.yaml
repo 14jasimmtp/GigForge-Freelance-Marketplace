@@ -22,7 +22,7 @@ services:
     ports:
       - 27017:27017
 
-  api-gateway:
+  api-gateway: 
     image: api-gateway
     restart: on-failure
     environment:

@@ -20,6 +20,8 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 	return &ProfileHandler{profile: profile}
 }
 
+//Freelancer profile
+
 func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	var req req.Education
 	user_id, _ := c.Locals("User_id").(string)
@@ -291,7 +293,7 @@ func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error {
+func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(string)
 	res, err := h.profile.GetProfile(context.Background(), &auth.GetProfileReq{UserId: user_id})
 	if err != nil {
@@ -299,6 +301,24 @@ func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error {
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
+
+//client profile
+
+// func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
+// 	user_id:=c.Locals("User_id").(string)
+// 	var req req.AddReview
+
+// 	if err:=c.BodyParser(&req);err != nil {
+// 		return c.Status(400).JSON(fiber.Map{"error":"error in parsing body. enter fields correctly"})
+// 	}
+	
+// 	res,err:=h.profile.ReviewFreelancer(c,&AddFreelancerReviewReq{UserId: user_id})
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+// 	}
+// 	return c.Status(int(res.Status)).JSON(res)
+// }
+
 
 // func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{
 // 	// var req req.
@@ -327,7 +347,7 @@ func (h *ProfileHandler) GetProfile(c *fiber.Ctx) error {
 // 	return c.Status(int(res.Status)).JSON(res)
 // }
 
-// func (h *ProfileHandler) GetProfileClient(c *fiber.Ctx) error{
+// func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
 // 	var req req.Profile
 // 	user_id := c.Locals("User_id")
 // 	if err := c.BodyParser(&req); err != nil {

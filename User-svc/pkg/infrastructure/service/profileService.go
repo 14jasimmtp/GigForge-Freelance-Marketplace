@@ -218,3 +218,8 @@ func (s *Service) UpdateProfilePhoto(ctx context.Context, req *auth.PhotoReq) (*
 // func (s *Service) GetClientProfileForFreelancer(ctx context.Context){}
 
 // func (s *Service) GetFreelancerProfileForClient(ctx context.Context){}
+
+
+// func (s *Service) ReviewFreelancer(ctx context.Context,){
+// 	c.Params()
+// }

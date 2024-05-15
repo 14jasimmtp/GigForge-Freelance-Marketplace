@@ -18,6 +18,8 @@ func main() {
 	app := fiber.New()
 	di.InitializeAPI(app, cfg)
 	fmt.Println("listening on port 3000")
-	app.Listen(":3000")
+	if err :=app.Listen(cfg.PORT);err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("started")
 }

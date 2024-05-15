@@ -18,6 +18,45 @@ service JobService{
     rpc SendWeeklyInvoice(InvoiceReq) returns (InvoiceRes) {};
     rpc GetJobProposals(GJPReq) returns (GJPRes) {};
     rpc GetOfferByClient(GFCReq) returns (GFCRes) {};
+    rpc SearchJobs(SearchJobsReq) returns (SearchJobsRes) {};
+    rpc GetAllContractsForClient(GetAllContractsForClientReq) returns (GetAllContractsForClientRes) {};
+    rpc GetOneContractForClient(GetOneContractForClientReq) returns (GetOneContractForClientRes) {};
+}
+
+message GetOneContractForClientRes{
+
+}
+
+message GetOneContractForClientReq{
+    int64 user_id = 1;
+    
+}
+
+message Contracts{
+
+}
+
+message GetAllContractsForClientReq{
+    int64 user_id = 1;
+}
+
+message GetAllContractsForClientRes{
+    
+}
+
+message SearchJobsReq{
+    string query = 1;
+    string paytype =2;
+    string hourly_rate = 3;
+    string fixed_rate = 4;
+    string category = 5;
+}
+
+message SearchJobsRes{
+    repeated job jobs = 1;
+    int32 status =2;
+    string Error = 3;
+    string Response = 4;
 }
 
 message GFCReq{

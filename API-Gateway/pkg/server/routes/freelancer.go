@@ -13,7 +13,7 @@ func Freelancer(
 	job *handler.JobsHandler,
 ) {
 	profiles := api.Group("/profile")
-	profiles.Get("", middlewares.AuthFreelancer, profile.GetProfile)
+	profiles.Get("", middlewares.AuthFreelancer, profile.GetFreelancerProfile)
 	profiles.Post("/education", middlewares.AuthFreelancer, profile.AddEducationDetails)
 	profiles.Patch("/education", middlewares.AuthFreelancer, profile.UpdateEducation)
 	profiles.Post("/experience", middlewares.AuthFreelancer, profile.AddExperience)

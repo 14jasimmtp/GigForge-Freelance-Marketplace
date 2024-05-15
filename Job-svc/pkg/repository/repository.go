@@ -329,3 +329,47 @@ func (r *Repo) GetJob(id string) (*job.Job, error) {
 	return resultJobs, nil
 
 }
+
+
+func (r *Repo) SearchJobs(category,paytype,query string , fixedRate , HourlyRate []string)([]*job.Job,int32,error){
+
+	var jobs []domain.Jobs
+	r.DB.Raw(`
+	SELECT * FROM jobs 
+	WHERE 
+    (type = ? OR ? = '') AND 
+    (category = ? OR ? = '') AND 
+    (budget BETWEEN ? AND ? OR ? = '') AND 
+    (budget BETWEEN ? AND ? OR ? = '') AND 
+    title ILIKE CONCAT('%', ?, '%')`,
+	paytype,paytype,category,category,query).Scan(&jobs)
+	
+	var resultJobs []*job.Job
+	for _, jobi := range jobs {
+		var skills []int64
+		err := r.DB.Raw(`SELECT skill_id FROM job_skills WHERE job_id = ?`, jobi.ID).Scan(&skills).Error
+		if err != nil {
+			return nil, 500,err
+		}
+		jobSkills, err := r.job.GetJobsSkills(context.Background(),&user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
+		if err != nil {
+			return nil, 500,err
+		}
+		// var category string
+		// err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
+		// if err != nil {
+		// 	return nil, err
+		// }
+		resultJobs = append(resultJobs, &job.Job{
+			ID:          int64(jobi.ID),
+			Title:       jobi.Title,
+			Description: jobi.Description,
+			Skills:      jobSkills.Skill,
+			// Category:    category,
+			TimePeriod: jobi.TimePeriod,
+			Type:       jobi.Type,
+			Budget:     jobi.Budget,
+		})
+	}
+	return resultJobs, 200,nil
+}
