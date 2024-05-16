@@ -101,7 +101,6 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 	}
 	defer ch.Close()
 
-	// Declare a queue
 	q, err := ch.QueueDeclare(
 		"message", // name
 		false,     // durable

@@ -147,6 +147,10 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+func (h *ProjectHandler) SearchProject(c *fiber.Ctx) error{
+	
+}
+
 // func (h *ProjectHandler) ExecutePaymentForProject(c *fiber.Ctx) error {
 	
 // }

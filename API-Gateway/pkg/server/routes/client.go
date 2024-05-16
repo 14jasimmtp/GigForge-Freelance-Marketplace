@@ -17,11 +17,11 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	jobs.Get("", middlewares.AuthClient, job.GetMyJobs)
 	jobs.Post("/send-offer", middlewares.AuthClient, job.SendOffer)
 
-	// jobs.Get("/proposals/:id",job.GetProposalsOfJob)
+	jobs.Get("/proposals/:id",job.GetProposalsOfJob)
 
-	// contract:=api.Group("/contracts")
-	// contract.Use(middlewares.AuthClient)
-	// contract.Get("",job.GetAllContractsForClient)
+	contract:=api.Group("/contracts")
+	contract.Use(middlewares.AuthClient)
+	contract.Get("",job.GetAllContractsForClient)
 	// contract.Get("/:id",job.GetOneContract)
 	// contract.Get("/invoices/:job_id",job.GetAllInvoicesOfAJob)
 	// contract.Post("/payment/:invoice_id",job.ExecutePaymentForContractWithInvoiceID)

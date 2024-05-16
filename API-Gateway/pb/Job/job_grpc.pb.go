@@ -36,6 +36,8 @@ type JobServiceClient interface {
 	GetJobProposals(ctx context.Context, in *GJPReq, opts ...grpc.CallOption) (*GJPRes, error)
 	GetOfferByClient(ctx context.Context, in *GFCReq, opts ...grpc.CallOption) (*GFCRes, error)
 	SearchJobs(ctx context.Context, in *SearchJobsReq, opts ...grpc.CallOption) (*SearchJobsRes, error)
+	GetAllContractsForClient(ctx context.Context, in *GetAllContractsForClientReq, opts ...grpc.CallOption) (*GetAllContractsForClientRes, error)
+	GetOneContractForClient(ctx context.Context, in *GetOneContractForClientReq, opts ...grpc.CallOption) (*GetOneContractForClientRes, error)
 }
 
 type jobServiceClient struct {
@@ -172,6 +174,24 @@ func (c *jobServiceClient) SearchJobs(ctx context.Context, in *SearchJobsReq, op
 	return out, nil
 }
 
+func (c *jobServiceClient) GetAllContractsForClient(ctx context.Context, in *GetAllContractsForClientReq, opts ...grpc.CallOption) (*GetAllContractsForClientRes, error) {
+	out := new(GetAllContractsForClientRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetAllContractsForClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) GetOneContractForClient(ctx context.Context, in *GetOneContractForClientReq, opts ...grpc.CallOption) (*GetOneContractForClientRes, error) {
+	out := new(GetOneContractForClientRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetOneContractForClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -190,6 +210,8 @@ type JobServiceServer interface {
 	GetJobProposals(context.Context, *GJPReq) (*GJPRes, error)
 	GetOfferByClient(context.Context, *GFCReq) (*GFCRes, error)
 	SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error)
+	GetAllContractsForClient(context.Context, *GetAllContractsForClientReq) (*GetAllContractsForClientRes, error)
+	GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -238,6 +260,12 @@ func (UnimplementedJobServiceServer) GetOfferByClient(context.Context, *GFCReq) 
 }
 func (UnimplementedJobServiceServer) SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchJobs not implemented")
+}
+func (UnimplementedJobServiceServer) GetAllContractsForClient(context.Context, *GetAllContractsForClientReq) (*GetAllContractsForClientRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllContractsForClient not implemented")
+}
+func (UnimplementedJobServiceServer) GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOneContractForClient not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -504,6 +532,42 @@ func _JobService_SearchJobs_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_GetAllContractsForClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllContractsForClientReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetAllContractsForClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetAllContractsForClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetAllContractsForClient(ctx, req.(*GetAllContractsForClientReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_GetOneContractForClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOneContractForClientReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetOneContractForClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetOneContractForClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetOneContractForClient(ctx, req.(*GetOneContractForClientReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -566,6 +630,14 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchJobs",
 			Handler:    _JobService_SearchJobs_Handler,
+		},
+		{
+			MethodName: "GetAllContractsForClient",
+			Handler:    _JobService_GetAllContractsForClient_Handler,
+		},
+		{
+			MethodName: "GetOneContractForClient",
+			Handler:    _JobService_GetOneContractForClient_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

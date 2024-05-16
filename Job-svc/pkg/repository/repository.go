@@ -332,17 +332,16 @@ func (r *Repo) GetJob(id string) (*job.Job, error) {
 
 
 func (r *Repo) SearchJobs(category,paytype,query string , fixedRate , HourlyRate []string)([]*job.Job,int32,error){
-
+	q:="%"+query+"%"
+	cat,_:=strconv.Atoi(category)
 	var jobs []domain.Jobs
 	r.DB.Raw(`
 	SELECT * FROM jobs 
 	WHERE 
-    (type = ? OR ? = '') AND 
-    (category = ? OR ? = '') AND 
-    (budget BETWEEN ? AND ? OR ? = '') AND 
-    (budget BETWEEN ? AND ? OR ? = '') AND 
-    title ILIKE CONCAT('%', ?, '%')`,
-	paytype,paytype,category,category,query).Scan(&jobs)
+    (type = $1 OR $1 = '') AND 
+    (category = $2 OR $2 = 0) AND 
+    title ILIKE $3`,
+	paytype,cat,q).Scan(&jobs)
 	
 	var resultJobs []*job.Job
 	for _, jobi := range jobs {

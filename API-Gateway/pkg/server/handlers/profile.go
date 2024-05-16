@@ -302,6 +302,10 @@ func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+func (h *ProfileHandler) SearchTalents(c *fiber.Ctx) error {
+	
+}
+
 //client profile
 
 // func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{

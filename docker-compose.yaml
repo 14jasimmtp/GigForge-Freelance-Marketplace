@@ -29,7 +29,6 @@ services:
       AUTH_SVC: "user-svc:30001"
       JOB_SVC: "job-svc:30003"
       Project_SVC: "project-svc:30004"
-      ATokenSecret: "Gig91234Forgeya51234ahnka234"
     networks:
       - GigForge-Network
     ports:
@@ -44,8 +43,7 @@ services:
       - postgres
     networks:
       - GigForge-Network
-    # ports:
-    #   - "30001:30001"
+  
 
   job-svc:
     image: job-svc
@@ -56,8 +54,7 @@ services:
       - postgres
     networks:
       - GigForge-Network
-    # ports:
-    #   - "30003:30003"    
+     
 
   project-svc:
     image: project-svc
@@ -68,8 +65,7 @@ services:
       - postgres
     networks:
       - GigForge-Network
-    # ports:
-    #   - "30004:30004"
+  
 
   # chat-svc:
   #   image: chat-svc
@@ -77,11 +73,10 @@ services:
   #   environment:
   #     DB_URL: "postgres://postgres:postgres@postgres:5432"
   #   depends_on:
-  #     - postgres
+  #     - mongodb
   #   networks:
-  #     - mydb
-  #   ports:
-  #     - "30005:30005"
+  #     - GigForge-Network
+ 
 
 volumes:
   database-postgres:

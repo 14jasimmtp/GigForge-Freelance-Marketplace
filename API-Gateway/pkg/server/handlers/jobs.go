@@ -99,6 +99,17 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error{
+	client_id:=strconv.Itoa(int(c.Locals("User_id").(int64)))
+	job_id:=c.Params("id")
+
+	res,err:=h.job.GetJobProposals(context.Background(),&Job.GJPReq{UserId: client_id,JobId: job_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
+
 func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int64)
 	id := strconv.Itoa(int(user_id))
@@ -420,10 +431,23 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error{
 
 }
 
+
+
 //contracts
 
-// func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx){
-// 	user_id:=c.Locals("User_id").(int64)
-// 	res,err:=h.job.GetAllContractsForClient(context.Background(),&J)
-// }
+func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error{
+	user_id:=c.Locals("User_id").(int64)
+	res,err:=h.job.GetAllContractsForClient(context.Background(),&Job.GetAllContractsForClientReq{UserId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *JobsHandler) EndContract(c *fiber.Ctx) error{
+
+}
+
+func (h *JobsHandler) 
 
