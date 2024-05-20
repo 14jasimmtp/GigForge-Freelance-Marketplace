@@ -19,6 +19,28 @@ service JobService{
     rpc GetJobProposals(GJPReq) returns (GJPRes) {};
     rpc GetOfferByClient(GFCReq) returns (GFCRes) {};
     rpc SearchJobs(SearchJobsReq) returns (SearchJobsRes) {};
+    rpc GetJobOffersForFreelancer(GetJobOfferForFreelancerReq) returns (GetJobOfferForFreelancerRes) {};
+}
+
+message GetJobOfferForFreelancerReq{
+    string user_id = 1;
+    string status = 2;
+}
+
+message offer{
+    float offer_id = 1;
+    string client_id = 2;
+    string job_id = 3;
+    float budget = 4;
+    string offer_letter = 5;
+    string Starting_time = 6;
+    string status = 7;
+}
+
+message GetJobOfferForFreelancerRes{
+    int32 status = 1;
+    string Error = 2;
+    repeated offer Offers = 3;
 }
 
 message SearchJobsReq{
@@ -40,15 +62,6 @@ message GFCReq{
     string user_id = 1;
 }
 
-message offer{
-    string client_id = 1;
-    string job_id = 2;
-    float budget = 3;
-    string payment_type = 4;
-    string offer_letter = 5;
-    string Starting_time = 6;
-}
-
 message GFCRes{
     int32 Status = 1;
     string Error = 2;
@@ -62,7 +75,7 @@ message GJPReq{
 }
 
 message proposals{
-    string user_id = 1;
+    int32 user_id = 1;
     float budget = 2;
     string coverletter = 3;
 }
@@ -79,6 +92,8 @@ message InvoiceReq{
     float total_hour_worked = 1;
     int32 contractID = 2;
     string suser_id = 3;
+    string start_date = 4;
+    string end_date = 5;
 }
 
 message InvoiceRes{

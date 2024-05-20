@@ -112,7 +112,6 @@ func (h *ProjectHandler) ListProjects(c *fiber.Ctx) error {
 
 	}
 	return c.Status(int(res.Status)).JSON(res)
-
 }
 
 func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
@@ -142,14 +141,13 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	res,err:=h.project.BuyProject(context.Background(),&project.BuyProjectReq{UserId: user,ProjectId: prjt_id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
-
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *ProjectHandler) SearchProject(c *fiber.Ctx) error{
-	
-}
+// func (h *ProjectHandler) SearchProject(c *fiber.Ctx) error{
+// 	query:=c.Params("q")
+// }
 
 // func (h *ProjectHandler) ExecutePaymentForProject(c *fiber.Ctx) error {
 	

@@ -34,11 +34,11 @@ func (s *Service) ChatReciever() {
 
 	q, err := ch.QueueDeclare(
 		"message", // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
+		false,   
+		false,    
+		false,   
+		false,   
+		nil,     
 	)
 	if err != nil {
 		fmt.Println("error", err)

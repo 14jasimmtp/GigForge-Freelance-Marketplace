@@ -5,8 +5,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Common(api fiber.Router,job *handler.JobsHandler){
+func Common(api fiber.Router,job *handler.JobsHandler, project *handler.ProjectHandler,profile *handler.ProfileHandler){
 	jobs:=api.Group("/jobs")
 	jobs.Get("/search",job.Search)
 	jobs.Get("",job.GetJobs)
+	api.Get("/projects",project.ListProjects)
+	api.Get("/talents",profile.GetTalents)
 }

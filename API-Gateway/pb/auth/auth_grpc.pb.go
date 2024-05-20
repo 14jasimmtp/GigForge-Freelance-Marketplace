@@ -42,6 +42,10 @@ type AuthServiceClient interface {
 	UnBlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
 	AddSkill(ctx context.Context, in *AddSkillReq, opts ...grpc.CallOption) (*AddSkillRes, error)
 	UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error)
+	AdminLogin(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
+	OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error)
+	ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error)
+	GetFreelancers(ctx context.Context, in *GetTalentReq, opts ...grpc.CallOption) (*GetTalentRes, error)
 }
 
 type authServiceClient struct {
@@ -232,6 +236,42 @@ func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *PhotoReq
 	return out, nil
 }
 
+func (c *authServiceClient) AdminLogin(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error) {
+	out := new(LoginRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error) {
+	out := new(OnboardToPaypalRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/OnboardFreelancerToPaypal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error) {
+	out := new(ReviewFlancerRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ReviewFreelancer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetFreelancers(ctx context.Context, in *GetTalentReq, opts ...grpc.CallOption) (*GetTalentRes, error) {
+	out := new(GetTalentRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/GetFreelancers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -256,6 +296,10 @@ type AuthServiceServer interface {
 	UnBlockUser(context.Context, *BlockReq) (*BlockRes, error)
 	AddSkill(context.Context, *AddSkillReq) (*AddSkillRes, error)
 	UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error)
+	AdminLogin(context.Context, *LoginReq) (*LoginRes, error)
+	OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error)
+	ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error)
+	GetFreelancers(context.Context, *GetTalentReq) (*GetTalentRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -322,6 +366,18 @@ func (UnimplementedAuthServiceServer) AddSkill(context.Context, *AddSkillReq) (*
 }
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
+}
+func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *LoginReq) (*LoginRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
+}
+func (UnimplementedAuthServiceServer) OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OnboardFreelancerToPaypal not implemented")
+}
+func (UnimplementedAuthServiceServer) ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewFreelancer not implemented")
+}
+func (UnimplementedAuthServiceServer) GetFreelancers(context.Context, *GetTalentReq) (*GetTalentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFreelancers not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -696,6 +752,78 @@ func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AdminLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/AdminLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AdminLogin(ctx, req.(*LoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_OnboardFreelancerToPaypal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OnboardToPaypalReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).OnboardFreelancerToPaypal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/OnboardFreelancerToPaypal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).OnboardFreelancerToPaypal(ctx, req.(*OnboardToPaypalReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ReviewFreelancer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReviewFlancerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ReviewFreelancer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ReviewFreelancer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ReviewFreelancer(ctx, req.(*ReviewFlancerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetFreelancers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTalentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetFreelancers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/GetFreelancers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetFreelancers(ctx, req.(*GetTalentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -782,6 +910,22 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProfilePhoto",
 			Handler:    _AuthService_UpdateProfilePhoto_Handler,
+		},
+		{
+			MethodName: "AdminLogin",
+			Handler:    _AuthService_AdminLogin_Handler,
+		},
+		{
+			MethodName: "OnboardFreelancerToPaypal",
+			Handler:    _AuthService_OnboardFreelancerToPaypal_Handler,
+		},
+		{
+			MethodName: "ReviewFreelancer",
+			Handler:    _AuthService_ReviewFreelancer_Handler,
+		},
+		{
+			MethodName: "GetFreelancers",
+			Handler:    _AuthService_GetFreelancers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

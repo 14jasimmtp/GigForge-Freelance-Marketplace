@@ -63,6 +63,28 @@ func AuthFreelancer(c *fiber.Ctx) error{
 	return c.Next()
 }
 
+func AuthChat(c *fiber.Ctx) error{
+	tokenString := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
+
+	var secretKey = viper.GetString("ATokenSecret")
+
+	isValid, _ := jwttoken.IsValidAccessToken(secretKey, tokenString)
+	if !isValid {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error":"Not Authorised"})
+	}
+
+	User_id,User_role,err := jwttoken.GetRoleAndIDFromToken(tokenString)
+	if err != nil{
+		return c.Status(http.StatusUnauthorized).JSON("jwt token tampered")
+	}
+
+	c.Locals("User_id", User_id)
+	c.Locals("User_role",User_role)
+
+	log.Println("MW: User Authorized")
+	return c.Next()
+}
+
 func AuthAdmin(c *fiber.Ctx) error{
 	tokenString := strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
 

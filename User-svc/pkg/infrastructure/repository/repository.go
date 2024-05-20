@@ -384,3 +384,18 @@ func (r *Repo) GetJobsSkills(ctx context.Context,req *job.Req) (*job.Res,error){
 	}
 	return &job.Res{Skill: skill},nil
 }
+
+func (r *Repo) CheckUserOnboardStatus(user_id string) error{
+	var status bool
+	query:=r.db.Raw(`SELECT paypal_onboard_status FROM users where id = ?`,user_id).Scan(&status)
+	if status{
+		return errors.New("user already onboarded to paypal")
+	}
+	if query.Error != nil {
+		return errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0{
+		return errors.New("no user found with this id")
+	}
+	return nil
+}

@@ -36,6 +36,7 @@ type JobServiceClient interface {
 	GetJobProposals(ctx context.Context, in *GJPReq, opts ...grpc.CallOption) (*GJPRes, error)
 	GetOfferByClient(ctx context.Context, in *GFCReq, opts ...grpc.CallOption) (*GFCRes, error)
 	SearchJobs(ctx context.Context, in *SearchJobsReq, opts ...grpc.CallOption) (*SearchJobsRes, error)
+	GetJobOffersForFreelancer(ctx context.Context, in *GetJobOfferForFreelancerReq, opts ...grpc.CallOption) (*GetJobOfferForFreelancerRes, error)
 }
 
 type jobServiceClient struct {
@@ -172,6 +173,15 @@ func (c *jobServiceClient) SearchJobs(ctx context.Context, in *SearchJobsReq, op
 	return out, nil
 }
 
+func (c *jobServiceClient) GetJobOffersForFreelancer(ctx context.Context, in *GetJobOfferForFreelancerReq, opts ...grpc.CallOption) (*GetJobOfferForFreelancerRes, error) {
+	out := new(GetJobOfferForFreelancerRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetJobOffersForFreelancer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -190,6 +200,7 @@ type JobServiceServer interface {
 	GetJobProposals(context.Context, *GJPReq) (*GJPRes, error)
 	GetOfferByClient(context.Context, *GFCReq) (*GFCRes, error)
 	SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error)
+	GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -238,6 +249,9 @@ func (UnimplementedJobServiceServer) GetOfferByClient(context.Context, *GFCReq) 
 }
 func (UnimplementedJobServiceServer) SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchJobs not implemented")
+}
+func (UnimplementedJobServiceServer) GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobOffersForFreelancer not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -504,6 +518,24 @@ func _JobService_SearchJobs_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_GetJobOffersForFreelancer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJobOfferForFreelancerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetJobOffersForFreelancer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetJobOffersForFreelancer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetJobOffersForFreelancer(ctx, req.(*GetJobOfferForFreelancerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -566,6 +598,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchJobs",
 			Handler:    _JobService_SearchJobs_Handler,
+		},
+		{
+			MethodName: "GetJobOffersForFreelancer",
+			Handler:    _JobService_GetJobOffersForFreelancer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

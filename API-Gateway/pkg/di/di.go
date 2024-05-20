@@ -30,5 +30,5 @@ func InitializeAPI(app *fiber.App, cfg *config.Config) {
 	routes.Client(app.Group("/client"),profile,project,jobs)
 	routes.Auth(app.Group("/auth"),auth)
 	routes.Chat(app.Group("/chat"),&chat)
-	routes.Common(app.Group(""),jobs)
+	routes.Common(app.Group(""),jobs,project)
 }

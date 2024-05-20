@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/utils/paypal"
 	s3 "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/utils/s3bucket"
 )
 
@@ -206,6 +208,43 @@ func (s *Service) UpdateProfilePhoto(ctx context.Context, req *auth.PhotoReq) (*
 		Response: "profile photo updated successfully",
 	}, nil
 }
+
+func (s *Service) OnboardFreelancersToPaypal(ctx context.Context, req *auth.OnboardToPaypalReq) (*auth.OnboardToPaypalRes,error){
+	err:=s.repo.CheckUserOnboardStatus(req.UserId)
+	if err != nil {
+		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest,Error: "user already added paypal"},nil
+	}
+
+	accessToken,err:=paypal.GenerateAccessToken()
+	if err != nil {
+		return &auth.OnboardToPaypalRes{Status: http.StatusInternalServerError,Error: "error while generating paypal access token"},nil
+	}
+
+	onboardURL,err:=paypal.OnboardFreelancer(req.UserId,accessToken)
+	if err != nil {
+		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest,Error: "error while onboarding freelancer to paypal"},nil
+	}
+	return &auth.OnboardToPaypalRes{Status: http.StatusOK,OnboardURL: onboardURL},nil
+}
+
+// func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes,error) {
+// 	err:=s.repo.CheckFreelancerExist(req.FreelancerId)
+// 	if err != nil {
+// 		return &auth.ReviewFlancerRes{},nil
+// 	}
+
+// 	err = s.repo.CheckContractWithFreelancerAndClient(req.FreelancerId,req.ClientId)
+// 	if err != nil {
+// 		return &auth.ReviewFlancerRes{},nil
+// 	}
+
+// 	err = s.repo.AddReviewForFreelancer(req)
+// 	if err != nil {
+// 		return &auth.ReviewFlancerRes{},nil
+// 	}
+// 	return &auth.ReviewFlancerRes{},nil
+// }
+
 
 // func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UPDCompanyDetailsReq) (*auth.UPDCompanyDetailsRes, error){
 // 	err:=s.repo.UpdateCmpDtails(req)

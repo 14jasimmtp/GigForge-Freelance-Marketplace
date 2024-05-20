@@ -31,9 +31,7 @@ type SendOffer struct {
 type SendInvoice struct{
 	ContractId int `json:"contractID"`
 	TotalHoursWorked int `json:"Hours_worked"`
-
-}
-
-type PrepaidInvoices struct{
-
+	Start_date string `json:"week_starting_date"`
+	End_date string `json:"week_ending_date"`
+	Description string `json:"description"`
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -58,6 +59,18 @@ func (s *Service) GetJob(ctx context.Context, req *job.GetJobReq) (*job.GetJobRe
 	return &job.GetJobRes{Status: 200, Job: res}, nil
 }
 
+func (s *Service) GetJobProposals(ctx context.Context,req *job.GJPReq) (*job.GJPRes,error){
+	err:=s.repo.FindJobExistOfClient(req.JobId,req.UserId)
+	if err != nil {
+		return &job.GJPRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	proposals, err:=s.repo.GetJobProposals(req.JobId)
+	if err != nil {
+		return &job.GJPRes{Status: http.StatusBadRequest, Error: err.Error()},nil
+	}
+	return &job.GJPRes{Status: http.StatusOK,Prop: proposals,Response: "fetched proposals successfully"},nil
+}
+
 func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.ProposalRes, error) {
 	err := s.repo.FindJob(req.JobId)
 	if err != nil {
@@ -93,6 +106,7 @@ func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq) (*job.Se
 }
 
 func (s *Service) AcceptOffer(ctx context.Context, req *job.AcceptOfferReq) (*job.AcceptOfferRes, error) {
+
 	err := s.repo.AcceptOffer(req.OfferID)
 	if err != nil {
 		return &job.AcceptOfferRes{
@@ -115,26 +129,46 @@ func (s *Service) AcceptOffer(ctx context.Context, req *job.AcceptOfferReq) (*jo
 }
 
 func (s *Service) SendWeeklyInvoice(ctx context.Context, req *job.InvoiceReq) (*job.InvoiceRes, error) {
-	res, err := s.repo.GetContractDetails(req.ContractID)
+	contract, err := s.repo.CheckContractActive(req.ContractID)
+	if err != nil {
+		return &job.InvoiceRes{Status: 400, Error: err.Error()}, nil
+	}
+	if strconv.Itoa(contract.Freelancer_id) != req.SuserId {
+		return &job.InvoiceRes{Status: 400, Error: "Not your contract. Check Contract ID is correct"}, nil
+	}
+	LastInvoice, err := s.repo.GetLastInvoiceDetails(req.ContractID)
 	if err != nil {
 		return &job.InvoiceRes{Status: 500, Error: err.Error()}, nil
 	}
-	if res.UpdatedAt.Add(24 * 7 * time.Hour).After(time.Now()) {
-		err := s.repo.SendHourlyInvoice(int(res.ID), res.Type, res.Budget, req.TotalHourWorked)
-		if err != nil {
-			return &job.InvoiceRes{Status: 500, Error: err.Error()}, nil
-		}
-		return &job.InvoiceRes{Status: 200, Response: "invoice sent successfully"}, nil
+	StartDate, err := time.Parse("02-01-2006", req.StartDate)
+	if err != nil {
+		return &job.InvoiceRes{Status: 400, Error: err.Error()}, nil
 	}
-	return &job.InvoiceRes{Status: 500, Error: "week is not completed to send invoice"}, nil
+	EndDate, err := time.Parse("02-01-2006", req.EndDate)
+	if err != nil {
+		return &job.InvoiceRes{Status: 400, Error: err.Error()}, nil
+	}
+	if LastInvoice.End_date.After(StartDate) {
+		return &job.InvoiceRes{Status: http.StatusConflict, Error: "start date already covered in last invoice.Give the correct start date"}, nil
+	}
+
+	if EndDate.After(StartDate) {
+		return &job.InvoiceRes{Status: http.StatusBadRequest, Error: "End date is before start date. Enter date correctly"}, nil
+	}
+
+	err = s.repo.SendHourlyInvoice(int(contract.ID), contract.Type, contract.Budget, req.TotalHourWorked, EndDate, StartDate)
+	if err != nil {
+		return &job.InvoiceRes{Status: 500, Error: err.Error()}, nil
+	}
+	return &job.InvoiceRes{Status: 200, Response: "invoice sent successfully"}, nil
 }
 
 func (s *Service) SearchJobs(ctx context.Context, req *job.SearchJobsReq) (*job.SearchJobsRes, error) {
 	FixedRate, HourlyRate := []string{}, []string{}
 	if req.FixedRate != "" {
 		FixedRate = strings.Split(req.FixedRate, "-")
-	}else{
-		
+	} else {
+
 	}
 	if req.HourlyRate != "" {
 		HourlyRate = strings.Split(req.HourlyRate, "-")
@@ -151,11 +185,27 @@ func (s *Service) SearchJobs(ctx context.Context, req *job.SearchJobsReq) (*job.
 	return &job.SearchJobsRes{Status: status, Jobs: res, Response: "fetched jobs successfully"}, nil
 }
 
+func (s *Service) GetJobOffersForFreelancer(ctx context.Context,req *job.GetJobOfferForFreelancerReq) (*job.GetJobOfferForFreelancerRes,error){
+	offers,err:=s.repo.GetOffers(req.UserId,req.Status) 
+	if err != nil {
+		return &job.GetJobOfferForFreelancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &job.GetJobOfferForFreelancerRes{Status: http.StatusOK,Offers: offers},nil
+}
 
+//  func (s *Service) ExecutePayment(ctx context.Context,req *job.ExecutePaymentReq)(*job.ExecutePaymentRes,error){
+// 	invoice,err:=s.repo.GetInvoiceDetails(req.InvoiceId)
+// 	if err != nil {
+// 		return &job.ExecutePaymentRes{},nil
+// 	}
+// 	accessToken,err:=paypal.GenerateAccessToken()
+// 	auth_assertion_header:=paypal.GetAuthAssertionValue(req.User_id)
+// 	OrderID,err:=paypal.CreateOrder(accessToken,invoice.ID,invoice.Budget,"USD",auth_assertion_header)
+// 	if err != nil {
+// 		return &job.ExecutePaymentRes{},nil
+// 	}
+// 	return &job.ExecutePaymentRes{}
 
-// func (s *Service) ExecutePayment(ctx context.Context){
-// 	helper.GetPaymentDetails()
-// 	helper.GetContractDetails()
-// 	helper.CreatePaymentOrder()
+// }
 
 // }

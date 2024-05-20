@@ -33,6 +33,7 @@ type Experience struct {
 type AddReview struct{
 	Review string `json:"review" validate:"required"`
 	Rating int `json:"rating" validate:"required,numeric,gte=1,lte=5"`
+	Freelancer_id int `json:"freelancer_id" validate:"required"`
 }
 
 

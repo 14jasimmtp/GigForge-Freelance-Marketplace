@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/job"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/user"
@@ -168,20 +169,32 @@ func (r *Repo) SendOffer(req *job.SendOfferReq) (*job.SendOfferRes, error) {
 	return &job.SendOfferRes{Status: 200, Response: "offer letter sended successfully to freelancer"}, nil
 }
 
+func (r *Repo) GetOffers(user_id,status string)([]*job.Offer,error){
+	var offers []*job.Offer
+	query:=r.DB.Raw(`SELECT id AS offer_id,client_id,job_id,budget,offer_letter,starting_time,status FROM offers WHERE freelancer_id = $1 AND (status = $2 OR $2 = '')`,user_id,status).Scan(&offers)
+	if query.RowsAffected == 0{
+		return nil, errors.New(`no offers found`)
+	}
+	if query.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	return offers,nil
+}
+
 func (r *Repo) AcceptOffer(id string) error {
 	var status string
-	query := `SELECT status from offers where id = ?`
-	err := r.DB.Raw(query, id).Scan(&status).Error
-	if err != nil {
-		print(err)
+	query := r.DB.Raw(`SELECT status from offers where id = ?`, id).Scan(&status)
+	if query.RowsAffected == 0 {
+		return errors.New("no offers found with this id enter correct id")
+	}
+	if query.Error != nil {
+		print(query.Error)
 		return errors.New(`something went wrong`)
 	}
 	if status == "accepted" {
 		return errors.New("offer already accepted")
 	}
-
-	query = `UPDATE offers set status = 'accepted' where id = ?`
-	err = r.DB.Exec(query, id).Error
+	err := r.DB.Exec(`UPDATE offers set status = 'accepted' where id = ?`, id).Error
 	if err != nil {
 		print(err)
 		return errors.New("something went wrong")
@@ -233,25 +246,39 @@ func (r *Repo) SendFixedInvoice(id int, types string, budget float32) error {
 	return nil
 }
 
-func (r *Repo) GetContractDetails(id int32) (domain.Contract, error) {
+func (r *Repo) CheckContractActive(id int32) (domain.Contract, error) {
 	var contract domain.Contract
-	err := r.DB.Raw(`select * from contracts where id = ?`, id).Scan(&contract).Error
-	if err != nil {
+	query := r.DB.Raw(`select * from contracts where id = ?`, id).Scan(&contract)
+	if query.RowsAffected == 0 {
+		return domain.Contract{}, errors.New("no contracts found with this id")
+	}
+	if query.Error != nil {
 		return domain.Contract{}, errors.New(`error fetching contract`)
 	}
 	return contract, nil
 }
 
-func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours float32) error {
+func (r *Repo) GetLastInvoiceDetails(contract_id int32) (domain.Invoice, error) {
+	var Invoice domain.Invoice
+	query := r.DB.Raw("select * from invoices where contract_id = ?", contract_id).Scan(&Invoice)
+	if query.Error != nil {
+		return domain.Invoice{}, errors.New("something went wrong")
+	}
+	return Invoice, nil
+}
+
+func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours float32, Start_date, End_date time.Time) error {
 	amount := budget * Hours
 
 	invoice := &domain.Invoice{
 		Freelancer_fee:  amount * 0.95,
 		MarketPlace_fee: amount * 0.05,
+		Start_date:      Start_date,
+		End_date:        End_date,
 		Status:          "unpaid",
 		ContractID:      id,
 	}
-	err := r.DB.Create(invoice)
+	err := r.DB.Create(&invoice)
 	if err != nil {
 		return errors.New(`something went wrong`)
 	}
@@ -272,7 +299,7 @@ func (r *Repo) GetJobs() ([]*job.Job, error) {
 		if err != nil {
 			return nil, err
 		}
-		jobSkills, err := r.job.GetJobsSkills(context.Background(),&user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
+		jobSkills, err := r.job.GetJobsSkills(context.Background(), &user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
 		if err != nil {
 			return nil, err
 		}
@@ -307,14 +334,14 @@ func (r *Repo) GetJob(id string) (*job.Job, error) {
 		return nil, errors.New(`no job found with this id`)
 	}
 	var skills []int64
-		err = r.DB.Raw(`SELECT skill_id FROM job_skills WHERE job_id = ?`, jobs.ID).Scan(&skills).Error
-		if err != nil {
-			return nil, err
-		}
-	jobSkills, err := r.job.GetJobsSkills(context.Background(),&user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
-		if err != nil {
-			return nil, err
-		}
+	err = r.DB.Raw(`SELECT skill_id FROM job_skills WHERE job_id = ?`, jobs.ID).Scan(&skills).Error
+	if err != nil {
+		return nil, err
+	}
+	jobSkills, err := r.job.GetJobsSkills(context.Background(), &user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
+	if err != nil {
+		return nil, err
+	}
 	resultJobs := &job.Job{
 		ID:          int64(jobs.ID),
 		Title:       jobs.Title,
@@ -330,10 +357,9 @@ func (r *Repo) GetJob(id string) (*job.Job, error) {
 
 }
 
-
-func (r *Repo) SearchJobs(category,paytype,query string , fixedRate , HourlyRate []string)([]*job.Job,int32,error){
-	q:="%"+query+"%"
-	cat,_:=strconv.Atoi(category)
+func (r *Repo) SearchJobs(category, paytype, query string, fixedRate, HourlyRate []string) ([]*job.Job, int32, error) {
+	q := "%" + query + "%"
+	cat, _ := strconv.Atoi(category)
 	var jobs []domain.Jobs
 	r.DB.Raw(`
 	SELECT * FROM jobs 
@@ -341,18 +367,18 @@ func (r *Repo) SearchJobs(category,paytype,query string , fixedRate , HourlyRate
     (type = $1 OR $1 = '') AND 
     (category = $2 OR $2 = 0) AND 
     title ILIKE $3`,
-	paytype,cat,q).Scan(&jobs)
-	
+		paytype, cat, q).Scan(&jobs)
+
 	var resultJobs []*job.Job
 	for _, jobi := range jobs {
 		var skills []int64
 		err := r.DB.Raw(`SELECT skill_id FROM job_skills WHERE job_id = ?`, jobi.ID).Scan(&skills).Error
 		if err != nil {
-			return nil, 500,err
+			return nil, 500, err
 		}
-		jobSkills, err := r.job.GetJobsSkills(context.Background(),&user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
+		jobSkills, err := r.job.GetJobsSkills(context.Background(), &user.Req{Skill: skills}) // Assuming you have a method GetSkillsForJob to fetch skills by IDs
 		if err != nil {
-			return nil, 500,err
+			return nil, 500, err
 		}
 		// var category string
 		// err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
@@ -370,5 +396,36 @@ func (r *Repo) SearchJobs(category,paytype,query string , fixedRate , HourlyRate
 			Budget:     jobi.Budget,
 		})
 	}
-	return resultJobs, 200,nil
+	return resultJobs, 200, nil
+}
+
+func (r *Repo) FindJobExistOfClient(job_id, client_id string) error {
+	var jobs *domain.Jobs
+	r.DB.Raw(`select * from jobs WHERE id = $1 and client_id = $2`, job_id, client_id).Scan(&jobs)
+	if jobs == nil {
+		return errors.New(`no job found with this id of client`)
+	}
+	return nil
+}
+
+func (r *Repo) GetJobProposals(job_id string) ([]*job.Proposals, error) {
+	var proposals []domain.Proposals
+	query := r.DB.Raw(`SELECT * From proposals WHERE job_id = ?`, job_id).Scan(&proposals)
+	if query.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0 {
+		return nil, errors.New(`no proposals found for this job`)
+	}
+	var res []*job.Proposals
+	for _, prop := range proposals {
+
+		p := &job.Proposals{
+			UserId:      int32(prop.User_id),
+			Coverletter: prop.Cover_letter,
+			Budget:      prop.Budget,
+		}
+		res = append(res, p)
+	}
+	return res, nil
 }

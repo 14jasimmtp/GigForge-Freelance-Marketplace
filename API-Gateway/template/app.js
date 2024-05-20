@@ -2,7 +2,7 @@ window.paypal
   .Buttons({
     async createOrder() {
       try {
-        const response = await fetch("/api/orders", {
+        const response = await fetch("/client/contracts/1", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -10,12 +10,6 @@ window.paypal
           // use the "body" param to optionally pass additional order information
           // like product ids and quantities
           body: JSON.stringify({
-            cart: [
-              {
-                id: "YOUR_PRODUCT_ID",
-                quantity: "YOUR_PRODUCT_QUANTITY",
-              },
-            ],
           }),
         });
         

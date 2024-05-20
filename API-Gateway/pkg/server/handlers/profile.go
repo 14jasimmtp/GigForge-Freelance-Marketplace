@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/auth"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
@@ -302,26 +303,38 @@ func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *ProfileHandler) SearchTalents(c *fiber.Ctx) error {
-	
+func (h *ProfileHandler) OnboardFreelancersToPaypal(c *fiber.Ctx) error{
+	user_id:=c.Locals("User_id").(string)
+	res, err := h.profile.OnboardFreelancerToPaypal(context.Background(), &auth.OnboardToPaypalReq{UserId: user_id})
+	if err != nil {
+		return c.Status(403).JSON(err.Error())
+	}
+	return c.Status(int(res.Status)).JSON(res)
 }
 
-//client profile
+func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
+	user_id:=c.Locals("User_id").(int64)
+	var req req.AddReview
 
-// func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
-// 	user_id:=c.Locals("User_id").(string)
-// 	var req req.AddReview
+	if err:=c.BodyParser(&req);err != nil {
+		return c.Status(400).JSON(fiber.Map{"error":"error in parsing body. enter fields correctly"})
+	}
+	res,err:=h.profile.ReviewFreelancer(context.Background(),&auth.ReviewFlancerReq{Review: req.Review,FreelancerId: int32(req.Freelancer_id),Rating: int32(req.Rating),ClientId: user_id})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// 	if err:=c.BodyParser(&req);err != nil {
-// 		return c.Status(400).JSON(fiber.Map{"error":"error in parsing body. enter fields correctly"})
-// 	}
-	
-// 	res,err:=h.profile.ReviewFreelancer(c,&AddFreelancerReviewReq{UserId: user_id})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
-// 	}
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
+func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
+	query:=c.Query("q")
+	exp:=c.Query("exp")
+	talents,err:=h.profile.GetFreelancers(context.Background(),&auth.GetTalentReq{Query: query,Exp: exp})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(talents.Status).JSON(talents)
+}
 
 
 // func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{

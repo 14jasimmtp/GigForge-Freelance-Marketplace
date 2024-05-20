@@ -34,10 +34,12 @@ type JobServiceClient interface {
 	GetJobs(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetJobsRes, error)
 	SendWeeklyInvoice(ctx context.Context, in *InvoiceReq, opts ...grpc.CallOption) (*InvoiceRes, error)
 	GetJobProposals(ctx context.Context, in *GJPReq, opts ...grpc.CallOption) (*GJPRes, error)
-	GetOfferByClient(ctx context.Context, in *GFCReq, opts ...grpc.CallOption) (*GFCRes, error)
+	GetJobOffersForFreelancer(ctx context.Context, in *GetJobOfferForFreelancerReq, opts ...grpc.CallOption) (*GetJobOfferForFreelancerRes, error)
 	SearchJobs(ctx context.Context, in *SearchJobsReq, opts ...grpc.CallOption) (*SearchJobsRes, error)
 	GetAllContractsForClient(ctx context.Context, in *GetAllContractsForClientReq, opts ...grpc.CallOption) (*GetAllContractsForClientRes, error)
 	GetOneContractForClient(ctx context.Context, in *GetOneContractForClientReq, opts ...grpc.CallOption) (*GetOneContractForClientRes, error)
+	ExecutePayment(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
+	SaveJobs(ctx context.Context, in *SaveJobsReq, opts ...grpc.CallOption) (*SaveJobsRes, error)
 }
 
 type jobServiceClient struct {
@@ -156,9 +158,9 @@ func (c *jobServiceClient) GetJobProposals(ctx context.Context, in *GJPReq, opts
 	return out, nil
 }
 
-func (c *jobServiceClient) GetOfferByClient(ctx context.Context, in *GFCReq, opts ...grpc.CallOption) (*GFCRes, error) {
-	out := new(GFCRes)
-	err := c.cc.Invoke(ctx, "/job.JobService/GetOfferByClient", in, out, opts...)
+func (c *jobServiceClient) GetJobOffersForFreelancer(ctx context.Context, in *GetJobOfferForFreelancerReq, opts ...grpc.CallOption) (*GetJobOfferForFreelancerRes, error) {
+	out := new(GetJobOfferForFreelancerRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetJobOffersForFreelancer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -192,6 +194,24 @@ func (c *jobServiceClient) GetOneContractForClient(ctx context.Context, in *GetO
 	return out, nil
 }
 
+func (c *jobServiceClient) ExecutePayment(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error) {
+	out := new(ExecutePaymentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/ExecutePayment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) SaveJobs(ctx context.Context, in *SaveJobsReq, opts ...grpc.CallOption) (*SaveJobsRes, error) {
+	out := new(SaveJobsRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/SaveJobs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -208,10 +228,12 @@ type JobServiceServer interface {
 	GetJobs(context.Context, *NoParam) (*GetJobsRes, error)
 	SendWeeklyInvoice(context.Context, *InvoiceReq) (*InvoiceRes, error)
 	GetJobProposals(context.Context, *GJPReq) (*GJPRes, error)
-	GetOfferByClient(context.Context, *GFCReq) (*GFCRes, error)
+	GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error)
 	SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error)
 	GetAllContractsForClient(context.Context, *GetAllContractsForClientReq) (*GetAllContractsForClientRes, error)
 	GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error)
+	ExecutePayment(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
+	SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -255,8 +277,8 @@ func (UnimplementedJobServiceServer) SendWeeklyInvoice(context.Context, *Invoice
 func (UnimplementedJobServiceServer) GetJobProposals(context.Context, *GJPReq) (*GJPRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobProposals not implemented")
 }
-func (UnimplementedJobServiceServer) GetOfferByClient(context.Context, *GFCReq) (*GFCRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOfferByClient not implemented")
+func (UnimplementedJobServiceServer) GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobOffersForFreelancer not implemented")
 }
 func (UnimplementedJobServiceServer) SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchJobs not implemented")
@@ -266,6 +288,12 @@ func (UnimplementedJobServiceServer) GetAllContractsForClient(context.Context, *
 }
 func (UnimplementedJobServiceServer) GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOneContractForClient not implemented")
+}
+func (UnimplementedJobServiceServer) ExecutePayment(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecutePayment not implemented")
+}
+func (UnimplementedJobServiceServer) SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveJobs not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -496,20 +524,20 @@ func _JobService_GetJobProposals_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _JobService_GetOfferByClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GFCReq)
+func _JobService_GetJobOffersForFreelancer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJobOfferForFreelancerReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(JobServiceServer).GetOfferByClient(ctx, in)
+		return srv.(JobServiceServer).GetJobOffersForFreelancer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/job.JobService/GetOfferByClient",
+		FullMethod: "/job.JobService/GetJobOffersForFreelancer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServiceServer).GetOfferByClient(ctx, req.(*GFCReq))
+		return srv.(JobServiceServer).GetJobOffersForFreelancer(ctx, req.(*GetJobOfferForFreelancerReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -564,6 +592,42 @@ func _JobService_GetOneContractForClient_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(JobServiceServer).GetOneContractForClient(ctx, req.(*GetOneContractForClientReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_ExecutePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecutePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).ExecutePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/ExecutePayment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).ExecutePayment(ctx, req.(*ExecutePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_SaveJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveJobsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).SaveJobs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/SaveJobs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).SaveJobs(ctx, req.(*SaveJobsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -624,8 +688,8 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _JobService_GetJobProposals_Handler,
 		},
 		{
-			MethodName: "GetOfferByClient",
-			Handler:    _JobService_GetOfferByClient_Handler,
+			MethodName: "GetJobOffersForFreelancer",
+			Handler:    _JobService_GetJobOffersForFreelancer_Handler,
 		},
 		{
 			MethodName: "SearchJobs",
@@ -638,6 +702,14 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOneContractForClient",
 			Handler:    _JobService_GetOneContractForClient_Handler,
+		},
+		{
+			MethodName: "ExecutePayment",
+			Handler:    _JobService_ExecutePayment_Handler,
+		},
+		{
+			MethodName: "SaveJobs",
+			Handler:    _JobService_SaveJobs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

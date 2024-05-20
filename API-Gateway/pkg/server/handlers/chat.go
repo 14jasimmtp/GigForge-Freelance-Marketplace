@@ -136,15 +136,11 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 }
 
 func (h *ChatHandler) GetMessages(c *fiber.Ctx) error {
-	fmt.Println("0")
 	sender_id := c.Locals("User_id").(string)
-	fmt.Println("1")
 	receiver_id := c.Params("receiver_id")
-	fmt.Println("2")
 	res, err := h.chat.GetChats(context.Background(), &chat.GetChatReq{SenderId: sender_id, RecieverId: receiver_id})
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
-	fmt.Println("3")
 	return c.Status(fiber.StatusOK).JSON(res)
 }

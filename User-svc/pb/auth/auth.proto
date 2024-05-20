@@ -25,8 +25,33 @@ service AuthService{
     rpc UnBlockUser(BlockReq) returns (BlockRes) {};
     rpc AddSkill(AddSkillReq) returns (AddSkillRes) {};
     rpc UpdateProfilePhoto(PhotoReq) returns (PhotoRes) {};
+    rpc OnboardFreelancerToPaypal(OnboardToPaypalReq) returns (OnboardToPaypalRes) {};
+    rpc ReviewFreelancer(ReviewFlancerReq) returns (ReviewFlancerRes) {};
 }
 
+message ReviewFlancerReq{
+    string Review = 1;
+    int32 Rating = 2;
+    int32 Freelancer_id = 3;
+    int64 Client_id = 4;
+}
+
+message ReviewFlancerRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+
+message OnboardToPaypalReq{
+    string user_id = 1;
+}
+
+message OnboardToPaypalRes{
+    string OnboardURL = 1;
+    string Error = 2;
+    int32 status = 3;
+}
 
 message PhotoReq{
     string user_id = 1;

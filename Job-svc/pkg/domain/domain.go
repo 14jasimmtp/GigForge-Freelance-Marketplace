@@ -1,6 +1,10 @@
 package domain
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Jobs struct {
 	gorm.Model
@@ -12,6 +16,7 @@ type Jobs struct {
 	Budget      float32 `json:"budget"`
 	Client_id   int
 }
+
 
 type JobSkills struct {
 	ID       uint `gorm:"primarykey"`
@@ -40,6 +45,7 @@ type Offer struct{
 
 type Contract struct{
 	gorm.Model
+	Start_date time.Time
 	Client_id int
 	Freelancer_id int
 	Type string
@@ -53,6 +59,8 @@ type Invoice struct{
 	gorm.Model
 	Freelancer_fee float32
 	MarketPlace_fee float32
+	Start_date time.Time
+	End_date   time.Time
 	Status string
 	ContractID int
 }

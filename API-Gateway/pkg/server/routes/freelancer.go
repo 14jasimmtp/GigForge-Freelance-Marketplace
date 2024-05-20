@@ -28,7 +28,7 @@ func Freelancer(
 	jobs := api.Group("/job")
 	jobs.Post("accept-offer/:offer_id", middlewares.AuthFreelancer, job.AcceptOffer)
 	jobs.Post("send-proposal", middlewares.AuthFreelancer, job.SendProposal)
-	// jobs.Get("/offers",job.GetAllJobOffersForFreelancer)
+	jobs.Get("/offers",middlewares.AuthFreelancer  ,job.GetAllJobOffersForFreelancer)
 	jobs.Get("",job.GetJobs)
 	jobs.Get("/:id",job.GetJob)
 	jobs.Post("/invoice", middlewares.AuthFreelancer,job.SendInvoice)
@@ -45,12 +45,12 @@ func Freelancer(
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)
 	projects.Post("/buy/:id",project.BuyProject)
-	// projects.Get("/payment/:id",project.ExecutePaymentForProject)
+	projects.Get("/payment/:id",project.ExecutePaymentForProject)
 	projects.Get("/user/only",project.ListMyProjects)
 	// projects.Get("")
 
 	payment:=api.Group("/payment")
 	payment.Use(middlewares.AuthFreelancer)
-	payment.Post("/onboard-freelancers",job.OnboardFreelancersToPaypal)
+	payment.Post("/onboard-freelancers",profile.OnboardFreelancersToPaypal)
 
 }

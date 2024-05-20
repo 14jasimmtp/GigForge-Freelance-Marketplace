@@ -32,4 +32,5 @@ type RepoIfc interface {
 	BlockUser(userID string) (int, error)
 	UnBlockUser(userID string) (int, error)
 	UpdateProfilePhoto(userID,url string) error
+	CheckUserOnboardStatus(user_id string) error
 }
