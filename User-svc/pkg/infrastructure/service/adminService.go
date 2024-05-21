@@ -47,3 +47,4 @@ func (s *Service) AddSkill(ctx context.Context, req *auth.AddSkillReq) (*auth.Ad
 		Response: "skill added to database successfully",
 	}, nil
 }
+

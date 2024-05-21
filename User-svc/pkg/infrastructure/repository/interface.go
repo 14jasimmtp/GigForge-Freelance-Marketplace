@@ -33,4 +33,6 @@ type RepoIfc interface {
 	UnBlockUser(userID string) (int, error)
 	UpdateProfilePhoto(userID,url string) error
 	CheckUserOnboardStatus(user_id string) error
+	UpdateSkillUserProfile(user_id string, skill []int64) ([]string,error)
+	CheckSkillsExist(skills []int64) error
 }

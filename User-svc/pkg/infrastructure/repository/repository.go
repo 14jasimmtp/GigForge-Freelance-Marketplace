@@ -309,8 +309,8 @@ func (r *Repo) UpdatePassword(password, email string) error {
 }
 
 func (r *Repo) AddSkill(req *auth.AddSkillReq) (int, error) {
-	query := `INSERT INTO skills(skill,description) VALUES(?,?)`
-	err := r.db.Exec(query, req.Skill, req.Description).Error
+	skill:=domain.Skill{Skill: req.Skill,Description: req.Description}
+	err := r.db.Create(&skill).Error
 	if err != nil {
 		return 500, err
 	}
@@ -384,6 +384,37 @@ func (r *Repo) GetJobsSkills(ctx context.Context,req *job.Req) (*job.Res,error){
 	}
 	return &job.Res{Skill: skill},nil
 }
+
+func (r *Repo) CheckSkillsExist(skills []int64) error{
+	var count int64
+	if err := r.db.Model(&domain.Skill{}).Where("id IN ?", skills).Count(&count).Error; err != nil {
+		return err
+	}
+	if count != int64(len(skills)) {
+		return errors.New("some skills do not exist")
+	}
+	return nil
+}
+
+func (r *Repo) UpdateSkillUserProfile(user_id string, skill []int64) ([]string,error){
+	var skills []string
+	for _,s:=range skill{
+		query:=r.db.Where("freelancer_id = ? AND skill_id = ?",user_id,s).FirstOrCreate(&domain.Freelancer_skills{})
+		if query.Error != nil{
+			return nil,errors.New(`something went wrong`)
+		}
+		var skil string
+		err:=r.db.Raw(`SELECT skill FROM skills WHERE id = ?`,s).Scan(&skil).Error
+		if err != nil {
+			return nil,errors.New(`something went wrong`)
+		}
+		skills = append(skills, skil)
+	}
+	
+	return skills,nil
+}
+
+
 
 func (r *Repo) CheckUserOnboardStatus(user_id string) error{
 	var status bool

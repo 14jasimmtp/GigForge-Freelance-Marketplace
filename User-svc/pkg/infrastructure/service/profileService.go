@@ -146,6 +146,18 @@ func (s *Service) DeleteExperience(ctx context.Context, req *auth.DltExpReq) (*a
 	}, nil
 }
 
+func (s *Service) EditSkill(ctx context.Context, req *auth.EditSkillReq) (*auth.EditSkillRes,error){
+	err:=s.repo.CheckSkillsExist(req.Skills)
+	if err != nil {
+		return &auth.EditSkillRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	skills,err:=s.repo.UpdateSkillUserProfile(req.UserId,req.Skills)
+	if err != nil {
+		return &auth.EditSkillRes{Status: http.StatusExpectationFailed,Error: err.Error()},nil
+	}
+	return &auth.EditSkillRes{Status: http.StatusOK,Message: "skills updated successfully",Skills: skills},nil
+}
+
 func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*auth.GetProfileRes, error) {
 	user, err := s.repo.GetUserWithId(req.UserId)
 	if err != nil {
