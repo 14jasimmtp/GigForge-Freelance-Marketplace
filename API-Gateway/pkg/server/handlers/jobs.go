@@ -115,6 +115,15 @@ func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+func (h *JobsHandler) GetCategories(c *fiber.Ctx) error{
+	query:=c.Query("q")
+	category, err := h.job.GetCategory(context.Background(),&Job.GetCategoryReq{Query: query})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Error":err.Error()})
+	}
+	return c.Status(int(category.Status)).JSON(category)
+}
+
 func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
 	user_id := c.Locals("User_id").(string)

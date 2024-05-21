@@ -24,6 +24,7 @@ service AuthService{
     rpc BlockUser(BlockReq) returns (BlockRes) {};
     rpc UnBlockUser(BlockReq) returns (BlockRes) {};
     rpc AddSkill(AddSkillReq) returns (AddSkillRes) {};
+    rpc AdminLogin(LoginReq) returns (LoginRes) {};
     rpc UpdateProfilePhoto(PhotoReq) returns (PhotoRes) {};
     rpc OnboardFreelancerToPaypal(OnboardToPaypalReq) returns (OnboardToPaypalRes) {};
     rpc ReviewFreelancer(ReviewFlancerReq) returns (ReviewFlancerRes) {};
@@ -62,6 +63,18 @@ message PhotoRes{
     int64 status = 1;
     string error = 2;
     string response = 3;
+}
+
+message LoginReq{
+    string email = 1;
+    string password = 2;
+}
+
+message LoginRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+    string Token = 4;
 }
 
 message UserLoginReq{

@@ -2,9 +2,25 @@ package service
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
+	jwtoken "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/utils/jwt"
+	"github.com/spf13/viper"
+	"golang.org/x/crypto/bcrypt"
 )
+
+func (s *Service) AdminLogin(ctx context.Context, req *auth.LoginReq) (*auth.LoginRes,error){
+	admin,err:=s.repo.CheckAdminExist(req.Email)
+	if err != nil {
+		return &auth.LoginRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	if bcrypt.CompareHashAndPassword([]byte(admin.Password),[]byte(req.Password)) != nil {
+		return &auth.LoginRes{Status: http.StatusUnauthorized,Error: "incorrect password"}
+	}
+	jwtoken.GenerateAccessToken(viper.GetString("ATokenSecret"),)
+	return &auth.LoginRes{Status: http.StatusOK,Token: }
+}
 
 func (s *Service) BlockUser(ctx context.Context, req *auth.BlockReq) (*auth.BlockRes, error) {
 	status, err := s.repo.BlockUser(req.UserId)

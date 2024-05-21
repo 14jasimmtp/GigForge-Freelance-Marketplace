@@ -137,17 +137,17 @@ func (r *Repo) GetMyJobs(user_id string) ([]*job.Job, error) {
 		if err != nil {
 			return nil, err
 		}
-		// var category string
-		// err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
-		// if err != nil {
-		// 	return nil, err
-		// }
+		 var category string
+		err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
+		if err != nil {
+			return nil, err
+		}
 		resultJobs = append(resultJobs, &job.Job{
 			ID:          int64(jobi.ID),
 			Title:       jobi.Title,
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
-			// Category:    category,
+			Category:    category,
 			TimePeriod: jobi.TimePeriod,
 			Type:       jobi.Type,
 			Budget:     jobi.Budget,
@@ -307,17 +307,17 @@ func (r *Repo) GetJobs() ([]*job.Job, error) {
 		if err != nil {
 			return nil, err
 		}
-		// var category string
-		// err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
-		// if err != nil {
-		// 	return nil, err
-		// }
+		var category string
+		err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
+		if err != nil {
+			return nil, err
+		}
 		resultJobs = append(resultJobs, &job.Job{
 			ID:          int64(jobi.ID),
 			Title:       jobi.Title,
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
-			// Category:    category,
+			Category:    category,
 			TimePeriod: jobi.TimePeriod,
 			Type:       jobi.Type,
 			Budget:     jobi.Budget,
@@ -351,7 +351,7 @@ func (r *Repo) GetJob(id string) (*job.Job, error) {
 		Title:       jobs.Title,
 		Description: jobs.Description,
 		Skills:      jobSkills.Skill,
-		// Category:    category,
+		//Category:    category,
 		TimePeriod: jobs.TimePeriod,
 		Type:       jobs.Type,
 		Budget:     jobs.Budget,
@@ -384,17 +384,17 @@ func (r *Repo) SearchJobs(category, paytype, query string, fixedRate, HourlyRate
 		if err != nil {
 			return nil, 500, err
 		}
-		// var category string
-		// err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
-		// if err != nil {
-		// 	return nil, err
-		// }
+		 var category string
+		 err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
+		 if err != nil {
+		 	return nil,500, err
+		 }
 		resultJobs = append(resultJobs, &job.Job{
 			ID:          int64(jobi.ID),
 			Title:       jobi.Title,
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
-			// Category:    category,
+			Category:    category,
 			TimePeriod: jobi.TimePeriod,
 			Type:       jobi.Type,
 			Budget:     jobi.Budget,

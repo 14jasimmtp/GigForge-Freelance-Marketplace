@@ -254,6 +254,21 @@ message DeleteEducationRes{
     string Error = 3;
 }
 
+message skill{
+    string skill = 1;
+}
+
+message AddSkillReq{
+    string skill = 1;
+    string description = 2;
+}
+
+message AddSkillRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
 message EditSkillReq{
     repeated int64 skills = 1;
     string user_id = 2;
@@ -263,6 +278,7 @@ message EditSkillRes{
     int64 Status = 1;
     string message = 2;
     string Error = 3;
+    repeated skill skills = 4;
 }
 
 message GetProfileReq{
@@ -322,17 +338,6 @@ message BlockReq{
 }
 
 message BlockRes{
-    int64 status = 1;
-    string Error = 2;
-    string Response = 3;
-}
-
-message AddSkillReq{
-    string skill = 1;
-    string description = 2;
-}
-
-message AddSkillRes{
     int64 status = 1;
     string Error = 2;
     string Response = 3;

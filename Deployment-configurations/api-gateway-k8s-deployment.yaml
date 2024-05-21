@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+  labels:
+    app: gigforge-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gigforge-api-gateway
+  template:
+    metadata:
+      labels:
+        app: gigforge-api-gateway
+    spec:
+      containers:
+      - name: gigforge-api-gateway
+        image: muhamedjasim/gigforge-api_gateway:latest
+        ports:
+        - containerPort: 3000
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gigforge-api-gateway-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: gigforge-api-gateway
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30010   

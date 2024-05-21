@@ -333,7 +333,7 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 	}
-	return c.Status(talents.Status).JSON(talents)
+	return c.Status(int(talents.Status)).JSON(talents)
 }
 
 

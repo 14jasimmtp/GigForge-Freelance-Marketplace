@@ -41,6 +41,7 @@ type AuthServiceClient interface {
 	BlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
 	UnBlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
 	AddSkill(ctx context.Context, in *AddSkillReq, opts ...grpc.CallOption) (*AddSkillRes, error)
+	AdminLogin(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
 	UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error)
@@ -225,6 +226,15 @@ func (c *authServiceClient) AddSkill(ctx context.Context, in *AddSkillReq, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) AdminLogin(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error) {
+	out := new(LoginRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error) {
 	out := new(PhotoRes)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateProfilePhoto", in, out, opts...)
@@ -275,6 +285,7 @@ type AuthServiceServer interface {
 	BlockUser(context.Context, *BlockReq) (*BlockRes, error)
 	UnBlockUser(context.Context, *BlockReq) (*BlockRes, error)
 	AddSkill(context.Context, *AddSkillReq) (*AddSkillRes, error)
+	AdminLogin(context.Context, *LoginReq) (*LoginRes, error)
 	UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error)
@@ -341,6 +352,9 @@ func (UnimplementedAuthServiceServer) UnBlockUser(context.Context, *BlockReq) (*
 }
 func (UnimplementedAuthServiceServer) AddSkill(context.Context, *AddSkillReq) (*AddSkillRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSkill not implemented")
+}
+func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *LoginReq) (*LoginRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
@@ -706,6 +720,24 @@ func _AuthService_AddSkill_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AdminLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/AdminLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AdminLogin(ctx, req.(*LoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PhotoReq)
 	if err := dec(in); err != nil {
@@ -842,6 +874,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddSkill",
 			Handler:    _AuthService_AddSkill_Handler,
+		},
+		{
+			MethodName: "AdminLogin",
+			Handler:    _AuthService_AdminLogin_Handler,
 		},
 		{
 			MethodName: "UpdateProfilePhoto",

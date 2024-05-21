@@ -28,7 +28,7 @@ type JobServiceClient interface {
 	AcceptOffer(ctx context.Context, in *AcceptOfferReq, opts ...grpc.CallOption) (*AcceptOfferRes, error)
 	ViewContract(ctx context.Context, in *ContractReq, opts ...grpc.CallOption) (*ViewContractRes, error)
 	AddCategory(ctx context.Context, in *AddCategoryReq, opts ...grpc.CallOption) (*AddCategoryRes, error)
-	GetCategory(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetCategoryRes, error)
+	GetCategory(ctx context.Context, in *GetCategoryReq, opts ...grpc.CallOption) (*GetCategoryRes, error)
 	GetMyJobs(ctx context.Context, in *GetMyJobsReq, opts ...grpc.CallOption) (*GetMyJobsRes, error)
 	GetJob(ctx context.Context, in *GetJobReq, opts ...grpc.CallOption) (*GetJobRes, error)
 	GetJobs(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetJobsRes, error)
@@ -104,7 +104,7 @@ func (c *jobServiceClient) AddCategory(ctx context.Context, in *AddCategoryReq, 
 	return out, nil
 }
 
-func (c *jobServiceClient) GetCategory(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*GetCategoryRes, error) {
+func (c *jobServiceClient) GetCategory(ctx context.Context, in *GetCategoryReq, opts ...grpc.CallOption) (*GetCategoryRes, error) {
 	out := new(GetCategoryRes)
 	err := c.cc.Invoke(ctx, "/job.JobService/GetCategory", in, out, opts...)
 	if err != nil {
@@ -222,7 +222,7 @@ type JobServiceServer interface {
 	AcceptOffer(context.Context, *AcceptOfferReq) (*AcceptOfferRes, error)
 	ViewContract(context.Context, *ContractReq) (*ViewContractRes, error)
 	AddCategory(context.Context, *AddCategoryReq) (*AddCategoryRes, error)
-	GetCategory(context.Context, *NoParam) (*GetCategoryRes, error)
+	GetCategory(context.Context, *GetCategoryReq) (*GetCategoryRes, error)
 	GetMyJobs(context.Context, *GetMyJobsReq) (*GetMyJobsRes, error)
 	GetJob(context.Context, *GetJobReq) (*GetJobRes, error)
 	GetJobs(context.Context, *NoParam) (*GetJobsRes, error)
@@ -259,7 +259,7 @@ func (UnimplementedJobServiceServer) ViewContract(context.Context, *ContractReq)
 func (UnimplementedJobServiceServer) AddCategory(context.Context, *AddCategoryReq) (*AddCategoryRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCategory not implemented")
 }
-func (UnimplementedJobServiceServer) GetCategory(context.Context, *NoParam) (*GetCategoryRes, error) {
+func (UnimplementedJobServiceServer) GetCategory(context.Context, *GetCategoryReq) (*GetCategoryRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
 }
 func (UnimplementedJobServiceServer) GetMyJobs(context.Context, *GetMyJobsReq) (*GetMyJobsRes, error) {
@@ -417,7 +417,7 @@ func _JobService_AddCategory_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _JobService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoParam)
+	in := new(GetCategoryReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -429,7 +429,7 @@ func _JobService_GetCategory_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/job.JobService/GetCategory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServiceServer).GetCategory(ctx, req.(*NoParam))
+		return srv.(JobServiceServer).GetCategory(ctx, req.(*GetCategoryReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
