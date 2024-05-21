@@ -325,3 +325,7 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error {
 // func (h *JobsHandler) EndContract(c *fiber.Ctx) error {
 
 // }
+
+func (h *JobsHandler) GetPaymentForContractWithInvoiceID(c *fiber.Ctx){
+	
+}

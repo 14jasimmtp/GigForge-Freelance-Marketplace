@@ -12,7 +12,6 @@ func InitializeAPI(app *fiber.App, cfg *config.Config) {
 	//clients
 	Authclient := client.InitAuthClient(cfg)
 	JobsClient := client.InitJobClient()
-	adminClient:=client.InitAdminClient()
 	ProjectClient:=client.InitProjectClient()
 	chatClient:=client.InitChatClient()
 
@@ -20,7 +19,7 @@ func InitializeAPI(app *fiber.App, cfg *config.Config) {
 	auth := handler.NewAuthHandler(Authclient)
 	profile := handler.NewProfilehandler(Authclient)
 	jobs:= handler.NewJobsHandler(JobsClient)
-	admins:=handler.NewAdminHandler(adminClient,Authclient)
+	admins:=handler.NewAdminHandler(JobsClient,Authclient)
 	project:=handler.NewProjectHandler(ProjectClient)
 	chat:=handler.NewChatHandler(chatClient)
 

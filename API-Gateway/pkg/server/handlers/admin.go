@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/Job"
-	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/admin"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/auth"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
 	"github.com/gofiber/fiber/v2"
@@ -13,11 +12,11 @@ import (
 
 type AdminHandler struct {
 	auth auth.AuthServiceClient
-	job Job.JobServiceClient
+	job  Job.JobServiceClient
 }
 
-func NewAdminHandler(admin admin.AdminServiceClient,auth auth.AuthServiceClient) AdminHandler {
-	return AdminHandler{auth: auth}
+func NewAdminHandler(job Job.JobServiceClient, auth auth.AuthServiceClient) AdminHandler {
+	return AdminHandler{auth: auth,job: job}
 }
 
 func (h *AdminHandler) AdminLogin(ctx *fiber.Ctx) error {
@@ -85,19 +84,17 @@ func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 	return ctx.Status(int(res.Status)).JSON(res)
 }
 
-func (h *AdminHandler) AddCategory(c *fiber.Ctx) error{
+func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 	var req req.AddCategory
 
-	if err:=c.BodyParser(&req);err != nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":"error while parsing the body"})
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error while parsing the body"})
+	}
+	fmt.Println("1")
+	res, err := h.job.AddCategory(context.Background(), &Job.AddCategoryReq{Category: req.Category})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Error": err.Error()})
 	}
 
-	res,err:=h.job.AddCategory(context.Background(),&Job.AddCategoryReq{Category: req.Category})
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"Error":err.Error()})
-	}
 	return c.Status(int(res.Status)).JSON(res)
 }
-
-
-

@@ -23,8 +23,8 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	contract.Use(middlewares.AuthClient)
 	// contract.Get("",job.GetAllContractsForClient)
 	// contract.Get("/:id",job.GetOneContract)
-	// contract.Get("/invoices/:job_id",job.GetAllInvoicesOfAJob)
-	contract.Post("/payment/:invoice_id",job.ExecutePaymentForContractWithInvoiceID)
+	//contract.Get("/invoices/:job_id",job.GetAllInvoicesOfAJob)
+	contract.Get("/payment/:invoice_id",job.GetPaymentForContractWithInvoiceID)
 
 	projects:=api.Group("/project")
 	projects.Use(middlewares.AuthClient)

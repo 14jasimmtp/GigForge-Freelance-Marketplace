@@ -1,14 +1,25 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayPal JS SDK Standard Integration</title>
-  </head>
-  <body>
-    <div id="paypal-button-container"></div>
-    <p id="result-message"></p>
-    <!-- Replace the "test" client-id value with your client-id -->
-    <script src="https://www.paypal.com/sdk/js?client-id={CLIENT_ID}&merchant-id={SELLER_PAYER_ID}&components=buttons" data-partner-attribution-id="{PARTNER_BN_CODE}"></script>
+    <title>PayPal Multiparty Payment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pay Freelancer</h1>
+        <div class="button" id="paypal-button-container"></div>
+    </div>
+
+    <!-- Payment success modal -->
+    <div id="paymentSuccessModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Payment successful!</p>
+        </div>
+    </div>
+
     <script src="app.js"></script>
-  </body>
+</body>
 </html>
