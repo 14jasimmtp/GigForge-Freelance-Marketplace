@@ -17,6 +17,11 @@ type Jobs struct {
 	Client_id   int
 }
 
+type Category struct{
+	gorm.Model
+	Category string
+}
+
 
 type JobSkills struct {
 	ID       uint `gorm:"primarykey"`

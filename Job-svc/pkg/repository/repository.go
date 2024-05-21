@@ -99,16 +99,20 @@ func (r *Repo) ViewProposalsForClients(client_id int) error {
 	return nil
 }
 
-func (r *Repo) GetCategory() (*job.GetCategoryRes, error) {
-	var category *job.GetCategoryRes
-	err := r.DB.Raw("SELECT * FROM categories").Scan(&category).Error
-	if err != nil {
-		return nil, err
+func (r *Repo) GetCategory(query string) ([]*job.Category, error) {
+	var category []*job.Category
+	q := r.DB.Raw("SELECT id AS ID,category AS Category FROM categories WHERE category ILIKE %?% OR ? = ''",query).Scan(&category)
+	if q.RowsAffected == 0{
+		return nil,errors.New(`no categories found`)
+	}
+	if q.Error != nil {
+		return nil, errors.New(`something went wrong`)
 	}
 	return category, nil
 }
 func (r *Repo) AddCategory(category *job.AddCategoryReq) (*job.AddCategoryRes, error) {
-	err := r.DB.Raw("INSERT INTO categories (category) VALUES (?) RETURNING category", category.Category).Error
+	categori:=domain.Category{Category: category.Category}
+	err := r.DB.Create(&categori).Error
 	if err != nil {
 		return nil, errors.New(`something went wrong`)
 	}

@@ -71,6 +71,14 @@ func (s *Service) GetJobProposals(ctx context.Context,req *job.GJPReq) (*job.GJP
 	return &job.GJPRes{Status: http.StatusOK,Prop: proposals,Response: "fetched proposals successfully"},nil
 }
 
+func (s *Service) GetCategories(ctx context.Context,req *job.GetCategoryReq) (*job.GetCategoryRes,error){
+	categories,err:=s.repo.GetCategory(req.Query)
+	if err != nil {
+		return &job.GetCategoryRes{Status: http.StatusNoContent,Error: err.Error()},nil
+	}
+	return &job.GetCategoryRes{Status: http.StatusOK,Categories: categories},nil
+}
+
 func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.ProposalRes, error) {
 	err := s.repo.FindJob(req.JobId)
 	if err != nil {

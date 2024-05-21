@@ -11,7 +11,7 @@ service JobService{
     rpc AcceptOffer(AcceptOfferReq) returns (AcceptOfferRes) {};
     rpc ViewContract(ContractReq) returns (ViewContractRes) {};
     rpc AddCategory(AddCategoryReq) returns (AddCategoryRes) {};
-    rpc GetCategory(NoParam) returns (GetCategoryRes) {};
+    rpc GetCategory(GetCategoryReq) returns (GetCategoryRes) {};
     rpc GetMyJobs(GetMyJobsReq) returns (GetMyJobsRes) {};
     rpc GetJob(GetJobReq) returns (GetJobRes) {};
     rpc GetJobs(NoParam) returns (GetJobsRes) {};
@@ -147,6 +147,11 @@ message category{
     int64 ID = 1;
     string Category = 2;
 }
+
+message GetCategoryReq{
+    string query = 1;
+}
+
 message GetCategoryRes{
     int64 status = 1;
     string Error = 2;
