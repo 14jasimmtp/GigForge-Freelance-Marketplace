@@ -2,24 +2,50 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
 	jwtoken "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/utils/jwt"
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) AdminLogin(ctx context.Context, req *auth.LoginReq) (*auth.LoginRes,error){
-	admin,err:=s.repo.CheckAdminExist(req.Email)
+func (s *Service) AdminLogin(ctx context.Context, req *auth.LoginReq) (*auth.LoginRes, error) {
+	AdminDetails, err := s.repo.AdminLogin(req.Email)
 	if err != nil {
-		return &auth.LoginRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		fmt.Println("Admin doesn't exist")
+		return &auth.LoginRes{
+			Status:   http.StatusUnauthorized,
+			Error:    err.Error(),
+			Response: "Email doesn't exist",
+		}, nil
 	}
-	if bcrypt.CompareHashAndPassword([]byte(admin.Password),[]byte(req.Password)) != nil {
-		return &auth.LoginRes{Status: http.StatusUnauthorized,Error: "incorrect password"}
+
+	if bcrypt.CompareHashAndPassword([]byte(AdminDetails.Password), []byte(req.Password)) != nil {
+		fmt.Println("wrong password")
+		return &auth.LoginRes{
+			Status:   http.StatusUnauthorized,
+			Error:    errors.New("wrong password").Error(),
+			Response: "Enter password correctly",
+		}, nil
 	}
-	jwtoken.GenerateAccessToken(viper.GetString("ATokenSecret"),)
-	return &auth.LoginRes{Status: http.StatusOK,Token: }
+
+	tokenString, err := jwtoken.AdminTokenGenerate(AdminDetails)
+	if err != nil {
+		fmt.Println("error generating token")
+		return &auth.LoginRes{
+			Status:   http.StatusInternalServerError,
+			Error:    err.Error(),
+			Response: "error while generating token for admin",
+		}, nil
+	}
+
+	return &auth.LoginRes{
+		Status:   http.StatusOK,
+		Token:    tokenString,
+		Response: "admin logged in successfully",
+	}, nil
 }
 
 func (s *Service) BlockUser(ctx context.Context, req *auth.BlockReq) (*auth.BlockRes, error) {
@@ -63,4 +89,3 @@ func (s *Service) AddSkill(ctx context.Context, req *auth.AddSkillReq) (*auth.Ad
 		Response: "skill added to database successfully",
 	}, nil
 }
-

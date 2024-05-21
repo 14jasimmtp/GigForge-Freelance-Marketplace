@@ -187,12 +187,19 @@ func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*aut
 			Error:  err.Error(),
 		}, nil
 	}
-
+	skills,err:=s.repo.GetSkills(req.UserId)
+	if err != nil {
+		return &auth.GetProfileRes{
+			Status: 400,
+			Error:  err.Error(),
+		}, nil
+	}
 	return &auth.GetProfileRes{
 		User:        user,
 		Description: description,
 		Education:   education,
 		Experience:  experience,
+		Skills: skills,
 		Status:      200,
 	}, nil
 }

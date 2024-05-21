@@ -274,7 +274,7 @@ message GetProfileRes{
     repeated ExpReq experience = 4;
     string Error = 5;
     int64 Status = 6;
-    // repeated Experience experience = 3;
+    repeated string skills = 7;
 }
 
 message ExpReq{

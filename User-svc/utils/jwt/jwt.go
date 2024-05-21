@@ -50,6 +50,25 @@ func GenerateAccessToken(secret string, user *domain.UserModel) (string, error) 
 	return AccessToken, nil
 }
 
+func AdminTokenGenerate(user *domain.Admin) (string, error) {
+	claims := AccessTokenClaims{
+		User_id: int(user.ID),
+		Email:   user.Email,
+		Role:    "admin",
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "GigForge",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	TokenString, err := token.SignedString([]byte(viper.GetString("ATokenSecret")))
+	if err != nil {
+		return "", err
+	}
+	return TokenString, nil
+}
+
 // func GenerateRefreshToken(secret, email string) (string, error) {
 // 	claims := jwt.MapClaims{
 // 		"email": email,

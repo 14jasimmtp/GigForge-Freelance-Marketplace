@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
@@ -65,6 +66,16 @@ func (r *Repo) CheckUserExist(email, phone string) error {
 	}
 	return errors.New("user already exist")
 }
+
+func (r *Repo) AdminLogin(email string) (*domain.Admin, error) {
+	var details domain.Admin
+	if err := r.db.Raw("SELECT * FROM admins WHERE email=?", email).Scan(&details).Error; err != nil {
+		return nil, err
+	}
+	return &details, nil
+}
+
+
 
 func (r *Repo) GetUser(email string) (*domain.UserModel, error) {
 	var user domain.UserModel
@@ -317,6 +328,16 @@ func (r *Repo) AddSkill(req *auth.AddSkillReq) (int, error) {
 	return 200, nil
 }
 
+func (r *Repo) GetSkills(user_id string) ([]string,error){
+	var skill []string
+	query:=r.db.Raw(`SELECT skills.skill FROM skills INNER JOIN freelancer_skills on skills.id = freelancer_skills.skill_id WHERE freelancer_skills.freelancer_id = ?`,user_id).Scan(&skill)
+	if query.Error != nil{
+		return nil,errors.New(`no skills found`)
+	}
+	return skill,nil
+}
+
+
 func (r *Repo) BlockUser(userID string) (int, error) {
 	var active bool
 	query := `SELECT is_active FROM users where id = ?`
@@ -398,8 +419,9 @@ func (r *Repo) CheckSkillsExist(skills []int64) error{
 
 func (r *Repo) UpdateSkillUserProfile(user_id string, skill []int64) ([]string,error){
 	var skills []string
+	uid,_:=strconv.Atoi(user_id)
 	for _,s:=range skill{
-		query:=r.db.Where("freelancer_id = ? AND skill_id = ?",user_id,s).FirstOrCreate(&domain.Freelancer_skills{})
+		query:=r.db.Where("freelancer_id = ? AND skill_id = ?",user_id,s).Attrs(&domain.Freelancer_skills{Freelancer_id: uid,Skill_id: int(s)}).FirstOrCreate(&domain.Freelancer_skills{})
 		if query.Error != nil{
 			return nil,errors.New(`something went wrong`)
 		}
