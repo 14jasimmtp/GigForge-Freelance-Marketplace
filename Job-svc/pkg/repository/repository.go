@@ -3,12 +3,14 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/job"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/user"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/domain"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/utils/round"
 	"gorm.io/gorm"
 )
 
@@ -101,9 +103,9 @@ func (r *Repo) ViewProposalsForClients(client_id int) error {
 
 func (r *Repo) GetCategory(query string) ([]*job.Category, error) {
 	var category []*job.Category
-	q := r.DB.Raw("SELECT id AS ID,category AS Category FROM categories WHERE category ILIKE %?% OR ? = ''",query).Scan(&category)
-	if q.RowsAffected == 0{
-		return nil,errors.New(`no categories found`)
+	q := r.DB.Raw("SELECT id AS ID,category AS Category FROM categories WHERE category ILIKE %?% OR ? = ''", query).Scan(&category)
+	if q.RowsAffected == 0 {
+		return nil, errors.New(`no categories found`)
 	}
 	if q.Error != nil {
 		return nil, errors.New(`something went wrong`)
@@ -111,7 +113,7 @@ func (r *Repo) GetCategory(query string) ([]*job.Category, error) {
 	return category, nil
 }
 func (r *Repo) AddCategory(category *job.AddCategoryReq) (*job.AddCategoryRes, error) {
-	categori:=domain.Category{Category: category.Category}
+	categori := domain.Category{Category: category.Category}
 	err := r.DB.Create(&categori).Error
 	if err != nil {
 		return nil, errors.New(`something went wrong`)
@@ -137,7 +139,7 @@ func (r *Repo) GetMyJobs(user_id string) ([]*job.Job, error) {
 		if err != nil {
 			return nil, err
 		}
-		 var category string
+		var category string
 		err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
 		if err != nil {
 			return nil, err
@@ -148,9 +150,9 @@ func (r *Repo) GetMyJobs(user_id string) ([]*job.Job, error) {
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
 			Category:    category,
-			TimePeriod: jobi.TimePeriod,
-			Type:       jobi.Type,
-			Budget:     jobi.Budget,
+			TimePeriod:  jobi.TimePeriod,
+			Type:        jobi.Type,
+			Budget:      jobi.Budget,
 		})
 	}
 	return resultJobs, nil
@@ -173,16 +175,16 @@ func (r *Repo) SendOffer(req *job.SendOfferReq) (*job.SendOfferRes, error) {
 	return &job.SendOfferRes{Status: 200, Response: "offer letter sended successfully to freelancer"}, nil
 }
 
-func (r *Repo) GetOffers(user_id,status string)([]*job.Offer,error){
+func (r *Repo) GetOffers(user_id, status string) ([]*job.Offer, error) {
 	var offers []*job.Offer
-	query:=r.DB.Raw(`SELECT id AS offer_id,client_id,job_id,budget,offer_letter,starting_time,status FROM offers WHERE freelancer_id = $1 AND (status = $2 OR $2 = '')`,user_id,status).Scan(&offers)
-	if query.RowsAffected == 0{
+	query := r.DB.Raw(`SELECT id AS offer_id,client_id,job_id,budget,offer_letter,starting_time,status FROM offers WHERE freelancer_id = $1 AND (status = $2 OR $2 = '')`, user_id, status).Scan(&offers)
+	if query.RowsAffected == 0 {
 		return nil, errors.New(`no offers found`)
 	}
 	if query.Error != nil {
 		return nil, errors.New(`something went wrong`)
 	}
-	return offers,nil
+	return offers, nil
 }
 
 func (r *Repo) AcceptOffer(id string) error {
@@ -208,25 +210,35 @@ func (r *Repo) AcceptOffer(id string) error {
 
 func (r *Repo) CreateContract(id string) (int, string, float32, error) {
 	var offer domain.Offer
-	query := `SELECT * from offers where id =?`
+	fmt.Println(id)
+	query := `SELECT * from offers where id = ?`
 	err := r.DB.Raw(query, id).Scan(&offer).Error
 	if err != nil {
-		print(err)
+		fmt.Println(err,"error")
 		return 0, "", 0, errors.New(`something went wrong`)
 	}
 	var Type string
 	query = `select type from jobs where id = ?`
-	err = r.DB.Exec(query, offer.Job_id).Scan(&Type).Error
+	err = r.DB.Raw(query, offer.Job_id).Scan(&Type).Error
 	if err != nil {
 		return 0, "", 0, errors.New(`no job found with this id`)
 	}
+	fmt.Println(offer.Starting_time)
+	start_date, err := time.Parse("02-01-2006", offer.Starting_time)
+	if err!= nil {
+		fmt.Println(err)
+		return 0, "", 0, err
+	}
+	fmt.Println(start_date)
 	contract := &domain.Contract{
 		Client_id:      offer.Client_id,
+		Start_date:     start_date,
 		Freelancer_id:  offer.Freelancer_id,
 		Job_id:         offer.Job_id,
 		Paid_amount:    0,
 		Pending_amount: int(offer.Budget),
 		Type:           Type,
+		Status:         "active",
 	}
 	err = r.DB.Create(contract).Error
 	if err != nil {
@@ -236,18 +248,23 @@ func (r *Repo) CreateContract(id string) (int, string, float32, error) {
 }
 
 func (r *Repo) SendFixedInvoice(id int, types string, budget float32) error {
-
-	invoice := &domain.Invoice{
-		Freelancer_fee:  budget * 0.95,
-		MarketPlace_fee: budget * 0.05,
-		Status:          "unpaid",
-		ContractID:      id,
-	}
-	err := r.DB.Create(invoice)
-	if err != nil {
-		return errors.New(`something went wrong`)
-	}
-	return nil
+    freelancerFee := round.RoundToTwoDecimalPlaces(float64(budget) * 0.80)
+    marketPlaceFee := round.RoundToTwoDecimalPlaces(float64(budget) * 0.20)
+fmt.Println(freelancerFee,marketPlaceFee)
+    invoice := &domain.Invoice{
+        Freelancer_fee:  freelancerFee,
+        MarketPlace_fee: marketPlaceFee,
+		Start_date: time.Time{},
+		End_date: time.Time{},
+        Status:          "unpaid",
+        ContractID:      id,
+    }
+    err := r.DB.Create(invoice).Error
+    if err != nil {
+        fmt.Println(err)
+        return errors.New("something went wrong")
+    }
+    return nil
 }
 
 func (r *Repo) CheckContractActive(id int32) (domain.Contract, error) {
@@ -273,16 +290,17 @@ func (r *Repo) GetLastInvoiceDetails(contract_id int32) (domain.Invoice, error) 
 
 func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours float32, Start_date, End_date time.Time) error {
 	amount := budget * Hours
-
+	f:=round.RoundToTwoDecimalPlaces(float64(amount) * 0.80)
+	m:=round.RoundToTwoDecimalPlaces(float64(budget) * 0.20)
 	invoice := &domain.Invoice{
-		Freelancer_fee:  amount * 0.95,
-		MarketPlace_fee: amount * 0.05,
+		Freelancer_fee:  f,
+		MarketPlace_fee: m,
 		Start_date:      Start_date,
 		End_date:        End_date,
 		Status:          "unpaid",
 		ContractID:      id,
 	}
-	err := r.DB.Create(&invoice)
+	err := r.DB.Create(invoice)
 	if err != nil {
 		return errors.New(`something went wrong`)
 	}
@@ -318,9 +336,9 @@ func (r *Repo) GetJobs() ([]*job.Job, error) {
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
 			Category:    category,
-			TimePeriod: jobi.TimePeriod,
-			Type:       jobi.Type,
-			Budget:     jobi.Budget,
+			TimePeriod:  jobi.TimePeriod,
+			Type:        jobi.Type,
+			Budget:      jobi.Budget,
 		})
 	}
 	return resultJobs, nil
@@ -384,20 +402,20 @@ func (r *Repo) SearchJobs(category, paytype, query string, fixedRate, HourlyRate
 		if err != nil {
 			return nil, 500, err
 		}
-		 var category string
-		 err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
-		 if err != nil {
-		 	return nil,500, err
-		 }
+		var category string
+		err = r.DB.Raw(`SELECT category FROM categories WHERE id = ?`, jobi.Category).Scan(&category).Error
+		if err != nil {
+			return nil, 500, err
+		}
 		resultJobs = append(resultJobs, &job.Job{
 			ID:          int64(jobi.ID),
 			Title:       jobi.Title,
 			Description: jobi.Description,
 			Skills:      jobSkills.Skill,
 			Category:    category,
-			TimePeriod: jobi.TimePeriod,
-			Type:       jobi.Type,
-			Budget:     jobi.Budget,
+			TimePeriod:  jobi.TimePeriod,
+			Type:        jobi.Type,
+			Budget:      jobi.Budget,
 		})
 	}
 	return resultJobs, 200, nil

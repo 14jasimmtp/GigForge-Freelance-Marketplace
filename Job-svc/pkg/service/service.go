@@ -103,6 +103,12 @@ func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.
 }
 
 func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq) (*job.SendOfferRes, error) {
+	_,err:=time.Parse("02-01-2006",req.StartingTime)
+	if err != nil {
+		return &job.SendOfferRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	// s.repo.CheckJobExist(req.JobId)
+	// s.repo.CheckFreelancerExist(req.FreelancerId)
 	res, err := s.repo.SendOffer(req)
 	if err != nil {
 		return &job.SendOfferRes{
@@ -123,6 +129,9 @@ func (s *Service) AcceptOffer(ctx context.Context, req *job.AcceptOfferReq) (*jo
 		}, nil
 	}
 	contractID, contractType, budget, err := s.repo.CreateContract(req.OfferID)
+	if err != nil {
+		return &job.AcceptOfferRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
 	if contractType == "fixed" {
 		err := s.repo.SendFixedInvoice(contractID, contractType, budget)
 		if err != nil {

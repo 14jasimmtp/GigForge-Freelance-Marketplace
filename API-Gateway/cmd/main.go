@@ -16,6 +16,7 @@ func main() {
 	}
 
 	app := fiber.New()
+	app.Static("/","/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template")
 	di.InitializeAPI(app, cfg)
 	fmt.Println("listening on port 3000")
 	if err :=app.Listen(cfg.PORT);err != nil {

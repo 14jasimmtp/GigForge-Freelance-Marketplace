@@ -58,12 +58,14 @@ type Contract struct{
 	Job_id int
 	Paid_amount int
 	Pending_amount int
+	Status string
+	AttachmentUrl string 
 }
 
 type Invoice struct{
 	gorm.Model
-	Freelancer_fee float32
-	MarketPlace_fee float32
+	Freelancer_fee float64
+	MarketPlace_fee float64
 	Start_date time.Time
 	End_date   time.Time
 	Status string

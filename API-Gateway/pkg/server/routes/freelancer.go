@@ -44,7 +44,7 @@ func Freelancer(
 	{
 		contract.Use(middlewares.AuthFreelancer)
 		{
-			// contract.Get("",job.GetMyContractsForFreelancer)
+			//contract.Get("",job.GetMyContractsForFreelancer)
 		}
 	}
 

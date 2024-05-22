@@ -119,7 +119,6 @@ func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
 	res,err:=h.project.ListOneProject(context.Background(),&project.ListOneProjectReq{ProjectId: prjt_id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
-
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }

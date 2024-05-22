@@ -267,18 +267,26 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *JobsHandler) ExecutePaymentForContractWithInvoiceID(c *fiber.Ctx) error {
-	invoiceID := c.Params("invoice_id")
-	user_id := c.Locals("user_id").(int64)
-	uid:=strconv.Itoa(int(user_id))
+// func (h *JobsHandler) ExecutePayment(c *fiber.Ctx) error {
+// 	invoiceID := c.Params("invoice_id")
+// 	user_id := c.Locals("user_id").(int64)
+// 	uid:=strconv.Itoa(int(user_id))
 
-	res, err := h.job.ExecutePayment(context.Background(), &Job.ExecutePaymentReq{UserId: uid, InvoiceId: invoiceID})
-	if err != nil {
-		//return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
-	}
+// 	res, err := h.job.ExecutePayment(context.Background(), &Job.ExecutePaymentReq{UserId: uid, InvoiceId: invoiceID})
+// 	if err != nil {
+// 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
+// 	}
 
-	return c.Render("index.html", res)
+// 	return c.Render("index.html", res)
+// }
+
+func (h *JobsHandler) GetPayment(c *fiber.Ctx) error{
+	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html",nil)
 }
+
+// func (h *JobsHandler) CapturePayment(c *fiber.Ctx) error{
+
+// }
 
 // func (h *JobsHandler) CloseJobPost() {
 
