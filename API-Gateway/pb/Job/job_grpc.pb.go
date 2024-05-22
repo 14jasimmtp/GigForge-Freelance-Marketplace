@@ -38,7 +38,8 @@ type JobServiceClient interface {
 	SearchJobs(ctx context.Context, in *SearchJobsReq, opts ...grpc.CallOption) (*SearchJobsRes, error)
 	GetAllContractsForClient(ctx context.Context, in *GetAllContractsForClientReq, opts ...grpc.CallOption) (*GetAllContractsForClientRes, error)
 	GetOneContractForClient(ctx context.Context, in *GetOneContractForClientReq, opts ...grpc.CallOption) (*GetOneContractForClientRes, error)
-	ExecutePayment(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
+	ExecutePaymentContract(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
+	CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 	SaveJobs(ctx context.Context, in *SaveJobsReq, opts ...grpc.CallOption) (*SaveJobsRes, error)
 }
 
@@ -194,9 +195,18 @@ func (c *jobServiceClient) GetOneContractForClient(ctx context.Context, in *GetO
 	return out, nil
 }
 
-func (c *jobServiceClient) ExecutePayment(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error) {
+func (c *jobServiceClient) ExecutePaymentContract(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error) {
 	out := new(ExecutePaymentRes)
-	err := c.cc.Invoke(ctx, "/job.JobService/ExecutePayment", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/job.JobService/ExecutePaymentContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error) {
+	out := new(CapturePaymentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/CapturePaymentContract", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +242,8 @@ type JobServiceServer interface {
 	SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error)
 	GetAllContractsForClient(context.Context, *GetAllContractsForClientReq) (*GetAllContractsForClientRes, error)
 	GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error)
-	ExecutePayment(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
+	ExecutePaymentContract(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
+	CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
@@ -289,8 +300,11 @@ func (UnimplementedJobServiceServer) GetAllContractsForClient(context.Context, *
 func (UnimplementedJobServiceServer) GetOneContractForClient(context.Context, *GetOneContractForClientReq) (*GetOneContractForClientRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOneContractForClient not implemented")
 }
-func (UnimplementedJobServiceServer) ExecutePayment(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExecutePayment not implemented")
+func (UnimplementedJobServiceServer) ExecutePaymentContract(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecutePaymentContract not implemented")
+}
+func (UnimplementedJobServiceServer) CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CapturePaymentContract not implemented")
 }
 func (UnimplementedJobServiceServer) SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveJobs not implemented")
@@ -596,20 +610,38 @@ func _JobService_GetOneContractForClient_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _JobService_ExecutePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _JobService_ExecutePaymentContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ExecutePaymentReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(JobServiceServer).ExecutePayment(ctx, in)
+		return srv.(JobServiceServer).ExecutePaymentContract(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/job.JobService/ExecutePayment",
+		FullMethod: "/job.JobService/ExecutePaymentContract",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServiceServer).ExecutePayment(ctx, req.(*ExecutePaymentReq))
+		return srv.(JobServiceServer).ExecutePaymentContract(ctx, req.(*ExecutePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_CapturePaymentContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CapturePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).CapturePaymentContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/CapturePaymentContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).CapturePaymentContract(ctx, req.(*CapturePaymentReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -704,8 +736,12 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _JobService_GetOneContractForClient_Handler,
 		},
 		{
-			MethodName: "ExecutePayment",
-			Handler:    _JobService_ExecutePayment_Handler,
+			MethodName: "ExecutePaymentContract",
+			Handler:    _JobService_ExecutePaymentContract_Handler,
+		},
+		{
+			MethodName: "CapturePaymentContract",
+			Handler:    _JobService_CapturePaymentContract_Handler,
 		},
 		{
 			MethodName: "SaveJobs",

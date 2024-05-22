@@ -21,7 +21,8 @@ service JobService{
     rpc SearchJobs(SearchJobsReq) returns (SearchJobsRes) {};
     rpc GetAllContractsForClient(GetAllContractsForClientReq) returns (GetAllContractsForClientRes) {};
     rpc GetOneContractForClient(GetOneContractForClientReq) returns (GetOneContractForClientRes) {};
-    rpc ExecutePayment(ExecutePaymentReq) returns (ExecutePaymentRes) {};
+    rpc ExecutePaymentContract(ExecutePaymentReq) returns (ExecutePaymentRes) {};
+    rpc CapturePaymentContract(CapturePaymentReq) returns (CapturePaymentRes) {};
     rpc SaveJobs(SaveJobsReq) returns (SaveJobsRes) {};
 }
 
@@ -59,12 +60,24 @@ message GetJobOfferForFreelancerRes{
 }
 
 message ExecutePaymentReq{
-    string user_id =1;
     string invoice_id = 2;
 }
 
 message ExecutePaymentRes{
-    
+    int32 status = 1;
+    string Error = 2;
+    string PaymentID = 3;
+    repeated string merchantID = 4;
+}
+
+message CapturePaymentReq{
+    string paymentID = 1;
+}
+
+message CapturePaymentRes{
+    int32 status = 1;
+    string Error = 2;
+    string userName = 3;
 }
 
 
