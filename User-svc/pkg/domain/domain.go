@@ -96,3 +96,8 @@ type Admin struct{
 	Email string 
 	Password string
 }
+
+type Freelancer_paypal struct{
+	UserID uint `gorm:"primarykey"`
+	Email string `gorm:"email"`
+}

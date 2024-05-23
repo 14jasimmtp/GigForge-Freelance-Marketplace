@@ -24,9 +24,9 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	// contract.Get("",job.GetAllContractsForClient)
 	// contract.Get("/:id",job.GetOneContract)
 	// contract.Get("/invoices/:job_id",job.GetAllInvoicesOfAJob)
-	contract.Get("/payment/:invoice_id",job.GetPaymentContract)
-	contract.Post("/payment/execute/:invoiceID",job.ExecutePaymentContract)
-	contract.Post("/payment/capture/:paymentID",job.CapturePaymentContract)
+	contract.Get("/payment",job.GetPaymentContract)
+	contract.Post("/payment/execute",job.ExecutePaymentContract)
+	contract.Post("/payment/capture",job.CapturePaymentContract)
 
 	projects:=api.Group("/project")
 	projects.Use(middlewares.AuthClient)
@@ -37,7 +37,7 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	projects.Get("/payment/:orderID",project.GetPaymentProject)
 	projects.Get("/payment/capture/:orderID",project.CapturePaymentProject)
 
-
+	
 	// profiles:=api.Group("/profile")
 	// profile
 	// profiles.Get("",profile.GetProfile)

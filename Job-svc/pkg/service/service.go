@@ -2,22 +2,26 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/job"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/user"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/repository"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/utils/paypal"
 )
 
 type Service struct {
 	job.UnimplementedJobServiceServer
 	repo repository.Repo
+	user user.JobserviceClient
 }
 
-func NewJobService(repo repository.Repo) *Service {
-	return &Service{repo: repo}
+func NewJobService(repo repository.Repo, user user.JobserviceClient) *Service {
+	return &Service{repo: repo, user: user}
 }
 
 func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq) (*job.PostjobRes, error) {
@@ -59,24 +63,24 @@ func (s *Service) GetJob(ctx context.Context, req *job.GetJobReq) (*job.GetJobRe
 	return &job.GetJobRes{Status: 200, Job: res}, nil
 }
 
-func (s *Service) GetJobProposals(ctx context.Context,req *job.GJPReq) (*job.GJPRes,error){
-	err:=s.repo.FindJobExistOfClient(req.JobId,req.UserId)
+func (s *Service) GetJobProposals(ctx context.Context, req *job.GJPReq) (*job.GJPRes, error) {
+	err := s.repo.FindJobExistOfClient(req.JobId, req.UserId)
 	if err != nil {
-		return &job.GJPRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GJPRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	proposals, err:=s.repo.GetJobProposals(req.JobId)
+	proposals, err := s.repo.GetJobProposals(req.JobId)
 	if err != nil {
-		return &job.GJPRes{Status: http.StatusBadRequest, Error: err.Error()},nil
+		return &job.GJPRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	return &job.GJPRes{Status: http.StatusOK,Prop: proposals,Response: "fetched proposals successfully"},nil
+	return &job.GJPRes{Status: http.StatusOK, Prop: proposals, Response: "fetched proposals successfully"}, nil
 }
 
-func (s *Service) GetCategories(ctx context.Context,req *job.GetCategoryReq) (*job.GetCategoryRes,error){
-	categories,err:=s.repo.GetCategory(req.Query)
+func (s *Service) GetCategories(ctx context.Context, req *job.GetCategoryReq) (*job.GetCategoryRes, error) {
+	categories, err := s.repo.GetCategory(req.Query)
 	if err != nil {
-		return &job.GetCategoryRes{Status: http.StatusNoContent,Error: err.Error()},nil
+		return &job.GetCategoryRes{Status: http.StatusNoContent, Error: err.Error()}, nil
 	}
-	return &job.GetCategoryRes{Status: http.StatusOK,Categories: categories},nil
+	return &job.GetCategoryRes{Status: http.StatusOK, Categories: categories}, nil
 }
 
 func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.ProposalRes, error) {
@@ -103,9 +107,9 @@ func (s *Service) SendProposal(ctx context.Context, req *job.ProposalReq) (*job.
 }
 
 func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq) (*job.SendOfferRes, error) {
-	_,err:=time.Parse("02-01-2006",req.StartingTime)
+	_, err := time.Parse("02-01-2006", req.StartingTime)
 	if err != nil {
-		return &job.SendOfferRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.SendOfferRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
 	// s.repo.CheckJobExist(req.JobId)
 	// s.repo.CheckFreelancerExist(req.FreelancerId)
@@ -130,7 +134,7 @@ func (s *Service) AcceptOffer(ctx context.Context, req *job.AcceptOfferReq) (*jo
 	}
 	contractID, contractType, budget, err := s.repo.CreateContract(req.OfferID)
 	if err != nil {
-		return &job.AcceptOfferRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.AcceptOfferRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
 	if contractType == "fixed" {
 		err := s.repo.SendFixedInvoice(contractID, contractType, budget)
@@ -202,27 +206,51 @@ func (s *Service) SearchJobs(ctx context.Context, req *job.SearchJobsReq) (*job.
 	return &job.SearchJobsRes{Status: status, Jobs: res, Response: "fetched jobs successfully"}, nil
 }
 
-func (s *Service) GetJobOffersForFreelancer(ctx context.Context,req *job.GetJobOfferForFreelancerReq) (*job.GetJobOfferForFreelancerRes,error){
-	offers,err:=s.repo.GetOffers(req.UserId,req.Status) 
+func (s *Service) GetJobOffersForFreelancer(ctx context.Context, req *job.GetJobOfferForFreelancerReq) (*job.GetJobOfferForFreelancerRes, error) {
+	offers, err := s.repo.GetOffers(req.UserId, req.Status)
 	if err != nil {
-		return &job.GetJobOfferForFreelancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GetJobOfferForFreelancerRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	return &job.GetJobOfferForFreelancerRes{Status: http.StatusOK,Offers: offers},nil
+	return &job.GetJobOfferForFreelancerRes{Status: http.StatusOK, Offers: offers}, nil
 }
 
-//  func (s *Service) ExecutePayment(ctx context.Context,req *job.ExecutePaymentReq)(*job.ExecutePaymentRes,error){
-// 	invoice,err:=s.repo.GetInvoiceDetails(req.InvoiceId)
-// 	if err != nil {
-// 		return &job.ExecutePaymentRes{},nil
-// 	}
-// 	accessToken,err:=paypal.GenerateAccessToken()
-// 	auth_assertion_header:=paypal.GetAuthAssertionValue(req.User_id)
-// 	OrderID,err:=paypal.CreateOrder(accessToken,invoice.ID,invoice.Budget,"USD",auth_assertion_header)
-// 	if err != nil {
-// 		return &job.ExecutePaymentRes{},nil
-// 	}
-// 	return &job.ExecutePaymentRes{}
+func (s *Service) ExecutePaymentContract(ctx context.Context, req *job.ExecutePaymentReq) (*job.ExecutePaymentRes, error) {
+	fmt.Println("executing payment")
+	invoice, err := s.repo.GetInvoiceWithID(req.InvoiceId)
+	if err != nil {
+		return &job.ExecutePaymentRes{Status: http.StatusExpectationFailed, Error: err.Error()}, nil
+	}
+	contract, err := s.repo.CheckContractActive(int32(invoice.ContractID))
+	if err != nil {
+		return &job.ExecutePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	fmt.Println("3")
+	freelancerEmail, err := s.user.GetFreelancerPaypalEmail(context.Background(), &user.Preq{UserID: int32(contract.Freelancer_id)})
+	if err != nil {
+		return &job.ExecutePaymentRes{Status: http.StatusBadRequest, Error: freelancerEmail.Error}, nil
+	}
+	fmt.Println("4")
+	order, err := paypal.CreatePayment(invoice, freelancerEmail.Email)
+	if err != nil {
+		return &job.ExecutePaymentRes{Status: http.StatusFailedDependency, Error: err.Error()}, nil
+	}
+	fmt.Println("5")
+	return &job.ExecutePaymentRes{Status: http.StatusOK, PaymentID: order.OrderID, MerchantID: order.MerchantID}, nil
+}
 
-// }
-
-// }
+func (s *Service) CapturePaymentContract(ctx context.Context, req *job.CapturePaymentReq) (*job.CapturePaymentRes, error) {
+	fmt.Println("capturing payment...")
+	ClientName, err := paypal.CapturePayment(req.PaymentID)
+	if err != nil {
+		return &job.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	invoice, err := s.repo.UpdateInvoicePaymentStatus(req.InvoiceID)
+	if err != nil {
+		return &job.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	err = s.repo.UpdateContractDetails(invoice.ContractID, invoice.Freelancer_fee, invoice.MarketPlace_fee)
+	if err != nil {
+		return &job.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	return &job.CapturePaymentRes{Status: http.StatusOK, UserName: ClientName}, nil
+}

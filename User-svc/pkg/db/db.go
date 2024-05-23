@@ -48,6 +48,7 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.Skill{})
 	db.AutoMigrate(&domain.Freelancer_Experiences{})
 	db.AutoMigrate(&domain.Admin{})
+	db.AutoMigrate(&domain.Freelancer_paypal{})
 	createAdmin(db)
 	log.Println("migrated table")
 	return db

@@ -11,7 +11,7 @@ func InitializeAPI() *service.Service {
 	jobClient:=client.InitJobClient()
 	db := db.ConnectToDB()
 	repo := repository.NewJobRepo(db,jobClient)
-	service := service.NewJobService(repo)
+	service := service.NewJobService(repo,jobClient)
 
 	return service
 }

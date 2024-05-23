@@ -451,3 +451,37 @@ func (r *Repo) GetJobProposals(job_id string) ([]*job.Proposals, error) {
 	}
 	return res, nil
 }
+
+func (r *Repo) GetInvoiceWithID(id string)(*domain.Invoice,error){
+	var invoice domain.Invoice
+	q:=r.DB.Raw("SELECT * FROM invoices WHERE id = ?",id).Scan(&invoice)
+	if q.RowsAffected == 0{
+		fmt.Println("no invoices found with this id")
+		return nil,errors.New(`no invoices found with this id`)
+	}
+	if q.Error != nil {
+		fmt.Println(q.Error)
+		return nil,errors.New(`something went wrong`)
+	}
+	return &invoice,nil
+}
+
+func (r *Repo) UpdateInvoicePaymentStatus(invoiceID string)(*domain.Invoice,error){
+	var invoice domain.Invoice
+	query:=r.DB.Raw(`SELECT * FROM invoices WHERE id = ?`,invoiceID).Scan(&invoice)
+	if query.Error != nil {
+		return nil,errors.New(`something went wrong`)
+	}
+	if invoice.Status=="unpaid"{
+		r.DB.Exec(`UPDATE invoices SET status = 'paid' WHERE id = ?`,invoiceID)
+	}
+	return &invoice,nil
+}
+
+func (r *Repo) UpdateContractDetails(contractID int,freelancerFee,MarketplaceFee float64) error{
+	err:=r.DB.Exec(`UPDATE contracts SET paid_amount=paid_amount+$1, pending_amount = pending_amount - $1 WHERE id = $2`,freelancerFee+MarketplaceFee,contractID).Error
+	if err != nil {
+		return errors.New(`something went wrong`)
+	}
+	return nil
+}

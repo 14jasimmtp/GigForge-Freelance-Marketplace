@@ -268,11 +268,13 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 }
 
 func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
-	invoiceID := c.Params("invoiceID")
+	invoiceID := c.Query("invoiceID")
+	fmt.Println("1")
 	res, err := h.job.ExecutePaymentContract(context.Background(), &Job.ExecutePaymentReq{InvoiceId: invoiceID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
+	fmt.Println("2")
 
 	return c.Status(int(res.Status)).JSON(fiber.Map{
         "orderID":     res.PaymentID,
@@ -281,17 +283,20 @@ func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
 }
 
 func (h *JobsHandler) GetPaymentContract(c *fiber.Ctx) error{
+	invoiceID:=c.Query("invoiceID")
+	fmt.Println(invoiceID)
 	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html",nil)
 }
 
 func (h *JobsHandler) CapturePaymentContract(c *fiber.Ctx) error{
-	paymentID := c.Params("paymentID")
-	res, err := h.job.CapturePaymentContract(context.Background(), &Job.CapturePaymentReq{PaymentID: paymentID})
+	paymentID := c.Query("paymentID")
+	invoiceID := c.Query("invoiceID")
+	res, err := h.job.CapturePaymentContract(context.Background(), &Job.CapturePaymentReq{PaymentID: paymentID,InvoiceID: invoiceID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.Status(int(res.Status)).JSON(res)
+	return c.Status(int(res.Status)).JSON(res.UserName)
 }
 
 // func (h *JobsHandler) CloseJobPost() {

@@ -30,6 +30,8 @@ type ProjectServiceClient interface {
 	ListMyProjects(ctx context.Context, in *ListMyProjectReq, opts ...grpc.CallOption) (*ListMyProjectRes, error)
 	BuyProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error)
 	PaymentForProject(ctx context.Context, in *ProjectPaymentReq, opts ...grpc.CallOption) (*ProjectPaymentRes, error)
+	ExecutePaymentProject(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
+	CapturePaymentProject(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 }
 
 type projectServiceClient struct {
@@ -112,6 +114,24 @@ func (c *projectServiceClient) PaymentForProject(ctx context.Context, in *Projec
 	return out, nil
 }
 
+func (c *projectServiceClient) ExecutePaymentProject(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error) {
+	out := new(ExecutePaymentRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/ExecutePaymentProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) CapturePaymentProject(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error) {
+	out := new(CapturePaymentRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/CapturePaymentProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProjectServiceServer is the server API for ProjectService service.
 // All implementations must embed UnimplementedProjectServiceServer
 // for forward compatibility
@@ -124,6 +144,8 @@ type ProjectServiceServer interface {
 	ListMyProjects(context.Context, *ListMyProjectReq) (*ListMyProjectRes, error)
 	BuyProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error)
 	PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error)
+	ExecutePaymentProject(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
+	CapturePaymentProject(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	mustEmbedUnimplementedProjectServiceServer()
 }
 
@@ -154,6 +176,12 @@ func (UnimplementedProjectServiceServer) BuyProject(context.Context, *BuyProject
 }
 func (UnimplementedProjectServiceServer) PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentForProject not implemented")
+}
+func (UnimplementedProjectServiceServer) ExecutePaymentProject(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecutePaymentProject not implemented")
+}
+func (UnimplementedProjectServiceServer) CapturePaymentProject(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CapturePaymentProject not implemented")
 }
 func (UnimplementedProjectServiceServer) mustEmbedUnimplementedProjectServiceServer() {}
 
@@ -312,6 +340,42 @@ func _ProjectService_PaymentForProject_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProjectService_ExecutePaymentProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecutePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).ExecutePaymentProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/ExecutePaymentProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).ExecutePaymentProject(ctx, req.(*ExecutePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_CapturePaymentProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CapturePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).CapturePaymentProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/CapturePaymentProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).CapturePaymentProject(ctx, req.(*CapturePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProjectService_ServiceDesc is the grpc.ServiceDesc for ProjectService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -350,6 +414,14 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PaymentForProject",
 			Handler:    _ProjectService_PaymentForProject_Handler,
+		},
+		{
+			MethodName: "ExecutePaymentProject",
+			Handler:    _ProjectService_ExecutePaymentProject_Handler,
+		},
+		{
+			MethodName: "CapturePaymentProject",
+			Handler:    _ProjectService_CapturePaymentProject_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

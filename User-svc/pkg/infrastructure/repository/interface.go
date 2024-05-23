@@ -37,4 +37,5 @@ type RepoIfc interface {
 	CheckSkillsExist(skills []int64) error
 	AdminLogin(email string) (*domain.Admin, error)
 	GetSkills(user_id string) ([]string,error)
+	AddPaymentEmail(userID string,email string) (error)
 }

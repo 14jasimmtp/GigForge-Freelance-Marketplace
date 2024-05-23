@@ -246,6 +246,15 @@ func (s *Service) OnboardFreelancersToPaypal(ctx context.Context, req *auth.Onbo
 	return &auth.OnboardToPaypalRes{Status: http.StatusOK,OnboardURL: onboardURL},nil
 }
 
+func (s *Service) AddPaymentEmail(ctx context.Context,req *auth.AddPaymentEmailReq) (*auth.AddPaymentEmailRes,error){
+	
+	err:=s.repo.AddPaymentEmail(req.UserId,req.Email)
+	if err != nil {
+		return &auth.AddPaymentEmailRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &auth.AddPaymentEmailRes{Status: http.StatusOK,Message: "paypal email updated successfully"},nil
+}
+
 // func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes,error) {
 // 	err:=s.repo.CheckFreelancerExist(req.FreelancerId)
 // 	if err != nil {

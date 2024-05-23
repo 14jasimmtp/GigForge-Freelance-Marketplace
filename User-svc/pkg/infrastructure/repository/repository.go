@@ -452,3 +452,25 @@ func (r *Repo) CheckUserOnboardStatus(user_id string) error{
 	}
 	return nil
 }
+
+func (r *Repo) GetFreelancerPaypalEmail(ctx context.Context,req *job.Preq)(*job.Pres,error){
+	var email string
+	query:=r.db.Raw(`SELECT email  FROM freelancer_paypals where user_id = ?`,req.UserID).Scan(&email)
+	if query.RowsAffected == 0{
+		return &job.Pres{Error: "user doesn't added paypal account"},nil
+	}
+	if query.Error != nil {
+		fmt.Println(query.Error)
+		return &job.Pres{Error: "something went wrong"}, nil
+	}
+	return &job.Pres{Email: email},nil
+}
+
+func (r *Repo) AddPaymentEmail(userID string,email string) (error){
+	userid,err:=strconv.Atoi(userID)
+	if err != nil {
+		return errors.New(`user id is not integer.enter correctly`)
+	}
+	r.db.Create(&domain.Freelancer_paypal{UserID: uint(userid),Email: email})
+	return nil
+}

@@ -45,6 +45,7 @@ type AuthServiceClient interface {
 	UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error)
+	AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error)
 }
 
 type authServiceClient struct {
@@ -262,6 +263,15 @@ func (c *authServiceClient) ReviewFreelancer(ctx context.Context, in *ReviewFlan
 	return out, nil
 }
 
+func (c *authServiceClient) AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error) {
+	out := new(AddPaymentEmailRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/AddPaymentEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -289,6 +299,7 @@ type AuthServiceServer interface {
 	UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error)
+	AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -364,6 +375,9 @@ func (UnimplementedAuthServiceServer) OnboardFreelancerToPaypal(context.Context,
 }
 func (UnimplementedAuthServiceServer) ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewFreelancer not implemented")
+}
+func (UnimplementedAuthServiceServer) AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddPaymentEmail not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -792,6 +806,24 @@ func _AuthService_ReviewFreelancer_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AddPaymentEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddPaymentEmailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AddPaymentEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/AddPaymentEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AddPaymentEmail(ctx, req.(*AddPaymentEmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -890,6 +922,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewFreelancer",
 			Handler:    _AuthService_ReviewFreelancer_Handler,
+		},
+		{
+			MethodName: "AddPaymentEmail",
+			Handler:    _AuthService_AddPaymentEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

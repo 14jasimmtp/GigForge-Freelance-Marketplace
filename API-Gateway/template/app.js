@@ -6,49 +6,47 @@ function getQueryParam(param) {
 // Render PayPal buttons
 function renderPayPalButtons() {
   paypal.Buttons({
-    //   createOrder: function(data, actions) {
-    //     const ID = getQueryParam('invoiceID')
-    //       return fetch('http://localhost:3000/executePaymentWithInvoiceID?', {
-    //           method: 'POST',
-    //           headers: {
-    //               'Content-Type': 'application/json'
-    //           }
-    //       }).then(function(response) {
-    //           return response.json();
-    //       }).then(function(orderData) {
-    //           if (orderData.orderID) {
-    //               return orderData.orderID;
-    //           } else {
-    //               throw new Error('Order ID not found');
-    //           }
-    //       }).catch(function(err) {
-    //           console.error('Create Order Error:', err);
-    //           alert('Failed to create order');
-    //       });
-    //   },
-    //   onApprove: function(data, actions) {
-    //       return fetch('http://localhost:8080/capturePaymentWithInvoiceID?', {
-    //           method: 'POST',
-    //           headers: {
-    //               'Content-Type': 'application/json'
-    //           },
-    //           body: JSON.stringify({
-    //               orderID: data.orderID
-    //           })
-    //       }).then(function(response) {
-    //           return response.json();
-    //       }).then(function(orderData) {
-    //           alert('Transaction completed by ' + orderData.payer.name.given_name);
-    //           showPaymentSuccessModal();
-    //       }).catch(function(err) {
-    //           console.error('Capture Order Error:', err);
-    //           alert('Failed to capture order');
-    //       });
-    //   },
-    //   onError: function(err) {
-    //       console.error('An error occurred during the transaction:', err);
-    //       alert('An error occurred during the transaction: ' + err.message);
-    //   }
+      createOrder: function(data, actions) {
+        const ID = getQueryParam('invoiceID')
+          return fetch(`http://localhost:3000/client/contracts/payment/execute?invoiceID=${ID}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          }).then(function(response) {
+              return response.json();
+          }).then(function(orderData) {
+              if (orderData.orderID) {
+                  return orderData.orderID;
+              } else {
+                  throw new Error('Order ID not found');
+              }
+          }).catch(function(err) {
+              console.error('Create Order Error:', err);
+              alert('Failed to create order');
+          });
+      },
+      onApprove: function(data, actions) {
+        const IvcID = getQueryParam('invoiceID')
+          return fetch(`http://localhost:3000/client/contracts/payment/capture?paymentID=${data.orderID}&invoiceID=${IvcID}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+          }).then(function(response) {
+              return response.json();
+          }).then(function(orderData) {
+              alert('Transaction completed by ' + orderData);
+              showPaymentSuccessModal();
+          }).catch(function(err) {
+              console.error('Capture Order Error:', err);
+              alert('Failed to capture order');
+          });
+      },
+      onError: function(err) {
+          console.error('An error occurred during the transaction:', err);
+          alert('An error occurred during the transaction: ' + err.message);
+      }
   }).render('#paypal-button-container');
 }
 
@@ -76,7 +74,8 @@ function loadPayPalSDK(clientId, merchantIDs) {
 }
 
 // Fetch order details and merchant IDs, then load PayPal SDK
-fetch('http://localhost:8080/create-order', {
+const ID = getQueryParam('invoiceID')
+fetch(`http://localhost:3000/client/contracts/payment/execute?invoiceID=${ID}`, {
   method: 'POST',
   headers: {
       'Content-Type': 'application/json'

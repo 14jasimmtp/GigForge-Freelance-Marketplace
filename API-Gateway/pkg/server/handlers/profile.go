@@ -336,6 +336,19 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 	return c.Status(int(talents.Status)).JSON(talents)
 }
 
+func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
+	user_id:=c.Locals("User_id").(string)
+	var req req.AddPayment
+	if err:=c.BodyParser(&req);err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error":"error while validating body.Enter correctly"})
+	}
+
+	res,err:=h.profile.AddPaymentEmail(context.Background(),&auth.AddPaymentEmailReq{UserId: user_id,Email: req.Email})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
 // func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{
 // 	// var req req.

@@ -13,6 +13,29 @@ service ProjectService {
     rpc ListMyProjects(ListMyProjectReq) returns (ListMyProjectRes) {};
     rpc BuyProject(BuyProjectReq) returns (BuyProjectRes) {};
     rpc PaymentForProject(ProjectPaymentReq) returns (ProjectPaymentRes) {};
+    rpc ExecutePaymentProject(ExecutePaymentReq) returns (ExecutePaymentRes) {};
+    rpc CapturePaymentProject(CapturePaymentReq) returns (CapturePaymentRes) {};
+}
+
+message ExecutePaymentReq{
+    string orderID = 1;
+}
+
+message ExecutePaymentRes{
+    int32 status = 1;
+    string Error = 2;
+    string PaymentID = 3;
+    repeated string merchantID = 4;
+}
+
+message CapturePaymentReq{
+    string paymentID = 1;
+}
+
+message CapturePaymentRes{
+    int32 status = 1;
+    string Error = 2;
+    string userName = 3;
 }
 
 message ProjectPaymentRes{

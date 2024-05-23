@@ -36,5 +36,8 @@ type AddReview struct{
 	Freelancer_id int `json:"freelancer_id" validate:"required"`
 }
 
+type AddPayment struct{
+	Email string `json:"email" validate:"required"`
+}
 
 

@@ -29,6 +29,18 @@ service AuthService{
     rpc OnboardFreelancerToPaypal(OnboardToPaypalReq) returns (OnboardToPaypalRes) {};
     rpc ReviewFreelancer(ReviewFlancerReq) returns (ReviewFlancerRes) {};
     rpc GetFreelancers(GetTalentReq) returns (GetTalentRes) {};
+    rpc AddPaymentEmail(AddPaymentEmailReq) returns (AddPaymentEmailRes) {};
+}
+
+message AddPaymentEmailReq{
+    string Email = 1;
+    string user_id = 2;
+}
+
+message AddPaymentEmailRes{
+    int64 Status = 1;
+    string Error = 2;
+    string message = 3;
 }
 
 message GetTalentReq{

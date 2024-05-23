@@ -6,6 +6,17 @@ option go_package="./pb/user/";
 
 service Jobservice{
     rpc GetJobsSkills(req) returns (res) {};
+    rpc GetFreelancerPaypalEmail(Preq) returns (Pres) {};
+}
+
+message Preq{
+    int32 userID = 1;
+}
+
+message Pres{
+    string Email = 1;
+    int32 status = 2;
+    string Error = 3;
 }
 
 message req {

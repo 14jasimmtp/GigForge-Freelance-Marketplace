@@ -3,6 +3,7 @@ module github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc
 go 1.22.0
 
 require (
+	github.com/plutov/paypal/v4 v4.7.1
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0

@@ -37,6 +37,8 @@ type JobServiceClient interface {
 	GetOfferByClient(ctx context.Context, in *GFCReq, opts ...grpc.CallOption) (*GFCRes, error)
 	SearchJobs(ctx context.Context, in *SearchJobsReq, opts ...grpc.CallOption) (*SearchJobsRes, error)
 	GetJobOffersForFreelancer(ctx context.Context, in *GetJobOfferForFreelancerReq, opts ...grpc.CallOption) (*GetJobOfferForFreelancerRes, error)
+	ExecutePaymentContract(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
+	CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 }
 
 type jobServiceClient struct {
@@ -182,6 +184,24 @@ func (c *jobServiceClient) GetJobOffersForFreelancer(ctx context.Context, in *Ge
 	return out, nil
 }
 
+func (c *jobServiceClient) ExecutePaymentContract(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error) {
+	out := new(ExecutePaymentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/ExecutePaymentContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error) {
+	out := new(CapturePaymentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/CapturePaymentContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -201,6 +221,8 @@ type JobServiceServer interface {
 	GetOfferByClient(context.Context, *GFCReq) (*GFCRes, error)
 	SearchJobs(context.Context, *SearchJobsReq) (*SearchJobsRes, error)
 	GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error)
+	ExecutePaymentContract(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
+	CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -252,6 +274,12 @@ func (UnimplementedJobServiceServer) SearchJobs(context.Context, *SearchJobsReq)
 }
 func (UnimplementedJobServiceServer) GetJobOffersForFreelancer(context.Context, *GetJobOfferForFreelancerReq) (*GetJobOfferForFreelancerRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobOffersForFreelancer not implemented")
+}
+func (UnimplementedJobServiceServer) ExecutePaymentContract(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecutePaymentContract not implemented")
+}
+func (UnimplementedJobServiceServer) CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CapturePaymentContract not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -536,6 +564,42 @@ func _JobService_GetJobOffersForFreelancer_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_ExecutePaymentContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecutePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).ExecutePaymentContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/ExecutePaymentContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).ExecutePaymentContract(ctx, req.(*ExecutePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_CapturePaymentContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CapturePaymentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).CapturePaymentContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/CapturePaymentContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).CapturePaymentContract(ctx, req.(*CapturePaymentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -602,6 +666,14 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJobOffersForFreelancer",
 			Handler:    _JobService_GetJobOffersForFreelancer_Handler,
+		},
+		{
+			MethodName: "ExecutePaymentContract",
+			Handler:    _JobService_ExecutePaymentContract_Handler,
+		},
+		{
+			MethodName: "CapturePaymentContract",
+			Handler:    _JobService_CapturePaymentContract_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
