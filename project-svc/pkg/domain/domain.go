@@ -30,8 +30,11 @@ type SingleProject struct {
 
 type ProjectOrders struct{
 	gorm.Model
+	FreelancerID int
 	ClientID int
 	ProjectID int
 	Payment_status string
 	Delivery_status string
+	FreelancerFee float64
+	MarketplaceFee float64
 }

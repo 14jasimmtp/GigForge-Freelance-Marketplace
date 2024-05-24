@@ -255,23 +255,21 @@ func (s *Service) AddPaymentEmail(ctx context.Context,req *auth.AddPaymentEmailR
 	return &auth.AddPaymentEmailRes{Status: http.StatusOK,Message: "paypal email updated successfully"},nil
 }
 
-// func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes,error) {
-// 	err:=s.repo.CheckFreelancerExist(req.FreelancerId)
-// 	if err != nil {
-// 		return &auth.ReviewFlancerRes{},nil
-// 	}
-
-// 	err = s.repo.CheckContractWithFreelancerAndClient(req.FreelancerId,req.ClientId)
-// 	if err != nil {
-// 		return &auth.ReviewFlancerRes{},nil
-// 	}
-
-// 	err = s.repo.AddReviewForFreelancer(req)
-// 	if err != nil {
-// 		return &auth.ReviewFlancerRes{},nil
-// 	}
-// 	return &auth.ReviewFlancerRes{},nil
-// }
+func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes,error) {
+	err:=s.repo.CheckFreelancerExist(req.FreelancerId)
+	if err != nil {
+		return &auth.ReviewFlancerRes{},nil
+	}
+	err = s.repo.CheckContractWithFreelancerAndClient(req.FreelancerId,req.ClientId)
+	if err != nil {
+		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	err = s.repo.AddReviewForFreelancer(req)
+	if err != nil {
+		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &auth.ReviewFlancerRes{Status: http.StatusOK,Response: "review added successfully"},nil
+}
 
 
 // func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UPDCompanyDetailsReq) (*auth.UPDCompanyDetailsRes, error){

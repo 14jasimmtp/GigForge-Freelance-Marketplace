@@ -2,18 +2,23 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pb"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pb/user"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/repository"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/utils/paypal"
 )
 
 type ProjectService struct{
 	pb.UnimplementedProjectServiceServer
 	repo repository.Repo
+	user user.UserServiceClient
 }
 
-func NewService(rep repository.Repo) ProjectService{
-	return ProjectService{repo: rep}
+func NewService(rep repository.Repo,user user.UserServiceClient) ProjectService{
+	return ProjectService{repo: rep,user: user}
 }
 
 func (s *ProjectService) AddProject(ctx context.Context,req *pb.AddSingleProjectReq) (*pb.AddSingleProjectRes,error){
@@ -79,15 +84,48 @@ func (s *ProjectService) ListMyProjects(ctx context.Context, req *pb.ListMyProje
 	return &pb.ListMyProjectRes{Project: projects,Status: 200,Response: "project fetched successfully"},nil
 }
 
-// func (s *ProjectService) PaymentForProject(ctx context.Context, req *pb.ProjectPaymentReq) (*pb.ProjectPaymentRes,error){
+func (s *ProjectService) ExecutePaymentProject(ctx context.Context, req *pb.ExecutePaymentReq) (*pb.ExecutePaymentRes, error) {
+	fmt.Println("executing payment")
+	order, err := s.repo.GetProjectOrder(req.OrderID)
+	if err != nil {
+		return &pb.ExecutePaymentRes{Status: http.StatusExpectationFailed, Error: err.Error()}, nil
+	}
+	if order.Payment_status == "paid"{
+		return &pb.ExecutePaymentRes{Status: http.StatusExpectationFailed,Error: "already paid for the project"},nil
+	}
+	freelancerEmail, err := s.user.GetFreelancerPaypalEmails(context.Background(), &user.Preq{UserID: int32(order.FreelancerID)})
+	if err != nil {
+		return &pb.ExecutePaymentRes{Status: http.StatusBadRequest, Error: freelancerEmail.Error}, nil
+	}
+	orders, err := paypal.CreatePayment(order, freelancerEmail.Email)
+	if err != nil {
+		return &pb.ExecutePaymentRes{Status: http.StatusFailedDependency, Error: err.Error()}, nil
+	}
+	return &pb.ExecutePaymentRes{Status: http.StatusOK, PaymentID: orders.OrderID, MerchantID: orders.MerchantID}, nil
+}
 
-// }
+func (s *ProjectService) CapturePaymentContract(ctx context.Context, req *pb.CapturePaymentReq) (*pb.CapturePaymentRes, error) {
+	fmt.Println("capturing payment...")
+	ClientName, err := paypal.CapturePayment(req.PaymentID)
+	if err != nil {
+		return &pb.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	_, err = s.repo.UpdateOrderPaymentStatus(req.OrderID)
+	if err != nil {
+		return &pb.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	return &pb.CapturePaymentRes{Status: http.StatusOK, UserName: ClientName}, nil
+}
 
-//  func (s *ProjectService) BuyProject(ctx context.Context,req *pb.BuyProjectReq) (*pb.BuyProjectRes,error){
-// 	err:=s.repo.OrderProject(req.ProjectId,req.UserId)
-// 	if err != nil {
-// 		return &pb.BuyProjectRes{Status: 400,Error: err.Error()},nil
-// 	}
-
-//  }
+ func (s *ProjectService) OrderProject(ctx context.Context,req *pb.BuyProjectReq) (*pb.BuyProjectRes,error){
+	project,pro,err:=s.repo.CheckProjectActiveAndExist(req.ProjectId)
+	if err != nil {
+		return &pb.BuyProjectRes{Status: http.StatusForbidden,Error: "project is not currently active."},nil
+	}
+	err=s.repo.OrderProject(project,pro,req.UserId)
+	if err != nil {
+		return &pb.BuyProjectRes{Status: http.StatusInternalServerError,Error: err.Error()},nil
+	}
+	return &pb.BuyProjectRes{Status: http.StatusOK,Response: "project order successful. Will attach to you within delivery time."},nil
+ }
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/domain"
 	"github.com/plutov/paypal/v4"
 	"github.com/spf13/viper"
 )
@@ -16,12 +17,12 @@ type Order struct {
 	MerchantID []string
 }
 
-func CreatePayment(invoice *domain.Invoice, freelancerEmail string) (*Order, error) {
+func CreatePayment(order *domain.ProjectOrders, freelancerEmail string) (*Order, error) {
 	purchaseUnits := []paypal.PurchaseUnitRequest{
 		{
 			Amount: &paypal.PurchaseUnitAmount{
 				Currency: "USD",
-				Value:    fmt.Sprintf("%f", invoice.Freelancer_fee),
+				Value:    fmt.Sprintf("%f", order.FreelancerFee),
 			},
 			Payee: &paypal.PayeeForOrders{
 				EmailAddress: freelancerEmail,
@@ -31,7 +32,7 @@ func CreatePayment(invoice *domain.Invoice, freelancerEmail string) (*Order, err
 		{
 			Amount: &paypal.PurchaseUnitAmount{
 				Currency: "USD",
-				Value:    fmt.Sprintf("%f", invoice.MarketPlace_fee),
+				Value:    fmt.Sprintf("%f", order.MarketplaceFee),
 			},
 			Payee: &paypal.PayeeForOrders{
 				EmailAddress: viper.GetString("MarketPlacePaypalEmail"),
@@ -43,7 +44,7 @@ func CreatePayment(invoice *domain.Invoice, freelancerEmail string) (*Order, err
 	// Debug information to print the purchase units
 	fmt.Printf("Purchase Units: %+v\n", purchaseUnits)
 
-	order, err := paypalClient.CreateOrder(context.Background(), paypal.OrderIntentCapture, purchaseUnits, &paypal.CreateOrderPayer{
+	orders, err := paypalClient.CreateOrder(context.Background(), paypal.OrderIntentCapture, purchaseUnits, &paypal.CreateOrderPayer{
 		Name: &paypal.CreateOrderPayerName{
 			GivenName: "John",
 			Surname:   "Doe",
@@ -63,7 +64,7 @@ func CreatePayment(invoice *domain.Invoice, freelancerEmail string) (*Order, err
 	fmt.Println(order)
 	merchantIDs := []string{freelancerEmail, viper.GetString("MarketPlacePaypalEmail")}
 
-	return &Order{OrderID: order.ID, MerchantID: merchantIDs}, nil
+	return &Order{OrderID: orders.ID, MerchantID: merchantIDs}, nil
 
 	// Print full order response for debugging
 	// fmt.Printf("Full Order Response: %+v\n", order)

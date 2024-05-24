@@ -101,3 +101,11 @@ type Freelancer_paypal struct{
 	UserID uint `gorm:"primarykey"`
 	Email string `gorm:"email"`
 }
+
+type FreelancerReview struct{
+	gorm.Model
+	Review        string
+    Rating        int 
+    Freelancer_id int    
+	Client_id int
+}

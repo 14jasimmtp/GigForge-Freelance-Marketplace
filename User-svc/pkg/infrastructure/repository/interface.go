@@ -38,4 +38,7 @@ type RepoIfc interface {
 	AdminLogin(email string) (*domain.Admin, error)
 	GetSkills(user_id string) ([]string,error)
 	AddPaymentEmail(userID string,email string) (error)
+	AddReviewForFreelancer(req *auth.ReviewFlancerReq) error
+	CheckContractWithFreelancerAndClient(freelancerID int32,clientID int64) error
+	CheckFreelancerExist(userID int32) error
 }

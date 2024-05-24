@@ -28,8 +28,7 @@ type ProjectServiceClient interface {
 	ListProjects(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*ListProjectsRes, error)
 	ListOneProject(ctx context.Context, in *ListOneProjectReq, opts ...grpc.CallOption) (*ListOneProjectRes, error)
 	ListMyProjects(ctx context.Context, in *ListMyProjectReq, opts ...grpc.CallOption) (*ListMyProjectRes, error)
-	BuyProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error)
-	PaymentForProject(ctx context.Context, in *ProjectPaymentReq, opts ...grpc.CallOption) (*ProjectPaymentRes, error)
+	OrderProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error)
 	ExecutePaymentProject(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
 	CapturePaymentProject(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 }
@@ -96,18 +95,9 @@ func (c *projectServiceClient) ListMyProjects(ctx context.Context, in *ListMyPro
 	return out, nil
 }
 
-func (c *projectServiceClient) BuyProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error) {
+func (c *projectServiceClient) OrderProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error) {
 	out := new(BuyProjectRes)
-	err := c.cc.Invoke(ctx, "/project.ProjectService/BuyProject", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *projectServiceClient) PaymentForProject(ctx context.Context, in *ProjectPaymentReq, opts ...grpc.CallOption) (*ProjectPaymentRes, error) {
-	out := new(ProjectPaymentRes)
-	err := c.cc.Invoke(ctx, "/project.ProjectService/PaymentForProject", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/OrderProject", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,8 +132,7 @@ type ProjectServiceServer interface {
 	ListProjects(context.Context, *NoParam) (*ListProjectsRes, error)
 	ListOneProject(context.Context, *ListOneProjectReq) (*ListOneProjectRes, error)
 	ListMyProjects(context.Context, *ListMyProjectReq) (*ListMyProjectRes, error)
-	BuyProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error)
-	PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error)
+	OrderProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error)
 	ExecutePaymentProject(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
 	CapturePaymentProject(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	mustEmbedUnimplementedProjectServiceServer()
@@ -171,11 +160,8 @@ func (UnimplementedProjectServiceServer) ListOneProject(context.Context, *ListOn
 func (UnimplementedProjectServiceServer) ListMyProjects(context.Context, *ListMyProjectReq) (*ListMyProjectRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMyProjects not implemented")
 }
-func (UnimplementedProjectServiceServer) BuyProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BuyProject not implemented")
-}
-func (UnimplementedProjectServiceServer) PaymentForProject(context.Context, *ProjectPaymentReq) (*ProjectPaymentRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PaymentForProject not implemented")
+func (UnimplementedProjectServiceServer) OrderProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderProject not implemented")
 }
 func (UnimplementedProjectServiceServer) ExecutePaymentProject(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecutePaymentProject not implemented")
@@ -304,38 +290,20 @@ func _ProjectService_ListMyProjects_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProjectService_BuyProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProjectService_OrderProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BuyProjectReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProjectServiceServer).BuyProject(ctx, in)
+		return srv.(ProjectServiceServer).OrderProject(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/project.ProjectService/BuyProject",
+		FullMethod: "/project.ProjectService/OrderProject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectServiceServer).BuyProject(ctx, req.(*BuyProjectReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProjectService_PaymentForProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProjectPaymentReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProjectServiceServer).PaymentForProject(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/project.ProjectService/PaymentForProject",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectServiceServer).PaymentForProject(ctx, req.(*ProjectPaymentReq))
+		return srv.(ProjectServiceServer).OrderProject(ctx, req.(*BuyProjectReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -408,12 +376,8 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProjectService_ListMyProjects_Handler,
 		},
 		{
-			MethodName: "BuyProject",
-			Handler:    _ProjectService_BuyProject_Handler,
-		},
-		{
-			MethodName: "PaymentForProject",
-			Handler:    _ProjectService_PaymentForProject_Handler,
+			MethodName: "OrderProject",
+			Handler:    _ProjectService_OrderProject_Handler,
 		},
 		{
 			MethodName: "ExecutePaymentProject",

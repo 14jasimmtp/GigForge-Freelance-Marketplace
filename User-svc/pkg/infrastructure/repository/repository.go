@@ -10,6 +10,7 @@ import (
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/job"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/project"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pkg/domain"
 	"gorm.io/gorm"
 )
@@ -17,6 +18,7 @@ import (
 type Repo struct {
 	db *gorm.DB
 	job.UnimplementedJobserviceServer
+	project.UnimplementedUserServiceServer
 }
 
 func NewRepo(db *gorm.DB) *Repo {
@@ -466,11 +468,55 @@ func (r *Repo) GetFreelancerPaypalEmail(ctx context.Context,req *job.Preq)(*job.
 	return &job.Pres{Email: email},nil
 }
 
+func (r *Repo) GetFreelancerPaypalEmails(ctx context.Context,req *project.Preq)(*project.Pres,error){
+	var email string
+	query:=r.db.Raw(`SELECT email  FROM freelancer_paypals where user_id = ?`,req.UserID).Scan(&email)
+	if query.RowsAffected == 0{
+		return &project.Pres{Error: "user doesn't added paypal account"},nil
+	}
+	if query.Error != nil {
+		fmt.Println(query.Error)
+		return &project.Pres{Error: "something went wrong"}, nil
+	}
+	return &project.Pres{Email: email},nil
+}
+
 func (r *Repo) AddPaymentEmail(userID string,email string) (error){
 	userid,err:=strconv.Atoi(userID)
 	if err != nil {
 		return errors.New(`user id is not integer.enter correctly`)
 	}
 	r.db.Create(&domain.Freelancer_paypal{UserID: uint(userid),Email: email})
+	return nil
+}
+
+func (r *Repo) CheckFreelancerExist(userID int32) error{
+	q:=r.db.Raw(`SELECT * from users where id = ?`,userID)
+	if q.Error != nil {
+		return errors.New(`something went wrong`)
+	}
+	if q.RowsAffected == 1{
+		return nil
+	}
+	return errors.New(`no freelancer found with this id`)
+}
+
+func (r *Repo) CheckContractWithFreelancerAndClient(freelancerID int32,clientID int64) error{
+	var count int
+	q:=r.db.Raw(`SELECT count(*) from contracts where freelancer_id = ? AND client_id = ?`,freelancerID,clientID).Scan(&count)
+	if q.Error != nil {
+		return errors.New(`something went wrong`)
+	}
+	if count >= 1{
+		return nil
+	}
+	return errors.New(`you have no relation with this freelancer to review`)
+}
+
+func (r *Repo) AddReviewForFreelancer(req *auth.ReviewFlancerReq) error{
+	err:=r.db.Create(&domain.FreelancerReview{Rating: int(req.Rating),Review: req.Review,Freelancer_id: int(req.FreelancerId),Client_id: int(req.ClientId)}).Error
+	if err != nil {
+		return errors.New(`something went wrong`)
+	}
 	return nil
 }

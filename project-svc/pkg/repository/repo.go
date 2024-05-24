@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pb"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/domain"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/utils/round"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +31,7 @@ const (
 func (r *Repo) AddSingleProject(project *pb.AddSingleProjectReq) (int, error) {
 	var id int
 	insertProjectQuery := `INSERT INTO projects(created_at,updated_at,title, description, category,user_id) VALUES (?, ?, ?, ?, ?,?) RETURNING id`
-	err := r.db.Raw(insertProjectQuery, time.Now(), time.Now(), project.Title, project.Description, project.Category,project.UserId).Scan(&id).Error
+	err := r.db.Raw(insertProjectQuery, time.Now(), time.Now(), project.Title, project.Description, project.Category, project.UserId).Scan(&id).Error
 	if err != nil {
 		log.Printf("Error inserting project: %v", err)
 		return StatusInternalServerError, errors.New("failed to add project")
@@ -52,50 +54,50 @@ func (r *Repo) AddSingleProject(project *pb.AddSingleProjectReq) (int, error) {
 
 func (r *Repo) EditSingleProject(req *pb.EditSingleProjectReq) (int, error) {
 	query := `UPDATE projects set updated_at = ? , title = ? , description = ? ,category = ? where id = ? and user_id = ?`
-	err := r.db.Raw(query, time.Now(), req.Title, req.Description, req.Category,req.ProjectId,req.UserId).Error
+	err := r.db.Raw(query, time.Now(), req.Title, req.Description, req.Category, req.ProjectId, req.UserId).Error
 	if err != nil {
 		fmt.Println(err)
 		return StatusInternalServerError, errors.New("error while updating project")
 	}
-	query= `UPDATE single_project set updated_at = ?, price = ?, deliver_days = ?, number_of_revisions = ? where project_id = ?`
-	errs:= r.db.Exec(query,time.Now(),req.Price,req.DeliveryDays,req.NumberOfRevisions,req.ProjectId).Error
+	query = `UPDATE single_project set updated_at = ?, price = ?, deliver_days = ?, number_of_revisions = ? where project_id = ?`
+	errs := r.db.Exec(query, time.Now(), req.Price, req.DeliveryDays, req.NumberOfRevisions, req.ProjectId).Error
 	if errs != nil {
 		fmt.Println(err)
 		return StatusInternalServerError, errors.New("error while updating project")
 	}
-	return StatusOK,nil
+	return StatusOK, nil
 }
 
-func (r *Repo) DeleteProject(req *pb.RemProjectReq) (error){
-	query:=`Delete from projects where id = ? and user_id = ?`
-	err:=r.db.Raw(query,req.ProjectId,req.UserId).Error
+func (r *Repo) DeleteProject(req *pb.RemProjectReq) error {
+	query := `Delete from projects where id = ? and user_id = ?`
+	err := r.db.Raw(query, req.ProjectId, req.UserId).Error
 	if err != nil {
 		return errors.New(`can't delete project.Not yours`)
 	}
 	return nil
 }
 
-func (r *Repo) ListProjects() ([]*pb.Project,error){
+func (r *Repo) ListProjects() ([]*pb.Project, error) {
 	var project []domain.Project
 	var singleProject domain.SingleProject
 	var res []*pb.Project
 
-	query:=r.db.Raw(`SELECT * from projects `).Scan(&project)
+	query := r.db.Raw(`SELECT * from projects `).Scan(&project)
 	if query.Error != nil {
-		return nil,errors.New(`something went wrong`)
+		return nil, errors.New(`something went wrong`)
 	}
-	
-	for _,p:=range project{
-		query2:=r.db.Raw(`SELECT * from single_projects where project_id = ?`,p.ID).Scan(&singleProject)
+
+	for _, p := range project {
+		query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
 		if query2.Error != nil {
-			return nil,errors.New(`something went wrong`)
+			return nil, errors.New(`something went wrong`)
 		}
-		h:=pb.Project{
-			ID: int32(p.ID),
-			Title: p.Title,
-			Description: p.Description,
-			Price: singleProject.Price,
-			DeliveryDays: int32(singleProject.DeliverDays),
+		h := pb.Project{
+			ID:                int32(p.ID),
+			Title:             p.Title,
+			Description:       p.Description,
+			Price:             singleProject.Price,
+			DeliveryDays:      int32(singleProject.DeliverDays),
 			NumberOfRevisions: int32(singleProject.NumberOfRevisions),
 		}
 		res = append(res, &h)
@@ -104,55 +106,121 @@ func (r *Repo) ListProjects() ([]*pb.Project,error){
 	return res, nil
 }
 
-func (r *Repo) ListOneProject(id string) (*pb.Project,error){
+func (r *Repo) ListOneProject(id string) (*pb.Project, error) {
 	var project domain.Project
 	var singleProject domain.SingleProject
-	query:=r.db.Raw(`SELECT * from projects where id = ?`,id).Scan(&project)
+	query := r.db.Raw(`SELECT * from projects where id = ?`, id).Scan(&project)
 	if query.Error != nil {
-		return nil,errors.New(`something went wrong`)
+		return nil, errors.New(`something went wrong`)
 	}
-	query2:=r.db.Raw(`SELECT * from single_projects where project_id = ?`,id).Scan(&singleProject)
-		if query2.Error != nil {
-			return nil,errors.New(`something went wrong`)
-		}
-		h:=pb.Project{
-			ID: int32(project.ID),
-			Title: project.Title,
-			Description: project.Description,
-			Price: singleProject.Price,
-			DeliveryDays: int32(singleProject.DeliverDays),
-			NumberOfRevisions: int32(singleProject.NumberOfRevisions),
-		}
-		return &h,nil
+	query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, id).Scan(&singleProject)
+	if query2.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	h := pb.Project{
+		ID:                int32(project.ID),
+		Title:             project.Title,
+		Description:       project.Description,
+		Price:             singleProject.Price,
+		DeliveryDays:      int32(singleProject.DeliverDays),
+		NumberOfRevisions: int32(singleProject.NumberOfRevisions),
+	}
+	return &h, nil
 }
 
-func (r *Repo) ListMyProject(user_id string) ([]*pb.Project,error){
+func (r *Repo) ListMyProject(user_id string) ([]*pb.Project, error) {
 	var project []domain.Project
 	var singleProject domain.SingleProject
 	var res []*pb.Project
 
-	query:=r.db.Raw(`SELECT * from projects where user_id = ?`,user_id).Scan(&project)
+	query := r.db.Raw(`SELECT * from projects where user_id = ?`, user_id).Scan(&project)
 	if query.Error != nil {
-		return nil,errors.New(`something went wrong`)
+		return nil, errors.New(`something went wrong`)
 	}
-	
-	for _,p:=range project{
-		query2:=r.db.Raw(`SELECT * from single_projects where project_id = ?`,p.ID).Scan(&singleProject)
+
+	for _, p := range project {
+		query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
 		if query2.Error != nil {
-			return nil,errors.New(`something went wrong`)
+			return nil, errors.New(`something went wrong`)
 		}
-		h:=pb.Project{
-			ID: int32(p.ID),
-			Title: p.Title,
-			Description: p.Description,
-			Price: singleProject.Price,
-			DeliveryDays: int32(singleProject.DeliverDays),
+		h := pb.Project{
+			ID:                int32(p.ID),
+			Title:             p.Title,
+			Description:       p.Description,
+			Price:             singleProject.Price,
+			DeliveryDays:      int32(singleProject.DeliverDays),
 			NumberOfRevisions: int32(singleProject.NumberOfRevisions),
 		}
 		res = append(res, &h)
 
 	}
 	return res, nil
+}
+
+func (r *Repo) GetProjectOrder(orderID string) (*domain.ProjectOrders, error) {
+	var order domain.ProjectOrders
+	q := r.db.Raw(`SELECT * FROM project_orders WHERE id = ?`, orderID).Scan(&order)
+	if q.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	if q.RowsAffected == 0 {
+		return nil, errors.New(`no orders found with this id`)
+	}
+	return &order, nil
+}
+
+func (r *Repo) UpdateOrderPaymentStatus(orderID string) (*domain.ProjectOrders, error) {
+	var order domain.ProjectOrders
+	q := r.db.Raw(`SELECT * FROM project_orders WHERE id = ?`, orderID).Scan(&order)
+	if q.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	if q.RowsAffected == 0 {
+		return nil, errors.New(`no orders found with this id`)
+	}
+	if order.Payment_status == "paid" {
+		return nil, errors.New(`payment already paid`)
+	}
+
+	j := r.db.Exec(`UPDATE project_orders SET payment_status = 'paid' WHERE id = ?`, orderID)
+	if j.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	return &order, nil
+}
+
+func (r *Repo) CheckProjectActiveAndExist(projectID string) (*domain.SingleProject, *domain.Project, error) {
+	var project domain.SingleProject
+	q := r.db.Raw(`SELECT * FROM single_projects WHERE project_id = ?`, projectID).Scan(&project)
+	if q.Error != nil {
+		return nil, nil, q.Error
+	}
+	if q.RowsAffected < 1 {
+		return nil, nil, errors.New(`no orders found with this id`)
+	}
+	var pro domain.Project
+	query := r.db.Raw(`SELECT * FROM projects WHERE id = ?`, projectID).Scan(&pro)
+	if query.Error != nil {
+		return nil, nil, q.Error
+	}
+	if query.RowsAffected < 1 {
+		return nil, nil, errors.New(`no orders found with this id`)
+	}
+	return &project, &pro, nil
+}
+
+func (r *Repo) OrderProject(project *domain.SingleProject, pro *domain.Project, userId string) error {
+	uid,err:=strconv.Atoi(userId)
+	if err != nil {
+		return errors.New(`error in userid`)
+	}
+	freelancerFee := round.RoundToTwoDecimalPlaces(float64(project.Price) * 0.80)
+	marketPlaceFee := round.RoundToTwoDecimalPlaces(float64(project.Price) * 0.20)
+	q := r.db.Create(&domain.ProjectOrders{FreelancerID: pro.User_id, ClientID: uid, ProjectID: int(pro.ID), Payment_status: "unpaid", Delivery_status: "pending", FreelancerFee: freelancerFee, MarketplaceFee: marketPlaceFee})
+	if q.Error != nil {
+		return errors.New(`something went wrong`)
+	}
+	return nil
 }
 
 // func (r *Repo) OrderProject(req *pb.)

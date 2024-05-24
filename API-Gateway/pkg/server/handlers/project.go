@@ -137,7 +137,7 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	user_id:=c.Locals("User_id").(int64)
 	user:=strconv.Itoa(int(user_id))
 	prjt_id:=c.Params("id")
-	res,err:=h.project.BuyProject(context.Background(),&project.BuyProjectReq{UserId: user,ProjectId: prjt_id})
+	res,err:=h.project.OrderProject(context.Background(),&project.BuyProjectReq{UserId: user,ProjectId: prjt_id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 	}
@@ -145,7 +145,7 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 }
 
 func (h *ProjectHandler) ExecutePaymentProject(c *fiber.Ctx) error {
-	orderID := c.Params("orderID")
+	orderID := c.Query("orderID")
 	res, err := h.project.ExecutePaymentProject(context.Background(), &project.ExecutePaymentReq{OrderID: orderID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
@@ -158,16 +158,17 @@ func (h *ProjectHandler) ExecutePaymentProject(c *fiber.Ctx) error {
 }
 
 func (h *ProjectHandler) GetPaymentProject(c *fiber.Ctx) error{
+	c.Query("orderID")
 	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html",nil)
 }
 
 func (h *ProjectHandler) CapturePaymentProject(c *fiber.Ctx) error{
-	paymentID := c.Params("paymentID")
-	res, err := h.project.CapturePaymentProject(context.Background(), &project.CapturePaymentReq{PaymentID: paymentID})
+	paymentID := c.Query("paymentID")
+	orderID := c.Query("orderID")
+	res, err := h.project.CapturePaymentProject(context.Background(), &project.CapturePaymentReq{PaymentID: paymentID,OrderID: orderID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
-
 	return c.Status(int(res.Status)).JSON(res)
 }
 

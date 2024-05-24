@@ -11,8 +11,7 @@ service ProjectService {
     rpc ListProjects(NoParam) returns (ListProjectsRes) {};
     rpc ListOneProject(ListOneProjectReq) returns (ListOneProjectRes) {};
     rpc ListMyProjects(ListMyProjectReq) returns (ListMyProjectRes) {};
-    rpc BuyProject(BuyProjectReq) returns (BuyProjectRes) {};
-    rpc PaymentForProject(ProjectPaymentReq) returns (ProjectPaymentRes) {};
+    rpc OrderProject(BuyProjectReq) returns (BuyProjectRes) {};
     rpc ExecutePaymentProject(ExecutePaymentReq) returns (ExecutePaymentRes) {};
     rpc CapturePaymentProject(CapturePaymentReq) returns (CapturePaymentRes) {};
 }
@@ -30,20 +29,14 @@ message ExecutePaymentRes{
 
 message CapturePaymentReq{
     string paymentID = 1;
+    string orderID = 2;
+
 }
 
 message CapturePaymentRes{
     int32 status = 1;
     string Error = 2;
     string userName = 3;
-}
-
-message ProjectPaymentRes{
-
-}
-
-message ProjectPaymentReq{
-
 }
 
 message BuyProjectRes{
@@ -67,8 +60,6 @@ message ListMyProjectRes{
     string Error = 3;
     string Response = 4;
 }
-
-
 
 message RemProjectReq{
     string user_id = 1;
