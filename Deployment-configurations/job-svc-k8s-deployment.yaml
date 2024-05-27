@@ -16,9 +16,20 @@ spec:
     spec:
       containers:
       - name: gigforge-job-svc
-        image: job-svc:latest
+        image: muhamedjasim/gigforge-job_svc:latest
         ports:
-        - containerPort: 30004
+        - containerPort: 30003
+        env:
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: postgres-url
+        - name: USER_SVC
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: user-url
 ---
 
 apiVersion: v1
@@ -26,11 +37,10 @@ kind: Service
 metadata:
   name: gigforge-job-svc-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gigforge-job-svc
   ports:
     - protocol: TCP
-      port: 30005
-      targetPort: 30005
-      nodePort: 30015   
+      port: 30003
+      targetPort: 30003

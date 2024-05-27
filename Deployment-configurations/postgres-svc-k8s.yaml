@@ -1,10 +1,11 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-deployment
+  name: postgres
   labels:
     app: postgres
 spec:
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
@@ -16,38 +17,45 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:latest
+        image: postgres:13
         ports:
         - containerPort: 5432
+          name: postgres
         env:
         - name: POSTGRES_USER
-          valueFrom: 
-            secretKeyRef: 
-              name: postgres-secret
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
               key: postgres-user
         - name: POSTGRES_PASSWORD
-          valueFrom: 
-            secretKeyRef: 
-              name: postgres-secret
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
               key: postgres-password
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data
-      volumes:
-      - name: postgres-data
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Mi
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
+  labels:
+    app: postgres
 spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  clusterIP: None
   selector:
     app: postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432

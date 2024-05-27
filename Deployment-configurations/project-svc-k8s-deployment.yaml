@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-svc-deployment
+  labels:
+    app: gigforge-project-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gigforge-project-svc
+  template:
+    metadata:
+      labels:
+        app: gigforge-project-svc
+    spec:
+      containers:
+      - name: gigforge-project-svc
+        image: muhamedjasim/gigforge-project_svc
+        ports:
+        - containerPort: 30004
+        env:
+        - name: DB_URL
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: postgres-url
+        - name: USER_SVC
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: user-url
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gigforge-project-svc-service
+spec:
+  type: ClusterIP
+  selector:
+    app: gigforge-project-svc
+  ports:
+    - protocol: TCP
+      port: 30004
+      targetPort: 30004

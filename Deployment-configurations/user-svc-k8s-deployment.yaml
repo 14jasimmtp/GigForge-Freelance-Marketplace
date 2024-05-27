@@ -1,36 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chat-svc-deployment
+  name: user-svc-deployment
   labels:
-    app: gigforge-chat-svc
+    app: gigforge-user-svc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gigforge-chat-svc
+      app: gigforge-user-svc
   template:
     metadata:
       labels:
-        app: gigforge-chat-svc
+        app: gigforge-user-svc
     spec:
       containers:
-      - name: gigforge-chat-svc
-        image: chat-svc:latest
+      - name: gigforge-user-svc
+        image: muhamedjasim/gigforge-user_svc:latest
         ports:
-        - containerPort: 30005
+        - containerPort: 30001
+        env:
+        - name: DB_URL
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: postgres-url
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: gigforge-chat-svc-service
+  name: gigforge-user-svc-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    app: gigforge-chat-svc
+    app: gigforge-user-svc
   ports:
     - protocol: TCP
-      port: 30005
-      targetPort: 30005
-      nodePort: 30015   
+      port: 30001
+      targetPort: 30001

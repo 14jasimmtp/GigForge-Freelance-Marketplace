@@ -19,6 +19,27 @@ spec:
         image: muhamedjasim/gigforge-api_gateway:latest
         ports:
         - containerPort: 3000
+        env:
+        - name: AUTH_SVC
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: user-url
+        - name: JOB_SVC
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: job-url
+        - name: Project_SVC
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: project-url
+        - name: CHAT_SVC
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: chat-url  
 ---
 
 apiVersion: v1

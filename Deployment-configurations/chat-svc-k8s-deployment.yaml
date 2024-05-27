@@ -16,9 +16,21 @@ spec:
     spec:
       containers:
       - name: gigforge-chat-svc
-        image: chat-svc:latest
+        image: muhamedjasim/gigforge-chat_svc:latest
         ports:
         - containerPort: 30005
+        env:
+        - name: mongoURL
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: mongo-url
+        - name: amqpUrl
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: rabbitmq-url
+        
 ---
 
 apiVersion: v1
@@ -26,11 +38,10 @@ kind: Service
 metadata:
   name: gigforge-chat-svc-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gigforge-chat-svc
   ports:
     - protocol: TCP
       port: 30005
       targetPort: 30005
-      nodePort: 30015   
