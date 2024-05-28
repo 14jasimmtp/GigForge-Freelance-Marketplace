@@ -350,6 +350,13 @@ func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
+
+// }
+
+// func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
+
+// }
 // func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{
 // 	// var req req.
 // 	user_id:=c.Locals("User_id").(string)

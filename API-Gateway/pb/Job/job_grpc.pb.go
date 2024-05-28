@@ -41,6 +41,7 @@ type JobServiceClient interface {
 	ExecutePaymentContract(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
 	CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 	SaveJobs(ctx context.Context, in *SaveJobsReq, opts ...grpc.CallOption) (*SaveJobsRes, error)
+	GetInvoiceContract(ctx context.Context, in *GetInvoiceContractReq, opts ...grpc.CallOption) (*GetInvoiceContractRes, error)
 }
 
 type jobServiceClient struct {
@@ -222,6 +223,15 @@ func (c *jobServiceClient) SaveJobs(ctx context.Context, in *SaveJobsReq, opts .
 	return out, nil
 }
 
+func (c *jobServiceClient) GetInvoiceContract(ctx context.Context, in *GetInvoiceContractReq, opts ...grpc.CallOption) (*GetInvoiceContractRes, error) {
+	out := new(GetInvoiceContractRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetInvoiceContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -245,6 +255,7 @@ type JobServiceServer interface {
 	ExecutePaymentContract(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
 	CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error)
+	GetInvoiceContract(context.Context, *GetInvoiceContractReq) (*GetInvoiceContractRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -308,6 +319,9 @@ func (UnimplementedJobServiceServer) CapturePaymentContract(context.Context, *Ca
 }
 func (UnimplementedJobServiceServer) SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveJobs not implemented")
+}
+func (UnimplementedJobServiceServer) GetInvoiceContract(context.Context, *GetInvoiceContractReq) (*GetInvoiceContractRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInvoiceContract not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -664,6 +678,24 @@ func _JobService_SaveJobs_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_GetInvoiceContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInvoiceContractReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetInvoiceContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetInvoiceContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetInvoiceContract(ctx, req.(*GetInvoiceContractReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -746,6 +778,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveJobs",
 			Handler:    _JobService_SaveJobs_Handler,
+		},
+		{
+			MethodName: "GetInvoiceContract",
+			Handler:    _JobService_GetInvoiceContract_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -22,6 +22,68 @@ service JobService{
     rpc GetJobOffersForFreelancer(GetJobOfferForFreelancerReq) returns (GetJobOfferForFreelancerRes) {};
     rpc ExecutePaymentContract(ExecutePaymentReq) returns (ExecutePaymentRes) {};
     rpc CapturePaymentContract(CapturePaymentReq) returns (CapturePaymentRes) {};
+    rpc GetAllContractsForClient(GetAllContractsForClientReq) returns (GetAllContractsForClientRes) {};
+    rpc GetOneContractForClient(GetOneContractForClientReq) returns (GetOneContractForClientRes) {};
+    rpc GetInvoiceContract(GetInvoiceContractReq) returns (GetInvoiceContractRes) {};
+}
+message GetInvoiceContractReq{
+    int64 userID= 1;
+    string contractID = 2;
+}
+
+message Invoices{
+    int32 InvoiceID = 1;
+    int32 contractID = 2;
+    string StartDate = 3;
+    string EndDate = 4;
+    string PaymentStatus = 5;
+    float TotalAmount = 6;
+    float FreelancerFee = 7;
+    float MarketPlaceFee = 8;
+}
+
+message GetInvoiceContractRes{
+    int32 Status = 1;
+    string Error = 2;
+    repeated Invoices invoices = 3;
+}
+
+message GetOneContractForClientRes{
+    Contracts contract = 1;
+    string Error = 2;
+    int32 status = 3;
+}
+
+message GetOneContractForClientReq{
+    int64 user_id = 1;
+    string contractID = 2;
+
+}
+
+message Contracts{
+    int32 contract_id = 1;
+    int32 Freelancer_id = 2;
+    int32 Client_id = 3;
+    string payment_type = 4;
+    float Total_amount = 5;
+    float paid_amount =6;
+    float pending_amount = 7;
+    string contract_status = 8;
+    string AttachmentUrl =9;
+    string Job_title = 10;
+    string Job_description = 11;
+    string Start_date = 12;
+}
+
+message GetAllContractsForClientReq{
+    int64 user_id = 1;
+    string Status = 2;
+}
+
+message GetAllContractsForClientRes{
+    repeated Contracts contracts = 1;
+    string Error = 2;
+    int32 status = 3;
 }
 
 message ExecutePaymentReq{

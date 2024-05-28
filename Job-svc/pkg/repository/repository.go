@@ -463,6 +463,9 @@ func (r *Repo) GetInvoiceWithID(id string)(*domain.Invoice,error){
 		fmt.Println(q.Error)
 		return nil,errors.New(`something went wrong`)
 	}
+	if invoice.Status == "paid"{
+		return nil, errors.New("already paid")
+	}
 	return &invoice,nil
 }
 
@@ -484,4 +487,42 @@ func (r *Repo) UpdateContractDetails(contractID int,freelancerFee,MarketplaceFee
 		return errors.New(`something went wrong`)
 	}
 	return nil
+}
+
+func (r *Repo) GetAllContracts(client_id int64) ([]domain.Contract,error){
+	var contracts []domain.Contract
+	q:=r.DB.Raw(`SELECT * FROM contracts WHERE client_id = ?`,client_id).Scan(&contracts)
+	if q.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	if q.RowsAffected == 0 {
+		return nil, errors.New(`no contracts.Make contract with freelancer to show contracts`)
+	}
+	return contracts,nil
+}
+
+func (r *Repo) GetOneContract(contractID string,clientID int64) (*domain.Contract,error){
+	var contracts domain.Contract
+	q:=r.DB.Raw(`SELECT * FROM contracts WHERE client_id = ? AND id = ?`,clientID,contractID).Scan(&contracts)
+	if q.Error != nil {
+		return nil, errors.New(`something went wrong`)
+	}
+	if q.RowsAffected == 0 {
+		return nil, errors.New(`no contracts.Make contract with freelancer to show contracts`)
+	}
+	return &contracts,nil
+}
+
+func (r *Repo) GetInvoices(client_id int64,contractID string) ([]domain.Invoice,error){
+	var invoices []domain.Invoice
+	fmt.Println("1")
+	q:=r.DB.Raw(`SELECT * From invoices where contract_id = ?`,contractID).Scan(&invoices)
+	if q.Error!= nil {
+		return nil,errors.New(`something went wrong`)
+	}
+	fmt.Println("2")
+	if q.RowsAffected == 0{
+		return nil, errors.New(`no invoices found`)
+	}
+	return invoices,nil
 }

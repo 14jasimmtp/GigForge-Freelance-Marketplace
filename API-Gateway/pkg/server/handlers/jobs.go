@@ -299,20 +299,6 @@ func (h *JobsHandler) CapturePaymentContract(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res.UserName)
 }
 
-// func (h *JobsHandler) CloseJobPost() {
-
-// }
-
-// func (h *JobsHandler) GetContractDetails(c *fiber.Ctx){
-// 	job_id:=c.Params("id")
-// 	println(job_id)
-// 	res, err := h.job.GetJob(context.Background(), &Job.GetJobReq{JobId: job_id})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
-// 	}
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
-
 func (h *JobsHandler) Search(c *fiber.Ctx) error {
 	query := c.Query("q")
 	PayType := c.Query("t")
@@ -329,22 +315,33 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error {
 
 }
 
-//contracts
-
-// func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
-// 	user_id := c.Locals("User_id").(int64)
-// 	res, err := h.job.GetAllContractsForClient(context.Background(), &Job.GetAllContractsForClientReq{UserId: user_id})
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-// 	}
-
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
-
-// func (h *JobsHandler) EndContract(c *fiber.Ctx) error {
-
-// }
-
-func (h *JobsHandler) GetPaymentForContractWithInvoiceID(c *fiber.Ctx){
-	
+func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error{
+	userID:=c.Locals("User_id").(int64)
+	Status:=c.Query("status")
+	contracts,err:=h.job.GetAllContractsForClient(context.Background(),&Job.GetAllContractsForClientReq{UserId: userID,Status: Status})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(contracts.Status)).JSON(contracts)
 }
+
+func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error{
+	userID:=c.Locals("User_id").(int64)
+	contractID:=c.Params("id")
+	contracts,err:=h.job.GetOneContractForClient(context.Background(),&Job.GetOneContractForClientReq{UserId: userID,ContractID: contractID})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(contracts.Status)).JSON(contracts)
+}
+
+func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error{
+	userID:=c.Locals("User_id").(int64)
+	cid:=c.Params("contractID")
+	contracts,err:=h.job.GetInvoiceContract(context.Background(),&Job.GetInvoiceContractReq{UserID: userID,ContractID: cid})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(contracts.Status)).JSON(contracts)
+}
+

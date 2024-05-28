@@ -104,7 +104,7 @@ func (s *ProjectService) ExecutePaymentProject(ctx context.Context, req *pb.Exec
 	return &pb.ExecutePaymentRes{Status: http.StatusOK, PaymentID: orders.OrderID, MerchantID: orders.MerchantID}, nil
 }
 
-func (s *ProjectService) CapturePaymentContract(ctx context.Context, req *pb.CapturePaymentReq) (*pb.CapturePaymentRes, error) {
+func (s *ProjectService) CapturePaymentProject(ctx context.Context, req *pb.CapturePaymentReq) (*pb.CapturePaymentRes, error) {
 	fmt.Println("capturing payment...")
 	ClientName, err := paypal.CapturePayment(req.PaymentID)
 	if err != nil {
@@ -126,6 +126,6 @@ func (s *ProjectService) CapturePaymentContract(ctx context.Context, req *pb.Cap
 	if err != nil {
 		return &pb.BuyProjectRes{Status: http.StatusInternalServerError,Error: err.Error()},nil
 	}
-	return &pb.BuyProjectRes{Status: http.StatusOK,Response: "project order successful. Will attach to you within delivery time."},nil
+	return &pb.BuyProjectRes{Status: http.StatusOK,Response: "project order successful. Go to payment route for payment for the order"},nil
  }
 

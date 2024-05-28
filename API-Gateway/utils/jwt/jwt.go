@@ -1,7 +1,9 @@
 package jwttoken
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -53,15 +55,15 @@ func IsValidVerifyToken(secretKey, tokenString string) (bool, *TempTokenClaims) 
 	}
 }
 
-func IsValidAccessToken(secretKey, tokenString string) (bool, *AccessTokenClaims) {
+func IsValidAccessToken(secretKey, tokenString string) (*AccessTokenClaims,error) {
 
 	token, err := jwt.ParseWithClaims(tokenString, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
 
 	if err != nil || !token.Valid {
-		fmt.Println("Error occurred while parsing token:", err)
-		return false, nil
+		log.Println("Error occurred while parsing token:", err)
+		return nil, errors.New(`error parsing token. Token not valid`)
 	}
 
 	if claims, ok := token.Claims.(*AccessTokenClaims); ok && token.Valid {
@@ -69,14 +71,14 @@ func IsValidAccessToken(secretKey, tokenString string) (bool, *AccessTokenClaims
 		// Check if token is expired
 		if claims.ExpiresAt.Before(time.Now()) {
 			fmt.Println("token expired")
-			return false, nil
+			return  nil,errors.New(`token expired`)
 		}
 
-		return true, claims
+		return claims,nil
 
 	} else {
 		fmt.Println("Error occurred while decoding token:", err)
-		return false, nil
+		return nil,errors.New(`error in decoding token`)
 	}
 }
 

@@ -222,5 +222,3 @@ func (r *Repo) OrderProject(project *domain.SingleProject, pro *domain.Project, 
 	}
 	return nil
 }
-
-// func (r *Repo) OrderProject(req *pb.)

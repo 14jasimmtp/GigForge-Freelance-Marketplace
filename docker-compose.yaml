@@ -1,4 +1,4 @@
-version: "3"
+# version: "3"
 services:
   postgres:
     image: postgres:latest
@@ -10,7 +10,7 @@ services:
     networks:
       - GigForge-Network
     volumes:
-      - gigforge_volume:/var/lib/postgresql/data
+      - database-postgres:/var/lib/postgresql/data
 
   mongodb:
     image: mongo
@@ -18,12 +18,13 @@ services:
     networks:
       - GigForge-Network
     volumes:
-      - gigforge_volume:/data/db
+      - database-postgres:/data/db
     ports:
       - 27017:27017
 
   api-gateway: 
     image: api-gateway
+    build: ./API-Gateway/
     restart: on-failure
     environment:
       AUTH_SVC: "user-svc:30001"

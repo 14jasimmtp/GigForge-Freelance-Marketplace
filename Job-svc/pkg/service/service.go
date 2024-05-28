@@ -224,17 +224,14 @@ func (s *Service) ExecutePaymentContract(ctx context.Context, req *job.ExecutePa
 	if err != nil {
 		return &job.ExecutePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	fmt.Println("3")
 	freelancerEmail, err := s.user.GetFreelancerPaypalEmail(context.Background(), &user.Preq{UserID: int32(contract.Freelancer_id)})
 	if err != nil {
 		return &job.ExecutePaymentRes{Status: http.StatusBadRequest, Error: freelancerEmail.Error}, nil
 	}
-	fmt.Println("4")
 	order, err := paypal.CreatePayment(invoice, freelancerEmail.Email)
 	if err != nil {
 		return &job.ExecutePaymentRes{Status: http.StatusFailedDependency, Error: err.Error()}, nil
 	}
-	fmt.Println("5")
 	return &job.ExecutePaymentRes{Status: http.StatusOK, PaymentID: order.OrderID, MerchantID: order.MerchantID}, nil
 }
 
@@ -253,4 +250,80 @@ func (s *Service) CapturePaymentContract(ctx context.Context, req *job.CapturePa
 		return &job.CapturePaymentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
 	return &job.CapturePaymentRes{Status: http.StatusOK, UserName: ClientName}, nil
+}
+
+func (s *Service) GetAllContractsForClient(ctx context.Context,req *job.GetAllContractsForClientReq) (*job.GetAllContractsForClientRes,error){
+	contracts,err:=s.repo.GetAllContracts(req.UserId)
+	if err != nil {
+		return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	var con []*job.Contracts
+	for _,c:=range contracts{
+		Jobs,err:=s.repo.GetJob(fmt.Sprintf("%d",c.Job_id))
+		if err != nil {
+			return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		}
+		con = append(con, &job.Contracts{
+			ContractId: int32(c.ID),
+			FreelancerId: int32(c.Freelancer_id),
+			ClientId: int32(c.Client_id),
+			PaymentType: c.Type,
+			TotalAmount: c.Budget,
+			PaidAmount: float32(c.Paid_amount),
+			PendingAmount: float32(c.Pending_amount),
+			ContractStatus: c.Status,
+			StartDate: c.Start_date.Format("02-01-2006"),
+			JobTitle: Jobs.Title,
+			JobDescription: Jobs.Description,
+		})
+	}
+	
+	return &job.GetAllContractsForClientRes{Contracts: con,Status: http.StatusOK},nil
+}	
+
+func (s *Service) GetOneContractForClient(ctx context.Context,req *job.GetOneContractForClientReq)(*job.GetOneContractForClientRes,error){
+	contract,err:=s.repo.GetOneContract(req.ContractID,req.UserId)
+	if err != nil {
+		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	Jobs,err:=s.repo.GetJob(fmt.Sprintf("%d",contract.Job_id))
+	if err != nil {
+		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	con:=&job.Contracts{
+		ContractId: int32(contract.ID),
+		FreelancerId: int32(contract.Freelancer_id),
+		ClientId: int32(contract.Client_id),
+		PaymentType: contract.Type,
+		TotalAmount: contract.Budget,
+		PaidAmount: float32(contract.Paid_amount),
+		PendingAmount: float32(contract.Pending_amount),
+		ContractStatus: contract.Status,
+		StartDate: contract.Start_date.Format("02-01-2006"),
+		JobTitle: Jobs.Title,
+		JobDescription: Jobs.Description,
+	}
+	return &job.GetOneContractForClientRes{Status: http.StatusOK,Contract: con},nil
+
+}
+
+func (s *Service) GetInvoiceContract(ctx context.Context,req *job.GetInvoiceContractReq)(*job.GetInvoiceContractRes,error){
+	invoices,err:=s.repo.GetInvoices(req.UserID,req.ContractID)
+	if err != nil {
+		return &job.GetInvoiceContractRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	var inv []*job.Invoices
+	for _,i:=range invoices{
+		in:=&job.Invoices{
+			InvoiceID: int32(i.ID),
+			ContractID: int32(i.ContractID),
+			StartDate: i.Start_date.Format("02-01-2006"),
+			EndDate: i.End_date.Format("02-01-2006"),
+			PaymentStatus: i.Status,
+			FreelancerFee: float32(i.Freelancer_fee),
+			MarketPlaceFee: float32(i.MarketPlace_fee),
+		}
+		inv = append(inv, in)
+	}
+	return &job.GetInvoiceContractRes{Invoices: inv,Status: http.StatusOK},nil
 }

@@ -44,7 +44,7 @@ func Freelancer(
 	{
 		contract.Use(middlewares.AuthFreelancer)
 		{
-			//contract.Get("",job.GetMyContractsForFreelancer)
+			// contract.Get("",job.GetMyContractsForFreelancer)
 		}
 	}
 
@@ -63,7 +63,6 @@ func Freelancer(
 		}
 	}
 	payment:=api.Group("/payment")
-	payment.Use(middlewares.AuthFreelancer)
 	payment.Post("/onboard-freelancers",profile.OnboardFreelancersToPaypal)
 	api.Post("/payment/add",profile.AddPaymentEmailPaypal)
 

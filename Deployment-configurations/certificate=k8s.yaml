@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hyperhive-certificate
+  namespace: hyperhive
+spec:
+  dnsNames:
+    - gigforge.jasim.online
+  secretName: 
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer

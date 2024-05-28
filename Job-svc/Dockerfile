@@ -12,7 +12,7 @@ FROM scratch AS build-stage
 
 WORKDIR /
 
-COPY --from=BaseImage ./Job-svc /
+COPY --from=BaseImage ./Job-svc/job-svc /
 COPY --from=BaseImage ./Job-svc/config.env /
 
-ENTRYPOINT [ "/job-svc"]
+CMD [ "/job-svc"]

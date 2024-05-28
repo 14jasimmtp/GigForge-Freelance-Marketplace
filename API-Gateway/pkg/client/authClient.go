@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func InitAuthClient(c *config.Config) auth.AuthServiceClient{
+func InitAuthClient(c *config.Config) auth.AuthServiceClient {
 	conn, err := grpc.Dial(c.AUTH_SVC, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("error connecting auth svc : ", err)

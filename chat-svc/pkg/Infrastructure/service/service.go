@@ -8,6 +8,7 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pb"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pkg/Infrastructure/repository"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/spf13/viper"
 )
 
 type Service struct{
@@ -20,7 +21,8 @@ func NewChatService(repo *repository.Repo) *Service{
 }
 
 func (s *Service) ChatReciever() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	fmt.Println(viper.GetString("AmqpUrl"),"url")
+	conn, err := amqp.Dial(viper.GetString("AmqpUrl"))
 	if err != nil {
 		fmt.Println("error", err)
 	}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/domain"
 	"github.com/plutov/paypal/v4"
-	"github.com/spf13/viper"
 )
 
 var paypalClient *paypal.Client
@@ -22,7 +22,7 @@ func CreatePayment(order *domain.ProjectOrders, freelancerEmail string) (*Order,
 		{
 			Amount: &paypal.PurchaseUnitAmount{
 				Currency: "USD",
-				Value:    fmt.Sprintf("%f", order.FreelancerFee),
+				Value:    fmt.Sprintf("%.2f", order.FreelancerFee),
 			},
 			Payee: &paypal.PayeeForOrders{
 				EmailAddress: freelancerEmail,
@@ -32,10 +32,10 @@ func CreatePayment(order *domain.ProjectOrders, freelancerEmail string) (*Order,
 		{
 			Amount: &paypal.PurchaseUnitAmount{
 				Currency: "USD",
-				Value:    fmt.Sprintf("%f", order.MarketplaceFee),
+				Value:    fmt.Sprintf("%.2f", order.MarketplaceFee),
 			},
 			Payee: &paypal.PayeeForOrders{
-				EmailAddress: viper.GetString("MarketPlacePaypalEmail"),
+				EmailAddress: "sb-aeymg30598091@business.example.com",
 			},
 			ReferenceID: "2",
 		},
@@ -43,7 +43,11 @@ func CreatePayment(order *domain.ProjectOrders, freelancerEmail string) (*Order,
 
 	// Debug information to print the purchase units
 	fmt.Printf("Purchase Units: %+v\n", purchaseUnits)
-
+	var err error
+	paypalClient, err = paypal.NewClient("ARh_tJkDPzL6OkIUdjKEMyxg8t_ZKiZ_sYm7Sapv4x9NTsPxjQqKAGyEUcpsyT_7_MdZeYUTM40o7oLl", "EDAsi6PgoWAgCqiEO-hhki2mmICwFM7q0z8K1fMylnQdkrH8jvUQyFPPc24Ie8j_Vmb6UCYOcUYa2ToT", paypal.APIBaseSandBox)
+	if err != nil {
+		log.Fatal(err)
+	}
 	orders, err := paypalClient.CreateOrder(context.Background(), paypal.OrderIntentCapture, purchaseUnits, &paypal.CreateOrderPayer{
 		Name: &paypal.CreateOrderPayerName{
 			GivenName: "John",
@@ -62,7 +66,7 @@ func CreatePayment(order *domain.ProjectOrders, freelancerEmail string) (*Order,
 	}
 
 	fmt.Println(order)
-	merchantIDs := []string{freelancerEmail, viper.GetString("MarketPlacePaypalEmail")}
+	merchantIDs := []string{freelancerEmail, "sb-aeymg30598091@business.example.com"}
 
 	return &Order{OrderID: orders.ID, MerchantID: merchantIDs}, nil
 

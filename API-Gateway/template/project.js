@@ -7,8 +7,8 @@ function getQueryParam(param) {
 function renderPayPalButtons() {
   paypal.Buttons({
       createOrder: function(data, actions) {
-        const ID = getQueryParam('invoiceID')
-          return fetch(`http://localhost:3000/client/payment/contract/execute?invoiceID=${ID}`, {
+        const ID = getQueryParam('orderID')
+          return fetch(`http://localhost:3000/client/payment/project/execute?orderID=${ID}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -27,8 +27,9 @@ function renderPayPalButtons() {
           });
       },
       onApprove: function(data, actions) {
-        const IvcID = getQueryParam('invoiceID')
-          return fetch(`http://localhost:3000/client/payment/contract/capture?paymentID=${data.orderID}&invoiceID=${IvcID}`, {
+        const orderID = getQueryParam('orderID')
+        console.log(orderID,data.orderID)
+          return fetch(`http://localhost:3000/client/payment/project/capture?paymentID=${data.orderID}&orderID=${orderID}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -39,6 +40,7 @@ function renderPayPalButtons() {
               alert('Transaction completed by ' + orderData);
               showPaymentSuccessModal();
           }).catch(function(err) {
+              console.log(orderID,data.orderID)
               console.error('Capture Order Error:', err);
               alert('Failed to capture order');
           });
@@ -74,8 +76,8 @@ function loadPayPalSDK(clientId, merchantIDs) {
 }
 
 // Fetch order details and merchant IDs, then load PayPal SDK
-const ID = getQueryParam('invoiceID')
-fetch(`http://localhost:3000/client/payment/contract/execute?invoiceID=${ID}`, {
+const ID = getQueryParam('orderID')
+fetch(`http://localhost:3000/client/payment/project/execute?orderID=${ID}`, {
   method: 'POST',
   headers: {
       'Content-Type': 'application/json'

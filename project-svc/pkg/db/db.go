@@ -41,6 +41,7 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.Project{})
 	db.AutoMigrate(&domain.SingleProject{})
 	db.AutoMigrate(&domain.TierProject{})
+	db.AutoMigrate(&domain.ProjectOrders{})
 
 	return db
 }

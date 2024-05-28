@@ -12,6 +12,7 @@ FROM scratch AS build-stage
 
 WORKDIR /
 
-COPY --from=BaseImage ./Chat-svc /
+COPY --from=BaseImage ./Chat-svc/chat-svc /
+COPY --from=BaseImage ./Chat-svc/config.env /
 
-ENTRYPOINT [ "/chat-svc"]
+CMD [ "/chat-svc"]

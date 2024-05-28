@@ -146,6 +146,7 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 
 func (h *ProjectHandler) ExecutePaymentProject(c *fiber.Ctx) error {
 	orderID := c.Query("orderID")
+	fmt.Println(orderID)
 	res, err := h.project.ExecutePaymentProject(context.Background(), &project.ExecutePaymentReq{OrderID: orderID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
@@ -159,7 +160,7 @@ func (h *ProjectHandler) ExecutePaymentProject(c *fiber.Ctx) error {
 
 func (h *ProjectHandler) GetPaymentProject(c *fiber.Ctx) error{
 	c.Query("orderID")
-	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html",nil)
+	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/projectpay.html",nil)
 }
 
 func (h *ProjectHandler) CapturePaymentProject(c *fiber.Ctx) error{
@@ -169,11 +170,5 @@ func (h *ProjectHandler) CapturePaymentProject(c *fiber.Ctx) error{
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.Status(int(res.Status)).JSON(res)
+	return c.Status(int(res.Status)).JSON(res.UserName)
 }
-
-
-// func (h *ProjectHandler) SearchProject(c *fiber.Ctx) error{
-// 	query:=c.Params("q")
-// }
-

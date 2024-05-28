@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func ConnectMongoDB() (*mongo.Collection, error) {
-
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	fmt.Println(viper.GetString("mongoURL"))
+	clientOptions := options.Client().ApplyURI(viper.GetString("mongoURL"))
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.Background(), clientOptions)

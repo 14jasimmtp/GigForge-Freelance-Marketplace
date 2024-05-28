@@ -10,8 +10,9 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	project *handler.ProjectHandler,
 	job *handler.JobsHandler) {
 
-	profiles:= api.Group("/profile")	
-	profiles.Post("",)
+	// profiles:= api.Group("/profile")	
+
+	// profiles.Get("",middlewares.AuthClient,profile.GetClientProfile)
 	jobs := api.Group("/job")
 
 	jobs.Post("", middlewares.AuthAdmin, job.AcceptOffer)
@@ -23,28 +24,23 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	jobs.Get("/proposals/:id",middlewares.AuthClient,job.GetProposalsOfJob)
 
 	contract:=api.Group("/contracts")
-	// contract.Use(middlewares.AuthClient)
-	// contract.Get("",job.GetAllContractsForClient)
-	// contract.Get("/:id",job.GetOneContract)
-	// contract.Get("/invoices/:job_id",job.GetAllInvoicesOfAJob)
-	contract.Get("/payment",job.GetPaymentContract)
-	contract.Post("/payment/execute",job.ExecutePaymentContract)
-	contract.Post("/payment/capture",job.CapturePaymentContract)
+	contract.Get("",middlewares.AuthClient,job.GetAllContractsForClient)
+	contract.Get("/:id",middlewares.AuthClient,job.GetOneContract)
+	contract.Get("/invoices/:contractID",middlewares.AuthClient,middlewares.AuthClient,job.GetAllInvoicesOfContract)
+	
 
 	projects:=api.Group("/project")
-	projects.Use(middlewares.AuthClient)
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)
-	projects.Post("/buy/:id",project.BuyProject)
-	projects.Post("/payment/execute",project.ExecutePaymentProject)
-	projects.Get("/payment/:orderID",project.GetPaymentProject)
-	projects.Get("/payment/capture",project.CapturePaymentProject)
+	projects.Post("/order/:id",middlewares.AuthClient,project.BuyProject)
+	
 	
 	api.Post("/review-freelancer",middlewares.AuthClient,profile.ReviewFreelancer)
 
-	// profiles:=api.Group("/profile")
-	// profile
-	// profiles.Get("",profile.GetProfile)
-
-	// payment:=api.Group("/")
+	api.Post("/payment/project/execute",project.ExecutePaymentProject)
+	api.Get("/payment/project/order",project.GetPaymentProject)
+	api.Post("/payment/project/capture",project.CapturePaymentProject)
+	api.Get("/payment/contract",job.GetPaymentContract)
+	api.Post("/payment/contract/execute",job.ExecutePaymentContract)
+	api.Post("/payment/contract/capture",job.CapturePaymentContract)
 }
