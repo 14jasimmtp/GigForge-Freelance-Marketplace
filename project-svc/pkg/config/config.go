@@ -9,7 +9,7 @@ type Config struct{
 
 }
 
-func LoadConfig() (config *Config,err error){
+func LoadConfig() (err error){
 	viper.AddConfigPath("./")
 	viper.SetConfigName("config")
 	viper.SetConfigType("env")
@@ -20,6 +20,5 @@ func LoadConfig() (config *Config,err error){
 		return
 	}
 
-	err = viper.Unmarshal(&config)
 	return 
 }

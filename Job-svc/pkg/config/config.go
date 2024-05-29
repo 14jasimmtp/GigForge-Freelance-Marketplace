@@ -8,7 +8,7 @@ type Config struct{
 	User_SVC string `mapstructure:"USER_SVC"`
 }
 
-func LoadConfig() (config *Config,err error){
+func LoadConfig() (err error){
 	viper.AddConfigPath("./")
 	viper.SetConfigName("config")
 	viper.SetConfigType("env")
@@ -19,6 +19,5 @@ func LoadConfig() (config *Config,err error){
 		return
 	}
 
-	err = viper.Unmarshal(&config)
 	return 
 }

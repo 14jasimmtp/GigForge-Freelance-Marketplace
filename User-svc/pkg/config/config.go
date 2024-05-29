@@ -11,7 +11,7 @@ type Config struct{
 	DB_Path string `mapstructure:"DB_Path"`
 }
 
-func LoadConfig() (config *Config,err error){
+func LoadConfig() (err error){
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./")
 	viper.SetConfigType("env")
@@ -23,8 +23,5 @@ func LoadConfig() (config *Config,err error){
 	if err != nil{
 		return
 	}
-
-	err = viper.Unmarshal(&config)
-
 	return
 }

@@ -8,15 +8,16 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/di"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pb"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pkg/config"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	c, err := config.LoadConfig()
+	err := config.LoadConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-	lis, err := net.Listen("tcp", c.PORT)
+	lis, err := net.Listen("tcp", viper.GetString("PORT"))
 	if err != nil {
 		log.Fatal("error", err)
 	}
