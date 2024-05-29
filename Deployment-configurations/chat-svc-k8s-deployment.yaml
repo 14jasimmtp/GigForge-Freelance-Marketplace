@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gigforge-chat-svc
-        image: muhamedjasim/gigforge-chat_svc:latest
+        image: muhamedjasim/gigforge-chat_svc:1.0
         ports:
         - containerPort: 30005
         env:

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gigforge-project-svc
-        image: muhamedjasim/gigforge-project_svc
+        image: muhamedjasim/gigforge-project_svc:1.0
         ports:
         - containerPort: 30004
         env:
