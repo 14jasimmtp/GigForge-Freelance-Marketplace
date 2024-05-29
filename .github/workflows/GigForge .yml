@@ -1,0 +1,51 @@
+name: GigForge CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker images
+      run: |
+        docker compose -f ./Deployment-configurations/ImageBuilder.yaml build
+        docker compose -f ./Deployment-configurations/ImageBuilder.yaml push
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Get GKE credentials
+      run: |
+        gcloud container clusters get-credentials gigforge-cluster-1 --zone us-central1-a --project ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Update Kubernetes deployments
+      run: |
+        kubectl set image deployment/api-gateway-deployment=muhamedjasim/gigforge-api_gateway:latest
+        kubectl set image deployment/chat-svc-deployment=muhamedjasim/gigforge-chat_svc:latest
+        kubectl set image deployment/user-svc-deployment=muhamedjasim/gigforge-user_svc:latest
+        kubectl set image deployment/job-svc-deployment=muhamedjasim/gigforge-job_svc:latest
+        kubectl set image deployment/project-svc-deployment=muhamedjasim/gigforge-project_svc:latest
