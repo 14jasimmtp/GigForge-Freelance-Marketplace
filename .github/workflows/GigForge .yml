@@ -24,8 +24,8 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        docker compose -f ./Deployment-configurations/ImageBuilder.yaml build
-        docker compose -f ./Deployment-configurations/ImageBuilder.yaml push
+        docker compose -f Deployment-configurations/ImageBuilder.yaml build
+        docker compose -f Deployment-configurations/ImageBuilder.yaml push
 
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
