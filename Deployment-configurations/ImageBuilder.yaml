@@ -14,3 +14,4 @@ services:
   chat-svc:
     image: muhamedjasim/gigforge-chat_svc:latest
     build: ../chat-svc/
+    
