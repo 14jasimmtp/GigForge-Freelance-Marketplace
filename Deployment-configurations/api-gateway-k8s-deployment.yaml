@@ -39,7 +39,14 @@ spec:
           valueFrom:
             secretKeyRef:
               name: gigforge-secret
-              key: chat-url  
+              key: chat-url
+        - name: ATokenSecret
+          valueFrom:
+            secretKeyRef:
+              name: gigforge-secret
+              key: token-secret
+        - name: PORT
+          value: :3000
 ---
 
 apiVersion: v1

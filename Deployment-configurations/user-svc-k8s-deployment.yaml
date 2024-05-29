@@ -25,6 +25,23 @@ spec:
             secretKeyRef: 
               name: gigforge-secret
               key: postgres-url
+        - name: OTP_Email
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: email
+        - name: App_Password
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: email-password
+        - name: ATokenSecret
+          valueFrom: 
+            secretKeyRef: 
+              name: gigforge-secret
+              key: token-secret
+        - name: PORT
+          value: :30001
 ---
 
 apiVersion: v1

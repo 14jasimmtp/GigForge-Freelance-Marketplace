@@ -30,6 +30,8 @@ spec:
             secretKeyRef: 
               name: gigforge-secret
               key: user-url
+        - name: PORT
+          value: :30004
 ---
 
 apiVersion: v1

@@ -30,6 +30,8 @@ spec:
             secretKeyRef: 
               name: gigforge-secret
               key: rabbitmq-url
+        - name: PORT
+          value: :30005
         
 ---
 

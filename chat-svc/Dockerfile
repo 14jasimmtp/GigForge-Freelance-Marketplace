@@ -16,7 +16,7 @@ FROM scratch AS build-stage
 WORKDIR /
 
 COPY --from=BaseImage ./Chat-svc/chat-svc /
-COPY --from=BaseImage ./Chat-svc/config.env /
+# COPY --from=BaseImage ./Chat-svc/config.env /
 COPY --from=BaseImage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 
