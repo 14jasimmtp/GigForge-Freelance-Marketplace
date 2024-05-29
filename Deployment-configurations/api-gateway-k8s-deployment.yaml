@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gigforge-api-gateway
-        image: muhamedjasim/gigforge-api_gateway:latest
+        image: muhamedjasim/gigforge-api_gateway
         ports:
         - containerPort: 3000
         env:
@@ -47,11 +47,10 @@ kind: Service
 metadata:
   name: gigforge-api-gateway-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: gigforge-api-gateway
   ports:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 30010   

@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	fmt.Println("new image with certificat")
 	c, _ := config.LoadConfig()
 	lis, err := net.Listen("tcp", c.PORT)
 	if err != nil {
@@ -22,6 +23,7 @@ func main() {
 
 	svc,repo := di.InitializeAPI(c)
 	grpcServer := grpc.NewServer()
+
 	auth.RegisterAuthServiceServer(grpcServer, svc)
 	job.RegisterJobserviceServer(grpcServer,repo)
 	project.RegisterUserServiceServer(grpcServer,repo)
