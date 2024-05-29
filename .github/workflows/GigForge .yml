@@ -45,8 +45,8 @@ jobs:
 
     - name: Update Kubernetes deployments
       run: |
-        kubectl set image deployment/api-gateway-deployment=muhamedjasim/gigforge-api_gateway:latest
-        kubectl set image deployment/chat-svc-deployment=muhamedjasim/gigforge-chat_svc:latest
-        kubectl set image deployment/user-svc-deployment=muhamedjasim/gigforge-user_svc:latest
-        kubectl set image deployment/job-svc-deployment=muhamedjasim/gigforge-job_svc:latest
-        kubectl set image deployment/project-svc-deployment=muhamedjasim/gigforge-project_svc:latest
+        kubectl set image deployment/api-gateway-deployment gigforge-api-gateway=muhamedjasim/gigforge-api_gateway:latest
+        kubectl set image deployment/chat-svc-deployment gigforge-chat-svc=muhamedjasim/gigforge-chat_svc:latest
+        kubectl set image deployment/user-svc-deployment gigforge-user-svc=muhamedjasim/gigforge-user_svc:latest
+        kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:latest
+        kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:latest
