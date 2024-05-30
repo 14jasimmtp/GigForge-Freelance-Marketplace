@@ -8,11 +8,10 @@ type Config struct{
 	ATokenSecret string `mapstructure:"ATokenSecret"`
 	OtpEmail string `mapstructure:"OTP_Email"`
 	Email_Password string `mapstructure:"Email_Password"`
-	DB_Path string `mapstructure:"DB_Path"`
 }
 
 func LoadConfig() (err error){
-	viper.SetConfigName("config")
+	viper.SetConfigName("user-svc_config")
 	viper.AddConfigPath("./")
 	viper.SetConfigType("env")
 

@@ -11,10 +11,13 @@ type Config struct{
 
 func LoadConfig() (err error){
 	viper.AddConfigPath("./")
-	viper.SetConfigName("config")
+	viper.SetConfigName("user-svc_config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
+	viper.BindEnv("PORT", "PORT")
+	viper.BindEnv("USER_SVC", "USER_SVC")
+	viper.BindEnv("DB_URL", "DB_URL")
 	err = viper.ReadInConfig()
 	if err != nil{
 		return

@@ -13,14 +13,10 @@ type Config struct {
 
 func LoadConfig() (err error) {
 	viper.AddConfigPath("./")
-	viper.SetConfigName("config")
+	viper.SetConfigName("api-gateway_config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
-	viper.BindEnv("PORT", "PORT")
-	viper.BindEnv("AUTH_SVC", "AUTH_SVC")
-	viper.BindEnv("ATokenSecret", "ATokenSecret")
-	viper.BindEnv("CHAT_SVC", "CHAT_SVC")
 	err = viper.ReadInConfig()
 
 	if err != nil {

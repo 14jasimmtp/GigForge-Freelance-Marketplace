@@ -11,10 +11,11 @@ type Config struct{
 func LoadConfig() (err error){
 	var config Config
 	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
+	viper.SetConfigName("chat-svc_config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
+
 	err =viper.ReadInConfig()
 	if err != nil {
 		return err

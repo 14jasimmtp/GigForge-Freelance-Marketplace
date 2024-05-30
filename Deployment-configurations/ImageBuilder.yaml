@@ -1,16 +1,16 @@
 services:
   api-gateway: 
-    image: muhamedjasim/gigforge-api_gateway:1.0
+    image: muhamedjasim/gigforge-api_gateway:latest
     build: ../API-Gateway/
   user-svc:
-    image: muhamedjasim/gigforge-user_svc:1.0
+    image: muhamedjasim/gigforge-user_svc:latest
     build: ../User-svc/
   job-svc:
-    image: muhamedjasim/gigforge-job_svc:1.0
+    image: muhamedjasim/gigforge-job_svc:latest
     build: ../Job-svc/
   project-svc:
-    image: muhamedjasim/gigforge-project_svc:1.0
+    image: muhamedjasim/gigforge-project_svc:latest
     build: ../project-svc/
   chat-svc:
-    image: muhamedjasim/gigforge-chat_svc:1.0
+    image: muhamedjasim/gigforge-chat_svc:latest
     build: ../chat-svc/

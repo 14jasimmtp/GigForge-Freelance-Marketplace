@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gigforge-job-svc
-        image: muhamedjasim/gigforge-job_svc:1.0
+        image: muhamedjasim/gigforge-job_svc:latest
         ports:
         - containerPort: 30003
         env:
