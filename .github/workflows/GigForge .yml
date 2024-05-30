@@ -24,6 +24,7 @@ jobs:
 
     - name: Create config files
       run: |
+          echo pwd
           echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./api-gateway_config.env
           echo "${{ secrets.USERSVC_CONFIG }}" > ./user-svc_config.env
           echo "${{ secrets.JOBSVC_CONFIG }}" > ./job-svc_config.env
