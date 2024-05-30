@@ -15,7 +15,7 @@ import (
 func main() {
 	err := config.LoadConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	lis, err := net.Listen("tcp", viper.GetString("PORT"))
 	if err != nil {

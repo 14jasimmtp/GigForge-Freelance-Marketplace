@@ -25,7 +25,7 @@ spec:
             secretKeyRef:
               name: gigforge-secret
               key: user-url
-        - name: JOB_SVC
+        - name: Job_SVC
           valueFrom:
             secretKeyRef:
               name: gigforge-secret
