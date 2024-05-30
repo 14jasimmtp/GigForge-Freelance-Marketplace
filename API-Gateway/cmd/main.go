@@ -18,12 +18,12 @@ func main() {
 	}
 
 	app := fiber.New()
-	app.Static("/template","./template")
-    app.Use(logger.New())
+	app.Static("/template", "./template")
+	app.Use(logger.New())
 
 	di.InitializeAPI(app)
-	fmt.Println("listening on port 3000")
-	if err :=app.Listen(viper.GetString("PORT"));err != nil {
+	fmt.Println("listening on port ")
+	if err := app.Listen(viper.GetString("PORT")); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("started")
