@@ -25,11 +25,11 @@ jobs:
     - name: Create config files
       run: |
           pwd
-          echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./api-gateway_config.env
-          echo "${{ secrets.USERSVC_CONFIG }}" > ./user-svc_config.env
-          echo "${{ secrets.JOBSVC_CONFIG }}" > ./job-svc_config.env
-          echo "${{ secrets.PROJECTSVC_CONFIG }}" > ./project-svc_config.env
-          echo "${{ secrets.CHATSVC_CONFIG }}" > ./chat-svc_config.env
+          echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./API-Gateway/api-gateway_config.env
+          echo "${{ secrets.USERSVC_CONFIG }}" > ./User-svc/user-svc_config.env
+          echo "${{ secrets.JOBSVC_CONFIG }}" > ./Job-svc/job-svc_config.env
+          echo "${{ secrets.PROJECTSVC_CONFIG }}" > ./project-svc/project-svc_config.env
+          echo "${{ secrets.CHATSVC_CONFIG }}" > ./chat-svc/chat-svc_config.env
 
 
     - name: Build and push Docker images
@@ -73,4 +73,4 @@ jobs:
         kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:2.0 -n gigforge
         kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:2.0 -n gigforge
         kubectl rollout restart deployment -n gigforge
-        
+
