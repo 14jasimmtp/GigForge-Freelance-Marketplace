@@ -24,7 +24,7 @@ jobs:
 
     - name: Create config files
       run: |
-          echo pwd
+          pwd
           echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./api-gateway_config.env
           echo "${{ secrets.USERSVC_CONFIG }}" > ./user-svc_config.env
           echo "${{ secrets.JOBSVC_CONFIG }}" > ./job-svc_config.env
@@ -73,3 +73,4 @@ jobs:
         kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:2.0 -n gigforge
         kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:2.0 -n gigforge
         kubectl rollout restart deployment -n gigforge
+        
