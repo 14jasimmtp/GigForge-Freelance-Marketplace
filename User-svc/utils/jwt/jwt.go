@@ -89,7 +89,7 @@ func GenerateTemporaryTokenToVerify(secret string, user *auth.UserSignupReq) (st
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Minute)),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
 	tokenstring, err := token.SignedString([]byte(secret))
 	fmt.Println(secret)
 	if err != nil {

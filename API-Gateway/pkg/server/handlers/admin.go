@@ -144,6 +144,7 @@ func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error while parsing the body"})
 	}
 	fmt.Println("1")
+	
 	res, err := h.job.AddCategory(context.Background(), &Job.AddCategoryReq{Category: req.Category})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"Error": err.Error()})

@@ -151,7 +151,7 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 	}
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error":Error})
 	}
 	res, err := h.profile.UpdateProfileDescription(context.Background(), &auth.UPDReq{
 		Title:       req.Title,
@@ -427,7 +427,6 @@ func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
-
 
 // func (h *ProfileHandler) GetPaymentHistory(c *fiber.Ctx) error{
 	

@@ -630,7 +630,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /admin/add-category:
+  /admin/category:
     post:
       consumes:
       - application/json
@@ -662,67 +662,6 @@ paths:
               type: string
             type: object
       summary: Add a new category
-      tags:
-      - admin
-  /admin/add-skill:
-    post:
-      consumes:
-      - application/json
-      description: Add a new skill with the provided details
-      parameters:
-      - description: Skill details
-        in: body
-        name: skill
-        required: true
-        schema:
-          $ref: '#/definitions/req.AddSkills'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully added skill
-          schema:
-            $ref: '#/definitions/auth.AddSkillRes'
-        "400":
-          description: Bad request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Add a new skill
-      tags:
-      - admin
-  /admin/block-user:
-    put:
-      consumes:
-      - application/json
-      description: Block a user by their ID
-      parameters:
-      - description: User ID
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User blocked successfully
-          schema:
-            $ref: '#/definitions/auth.BlockRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Block a user
       tags:
       - admin
   /admin/login:
@@ -759,7 +698,68 @@ paths:
       summary: Admin login
       tags:
       - admin
-  /admin/unblock-user:
+  /admin/skills:
+    post:
+      consumes:
+      - application/json
+      description: Add a new skill with the provided details
+      parameters:
+      - description: Skill details
+        in: body
+        name: skill
+        required: true
+        schema:
+          $ref: '#/definitions/req.AddSkills'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully added skill
+          schema:
+            $ref: '#/definitions/auth.AddSkillRes'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new skill
+      tags:
+      - admin
+  /admin/user/block:
+    put:
+      consumes:
+      - application/json
+      description: Block a user by their ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User blocked successfully
+          schema:
+            $ref: '#/definitions/auth.BlockRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Block a user
+      tags:
+      - admin
+  /admin/user/unblock:
     put:
       consumes:
       - application/json
@@ -1041,6 +1041,38 @@ paths:
       summary: Get all contracts for a client
       tags:
       - contracts
+  /job:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job listing
+      parameters:
+      - description: Job details
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/req.PostJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully posted job
+          schema:
+            $ref: '#/definitions/Job.PostjobRes'
+        "400":
+          description: Error validating request body
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Post a job
+      tags:
+      - jobs
   /jobs:
     get:
       description: Get a list of all jobs
@@ -1396,38 +1428,6 @@ paths:
               type: string
             type: object
       summary: Execute payment contract
-      tags:
-      - jobs
-  /jobs/post:
-    post:
-      consumes:
-      - application/json
-      description: Create a new job listing
-      parameters:
-      - description: Job details
-        in: body
-        name: job
-        required: true
-        schema:
-          $ref: '#/definitions/req.PostJob'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully posted job
-          schema:
-            $ref: '#/definitions/Job.PostjobRes'
-        "400":
-          description: Error validating request body
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "403":
-          description: Forbidden
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Post a job
       tags:
       - jobs
   /jobs/proposal:

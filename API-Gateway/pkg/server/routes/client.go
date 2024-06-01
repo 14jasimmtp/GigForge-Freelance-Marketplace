@@ -37,6 +37,7 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)
 	projects.Post("/order/:id",middlewares.AuthClient,project.BuyProject)
+	// projects.Get("/orders",middlewares.AuthClient,project.GetOrders)
 	
 	
 	api.Post("/review-freelancer",middlewares.AuthClient,profile.ReviewFreelancer)

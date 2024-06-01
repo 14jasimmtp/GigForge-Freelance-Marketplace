@@ -33,9 +33,7 @@ service AuthService{
     rpc GetFreelancers(GetTalentReq) returns (GetTalentRes) {};
     rpc AddPaymentEmail(AddPaymentEmailReq) returns (AddPaymentEmailRes) {};
     rpc GetFreelancerReviews(GetReviewReq) returns (GetReviewRes) {};
-
 }
-
 message GetReviewReq{
     string userID = 1;
 }

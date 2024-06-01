@@ -5,13 +5,13 @@ go 1.22.0
 require (
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofiber/swagger v1.0.0
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/spf13/viper v1.18.2
-	github.com/swaggo/fiber-swagger v1.3.0
-	github.com/swaggo/swag v1.8.1
+	github.com/swaggo/swag v1.16.3
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 )
@@ -53,7 +53,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.52.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

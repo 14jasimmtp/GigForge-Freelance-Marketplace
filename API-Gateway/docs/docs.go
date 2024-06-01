@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/add-category": {
+        "/admin/category": {
             "post": {
                 "description": "Add a new category with the provided details",
                 "consumes": [
@@ -53,99 +53,6 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/add-skill": {
-            "post": {
-                "description": "Add a new skill with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Add a new skill",
-                "parameters": [
-                    {
-                        "description": "Skill details",
-                        "name": "skill",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.AddSkills"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully added skill",
-                        "schema": {
-                            "$ref": "#/definitions/auth.AddSkillRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/block-user": {
-            "put": {
-                "description": "Block a user by their ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Block a user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User blocked successfully",
-                        "schema": {
-                            "$ref": "#/definitions/auth.BlockRes"
                         }
                     },
                     "500": {
@@ -212,7 +119,100 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/unblock-user": {
+        "/admin/skills": {
+            "post": {
+                "description": "Add a new skill with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Add a new skill",
+                "parameters": [
+                    {
+                        "description": "Skill details",
+                        "name": "skill",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.AddSkills"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added skill",
+                        "schema": {
+                            "$ref": "#/definitions/auth.AddSkillRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/user/block": {
+            "put": {
+                "description": "Block a user by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Block a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User blocked successfully",
+                        "schema": {
+                            "$ref": "#/definitions/auth.BlockRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/user/unblock": {
             "put": {
                 "description": "Unblock a user by their ID",
                 "consumes": [
@@ -631,6 +631,55 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/job": {
+            "post": {
+                "description": "Create a new job listing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Post a job",
+                "parameters": [
+                    {
+                        "description": "Job details",
+                        "name": "job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.PostJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully posted job",
+                        "schema": {
+                            "$ref": "#/definitions/Job.PostjobRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error validating request body",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -1061,55 +1110,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/post": {
-            "post": {
-                "description": "Create a new job listing",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Post a job",
-                "parameters": [
-                    {
-                        "description": "Job details",
-                        "name": "job",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.PostJob"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully posted job",
-                        "schema": {
-                            "$ref": "#/definitions/Job.PostjobRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error validating request body",
-                        "schema": {
-                            "$ref": "#/definitions/res.CommonRes"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -2737,6 +2737,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

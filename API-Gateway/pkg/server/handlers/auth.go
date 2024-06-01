@@ -91,7 +91,7 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(user)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error": Error})
 	}
 
 	res, err := h.auth.Signup(context.Background(), &auth.UserSignupReq{
@@ -131,7 +131,7 @@ func (h *Handler) ForgotPassword(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error": Error})
 	}
 	res, err := h.auth.ForgotPassword(context.Background(), &auth.FPreq{
 		Email: req.Email,
@@ -165,7 +165,7 @@ func (h *Handler) ResetPassword(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error": Error})
 	}
 	token:=c.Get("Authorization")
 
@@ -175,7 +175,7 @@ func (h *Handler) ResetPassword(c *fiber.Ctx) error {
 		Token: token,
 	})
 	if err != nil {
-		return c.Status(500).JSON(err, "rpc error")
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(int(res.Status)).JSON(res)
@@ -202,10 +202,11 @@ func (h *Handler) Verify(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error": Error})
 	}
 
 	token := c.Get("Authorization")
+	fmt.Println("token",token)
 
 	res, err := h.auth.Verify(context.Background(), &auth.VerifyReq{
 		OTP:   req.OTP,
@@ -215,5 +216,6 @@ func (h *Handler) Verify(c *fiber.Ctx) error {
 		return c.Status(400).JSON(err.Error())
 	}
 
-	return c.Status(400).JSON(res)
+	return c.Status(int(res.Status)).JSON(res)
 }
+

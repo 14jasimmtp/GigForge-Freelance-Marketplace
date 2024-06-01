@@ -27,8 +27,7 @@ service JobService{
     rpc GetInvoiceContract(GetInvoiceContractReq) returns (GetInvoiceContractRes) {};
     rpc AddAttachmentToContract(AddAttachmentReq) returns (AddAttachmentRes) {};
     rpc GetAttachments(GetAttachmentReq) returns (GetAttachmentRes) {};
-
-}
+}  
 
 message GetAttachmentReq{
     string contractID= 1;
