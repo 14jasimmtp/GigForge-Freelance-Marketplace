@@ -45,5 +45,6 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.Invoice{})
 	db.AutoMigrate(&domain.Contract{})
 	db.AutoMigrate(&domain.Category{})
+	db.AutoMigrate(&domain.Attachment{})
 	return db
 }

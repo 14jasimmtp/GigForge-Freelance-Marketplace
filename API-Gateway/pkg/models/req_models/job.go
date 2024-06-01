@@ -35,3 +35,8 @@ type SendInvoice struct{
 	End_date string `json:"week_ending_date"`
 	Description string `json:"description"`
 }
+
+type AddContractAttachment struct{
+	ContractID int `json:"contractID" form:"contractID" validate:"required"`
+	Description string `json:"description" form:"description"`
+}

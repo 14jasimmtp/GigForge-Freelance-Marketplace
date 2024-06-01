@@ -16,7 +16,7 @@ FROM scratch AS build-stage
 WORKDIR /
 
 COPY --from=BaseImage ./Project-svc/project-svc /
-COPY --from=BaseImage ./Project-svc/project-svc_config.env /
+COPY --from=BaseImage ./Project-svc/config.env /
 COPY --from=BaseImage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 CMD [ "/project-svc"]

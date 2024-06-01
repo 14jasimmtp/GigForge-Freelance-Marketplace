@@ -41,4 +41,9 @@ type RepoIfc interface {
 	AddReviewForFreelancer(req *auth.ReviewFlancerReq) error
 	CheckContractWithFreelancerAndClient(freelancerID int32,clientID int64) error
 	CheckFreelancerExist(userID int32) error
+	UpdateCmpDtails(details *auth.UpdCompDtlReq) error
+	UpdateCompContact(details *auth.UpdCompContReq) error
+	GetCompanyDetails(userID int32) (*auth.UpdCompDtlReq,error)
+	ContactDetails(userID int32) (*auth.UpdCompContReq,error)
+	GetReviews(userID string) ([]*auth.Reviews,error)
 }

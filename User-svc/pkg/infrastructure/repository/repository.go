@@ -80,18 +80,18 @@ func (r *Repo) AdminLogin(email string) (*domain.Admin, error) {
 
 
 func (r *Repo) GetUser(email string) (*domain.UserModel, error) {
-	var user domain.UserModel
-	query := `SELECT * FROM users WHERE email = ? `
-	err := r.db.Raw(query, email).Scan(&user).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, errors.New("user doesn't exist with this email")
-		}
+	var user domain.User
+	query := r.db.Raw(`SELECT * FROM users WHERE email = ? `, email).Scan(&user)
+	if query.Error != nil {
 		return nil, errors.New("something went wrong")
 
 	}
+	if query.RowsAffected < 1{
+		return nil, errors.New(`user doesn't exist`)
+	}
+
 	fmt.Println(user.ID)
-	return &user, nil
+	return &domain.UserModel{FirstName: user.FirstName,Email: user.Email,ID: user.ID,Password: user.Password,Role: user.Role}, nil
 }
 
 func (r *Repo) CheckOTP(email string) (int64, time.Time, error) {
@@ -491,11 +491,12 @@ func (r *Repo) AddPaymentEmail(userID string,email string) (error){
 }
 
 func (r *Repo) CheckFreelancerExist(userID int32) error{
-	q:=r.db.Raw(`SELECT * from users where id = ?`,userID)
+	var count int 
+	q:=r.db.Raw(`SELECT count(*) from users where id = ?`,userID).Scan(&count)
 	if q.Error != nil {
 		return errors.New(`something went wrong`)
 	}
-	if q.RowsAffected == 1{
+	if count == 1{
 		return nil
 	}
 	return errors.New(`no freelancer found with this id`)
@@ -519,4 +520,98 @@ func (r *Repo) AddReviewForFreelancer(req *auth.ReviewFlancerReq) error{
 		return errors.New(`something went wrong`)
 	}
 	return nil
+}
+
+func (r *Repo) UpdateCmpDtails(details *auth.UpdCompDtlReq) error{
+	Dtls:=&domain.ClientCompany{
+		ClientID: int(details.UserId),
+		CompanyName: details.CompanyName,
+		NumberOfEmployees: int(details.NumberOfEmployees),
+		Website: details.Website,
+		Tagline: details.Tagline,
+		Industry: details.Industry,
+	}
+	query:=r.db.Where("ClientID = ?",details.UserId).Attrs(Dtls).FirstOrCreate(Dtls)
+	if query.Error != nil{
+		return errors.New(`something went wrong`)
+	}
+	return nil
+}
+
+func (r *Repo) UpdateCompContact(details *auth.UpdCompContReq) error{
+	Cont:=&domain.CompanyAddress{
+		ClientID: int(details.UserId),
+		OwnerName: details.OwnerName,
+		Phone: details.Phone,
+		Country: details.Address.Country,
+		State: details.Address.State,
+		District: details.Address.District,
+		City: details.Address.City,
+		Pincode: details.Address.Pincode,
+	}
+	query:=r.db.Where("ClientID = ?",details.UserId).Attrs(Cont).FirstOrCreate(&domain.CompanyAddress{})
+	if query.Error != nil{
+		return errors.New(`something went wrong`)
+	}
+	return nil
+}
+
+func (r *Repo) GetCompanyDetails(userID int32) (*auth.UpdCompDtlReq,error){
+	var client domain.ClientCompany
+	query:=r.db.Raw(`SELect * From client_companies Where client_id = ?`,userID).Scan(&client)
+	if query.Error!= nil{
+		return nil,errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0 {
+		return nil,nil
+	}
+	return &auth.UpdCompDtlReq{
+		CompanyName: client.CompanyName,
+		Website: client.Website,
+		NumberOfEmployees: int32(client.NumberOfEmployees),
+		Tagline: client.Tagline,
+		Industry: client.Industry,
+	},nil
+}
+
+func (r *Repo) ContactDetails(userID int32) (*auth.UpdCompContReq,error){
+	var client domain.CompanyAddress
+	query:=r.db.Raw(`SELect * From company_addresses Where client_id = ?`,userID).Scan(&client)
+	if query.Error!= nil{
+		return nil,errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0 {
+		return nil,nil
+	}
+	return &auth.UpdCompContReq{
+		OwnerName: client.OwnerName,
+		Phone: client.Phone,
+		Address: &auth.Address{
+			Country: client.Country,
+			State: client.State,
+			District: client.District,
+			City: client.City,
+			Pincode: client.Pincode,
+		},
+	},nil
+}
+
+func (r *Repo) GetReviews(userID string) ([]*auth.Reviews,error){
+	var reviews []domain.FreelancerReview
+	query:=r.db.Raw(`select * from freelancer_reviews where user_id = ?`,userID).Scan(&reviews)
+	if query.Error!= nil{
+		return nil,errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0 {
+		return nil,errors.New(`no reviews found`)
+	}
+	var rr []*auth.Reviews
+	for _,r:=range reviews{
+		rr = append(rr, &auth.Reviews{
+			Review: r.Review,
+			Rating: int32(r.Rating),
+			ClientID: strconv.Itoa(r.Client_id),
+		})
+	}
+	return rr,nil
 }

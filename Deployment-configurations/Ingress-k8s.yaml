@@ -36,13 +36,3 @@ spec:
             name: gigforge-api-gateway-service
             port:
               number: 3000
-  - host: ingress-nginx-controller
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend: 
-          service:
-            name: gigforge-api-gateway-service
-            port:
-              number: 3000

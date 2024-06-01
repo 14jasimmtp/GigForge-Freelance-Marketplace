@@ -40,4 +40,24 @@ type AddPayment struct{
 	Email string `json:"email" validate:"required"`
 }
 
+type UpdateCompanyDetails struct{
+	CompanyName string `json:"company"`
+	Website string `json:"website"`
+	NoOfEmployees int`json:"NumberOfEmployees"`
+	Tagline string `json:"tagline"`
+	Industry string `json:"industry"`
+}
 
+type UpdateCompanyContact struct{
+	OwnerName string `json:"OwnerName"`
+	Phone string `json:"phone"`
+	Address Address `json:"address"`
+}
+
+type Address struct{
+	Country string
+	State string
+	District string
+	City string
+	PinCode string
+}

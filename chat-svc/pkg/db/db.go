@@ -24,16 +24,9 @@ func ConnectMongoDB() (*mongo.Collection, error) {
 	if err != nil {
 		return nil, err
 	}
-	// message := domain.Messages{
-	// 	Sender_id:     1,
-	// 	Reciepient_id: 2,
-	// 	Message:       "Hello, how are you?",
-	// 	Timestamp:     time.Now(),
-	// 	Read:          false,
-	// }
+	
 
 	coll := client.Database("Gigforge_chat_svc").Collection("Messages_user")
-	// coll.InsertOne(context.TODO(),&message)
 	fmt.Println("Connected to MongoDB!")
 
 	return coll, nil

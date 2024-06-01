@@ -12,6 +12,7 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pb/user"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/pkg/repository"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/utils/paypal"
+	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc/utils/s3"
 )
 
 type Service struct {
@@ -252,78 +253,109 @@ func (s *Service) CapturePaymentContract(ctx context.Context, req *job.CapturePa
 	return &job.CapturePaymentRes{Status: http.StatusOK, UserName: ClientName}, nil
 }
 
-func (s *Service) GetAllContractsForClient(ctx context.Context,req *job.GetAllContractsForClientReq) (*job.GetAllContractsForClientRes,error){
-	contracts,err:=s.repo.GetAllContracts(req.UserId)
+func (s *Service) GetAllContractsForClient(ctx context.Context, req *job.GetAllContractsForClientReq) (*job.GetAllContractsForClientRes, error) {
+	contracts, err := s.repo.GetAllContracts(req.UserId)
 	if err != nil {
-		return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
 	var con []*job.Contracts
-	for _,c:=range contracts{
-		Jobs,err:=s.repo.GetJob(fmt.Sprintf("%d",c.Job_id))
+	for _, c := range contracts {
+		Jobs, err := s.repo.GetJob(fmt.Sprintf("%d", c.Job_id))
 		if err != nil {
-			return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+			return &job.GetAllContractsForClientRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 		}
 		con = append(con, &job.Contracts{
-			ContractId: int32(c.ID),
-			FreelancerId: int32(c.Freelancer_id),
-			ClientId: int32(c.Client_id),
-			PaymentType: c.Type,
-			TotalAmount: c.Budget,
-			PaidAmount: float32(c.Paid_amount),
-			PendingAmount: float32(c.Pending_amount),
+			ContractId:     int32(c.ID),
+			FreelancerId:   int32(c.Freelancer_id),
+			ClientId:       int32(c.Client_id),
+			PaymentType:    c.Type,
+			TotalAmount:    c.Budget,
+			PaidAmount:     float32(c.Paid_amount),
+			PendingAmount:  float32(c.Pending_amount),
 			ContractStatus: c.Status,
-			StartDate: c.Start_date.Format("02-01-2006"),
-			JobTitle: Jobs.Title,
+			StartDate:      c.Start_date.Format("02-01-2006"),
+			JobTitle:       Jobs.Title,
 			JobDescription: Jobs.Description,
 		})
 	}
-	
-	return &job.GetAllContractsForClientRes{Contracts: con,Status: http.StatusOK},nil
-}	
 
-func (s *Service) GetOneContractForClient(ctx context.Context,req *job.GetOneContractForClientReq)(*job.GetOneContractForClientRes,error){
-	contract,err:=s.repo.GetOneContract(req.ContractID,req.UserId)
+	return &job.GetAllContractsForClientRes{Contracts: con, Status: http.StatusOK}, nil
+}
+
+func (s *Service) GetOneContractForClient(ctx context.Context, req *job.GetOneContractForClientReq) (*job.GetOneContractForClientRes, error) {
+	contract, err := s.repo.GetOneContract(req.ContractID, req.UserId)
 	if err != nil {
-		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	Jobs,err:=s.repo.GetJob(fmt.Sprintf("%d",contract.Job_id))
+	Jobs, err := s.repo.GetJob(fmt.Sprintf("%d", contract.Job_id))
 	if err != nil {
-		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GetOneContractForClientRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	con:=&job.Contracts{
-		ContractId: int32(contract.ID),
-		FreelancerId: int32(contract.Freelancer_id),
-		ClientId: int32(contract.Client_id),
-		PaymentType: contract.Type,
-		TotalAmount: contract.Budget,
-		PaidAmount: float32(contract.Paid_amount),
-		PendingAmount: float32(contract.Pending_amount),
+	con := &job.Contracts{
+		ContractId:     int32(contract.ID),
+		FreelancerId:   int32(contract.Freelancer_id),
+		ClientId:       int32(contract.Client_id),
+		PaymentType:    contract.Type,
+		TotalAmount:    contract.Budget,
+		PaidAmount:     float32(contract.Paid_amount),
+		PendingAmount:  float32(contract.Pending_amount),
 		ContractStatus: contract.Status,
-		StartDate: contract.Start_date.Format("02-01-2006"),
-		JobTitle: Jobs.Title,
+		StartDate:      contract.Start_date.Format("02-01-2006"),
+		JobTitle:       Jobs.Title,
 		JobDescription: Jobs.Description,
 	}
-	return &job.GetOneContractForClientRes{Status: http.StatusOK,Contract: con},nil
+	return &job.GetOneContractForClientRes{Status: http.StatusOK, Contract: con}, nil
 
 }
 
-func (s *Service) GetInvoiceContract(ctx context.Context,req *job.GetInvoiceContractReq)(*job.GetInvoiceContractRes,error){
-	invoices,err:=s.repo.GetInvoices(req.UserID,req.ContractID)
+func (s *Service) GetInvoiceContract(ctx context.Context, req *job.GetInvoiceContractReq) (*job.GetInvoiceContractRes, error) {
+	invoices, err := s.repo.GetInvoices(req.UserID, req.ContractID)
 	if err != nil {
-		return &job.GetInvoiceContractRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &job.GetInvoiceContractRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
 	var inv []*job.Invoices
-	for _,i:=range invoices{
-		in:=&job.Invoices{
-			InvoiceID: int32(i.ID),
-			ContractID: int32(i.ContractID),
-			StartDate: i.Start_date.Format("02-01-2006"),
-			EndDate: i.End_date.Format("02-01-2006"),
-			PaymentStatus: i.Status,
-			FreelancerFee: float32(i.Freelancer_fee),
+	for _, i := range invoices {
+		in := &job.Invoices{
+			InvoiceID:      int32(i.ID),
+			ContractID:     int32(i.ContractID),
+			StartDate:      i.Start_date.Format("02-01-2006"),
+			EndDate:        i.End_date.Format("02-01-2006"),
+			PaymentStatus:  i.Status,
+			FreelancerFee:  float32(i.Freelancer_fee),
 			MarketPlaceFee: float32(i.MarketPlace_fee),
 		}
 		inv = append(inv, in)
 	}
-	return &job.GetInvoiceContractRes{Invoices: inv,Status: http.StatusOK},nil
+	return &job.GetInvoiceContractRes{Invoices: inv, Status: http.StatusOK}, nil
+}
+
+func (s *Service) AddAttachmentToContract(ctx context.Context, req *job.AddAttachmentReq) (*job.AddAttachmentRes, error) {
+	cid, _ := strconv.Atoi(req.ContractID)
+	_, err := s.repo.CheckContractActive(int32(cid))
+	if err != nil {
+		return &job.AddAttachmentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+
+	sess := s3.CreateSession()
+
+	attachmentUrl, err := s3.UploadAttachmentToS3(req.Attachment, req.ContractID, req.Filename, sess)
+	if err != nil {
+		return &job.AddAttachmentRes{Status: http.StatusBadRequest, Error: `something went wrong while uploading attachment`}, nil
+	}
+	err = s.repo.StoreAttachmentUrl(attachmentUrl, req)
+	if err != nil {
+		return &job.AddAttachmentRes{Status: http.StatusBadRequest, Error: `something went wrong while uploading attachment`}, nil
+
+	}
+	return &job.AddAttachmentRes{Status: http.StatusOK, Response: "attachment added successfully"}, nil
+}
+
+
+func (s *Service) GetAttachments(ctx context.Context, req *job.GetAttachmentReq) ( *job.GetAttachmentRes,error){
+	attachments,err:=s.repo.GetAttachments(req.ContractID)
+	if err != nil {
+		return &job.GetAttachmentRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+
+	} 
+	return &job.GetAttachmentRes{Status: http.StatusOK,Attachment: attachments},nil
 }

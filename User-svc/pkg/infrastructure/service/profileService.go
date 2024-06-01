@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/User-Auth/pb/auth"
@@ -32,7 +33,6 @@ func (s *Service) AddEducation(ctx context.Context, req *auth.AddEducationReq) (
 		},
 	}, nil
 }
-
 
 func (s *Service) UpdateEducation(ctx context.Context, req *auth.UpdateEducationReq) (*auth.UpdateEducationRes, error) {
 	res, err := s.repo.UpdateEducation(req)
@@ -146,16 +146,16 @@ func (s *Service) DeleteExperience(ctx context.Context, req *auth.DltExpReq) (*a
 	}, nil
 }
 
-func (s *Service) EditSkill(ctx context.Context, req *auth.EditSkillReq) (*auth.EditSkillRes,error){
-	err:=s.repo.CheckSkillsExist(req.Skills)
+func (s *Service) EditSkill(ctx context.Context, req *auth.EditSkillReq) (*auth.EditSkillRes, error) {
+	err := s.repo.CheckSkillsExist(req.Skills)
 	if err != nil {
-		return &auth.EditSkillRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &auth.EditSkillRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	skills,err:=s.repo.UpdateSkillUserProfile(req.UserId,req.Skills)
+	skills, err := s.repo.UpdateSkillUserProfile(req.UserId, req.Skills)
 	if err != nil {
-		return &auth.EditSkillRes{Status: http.StatusExpectationFailed,Error: err.Error()},nil
+		return &auth.EditSkillRes{Status: http.StatusExpectationFailed, Error: err.Error()}, nil
 	}
-	return &auth.EditSkillRes{Status: http.StatusOK,Message: "skills updated successfully",Skills: skills},nil
+	return &auth.EditSkillRes{Status: http.StatusOK, Message: "skills updated successfully", Skills: skills}, nil
 }
 
 func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*auth.GetProfileRes, error) {
@@ -187,7 +187,7 @@ func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*aut
 			Error:  err.Error(),
 		}, nil
 	}
-	skills,err:=s.repo.GetSkills(req.UserId)
+	skills, err := s.repo.GetSkills(req.UserId)
 	if err != nil {
 		return &auth.GetProfileRes{
 			Status: 400,
@@ -199,7 +199,7 @@ func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*aut
 		Description: description,
 		Education:   education,
 		Experience:  experience,
-		Skills: skills,
+		Skills:      skills,
 		Status:      200,
 	}, nil
 }
@@ -228,62 +228,93 @@ func (s *Service) UpdateProfilePhoto(ctx context.Context, req *auth.PhotoReq) (*
 	}, nil
 }
 
-func (s *Service) OnboardFreelancersToPaypal(ctx context.Context, req *auth.OnboardToPaypalReq) (*auth.OnboardToPaypalRes,error){
-	err:=s.repo.CheckUserOnboardStatus(req.UserId)
+func (s *Service) OnboardFreelancersToPaypal(ctx context.Context, req *auth.OnboardToPaypalReq) (*auth.OnboardToPaypalRes, error) {
+	err := s.repo.CheckUserOnboardStatus(req.UserId)
 	if err != nil {
-		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest,Error: "user already added paypal"},nil
+		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest, Error: "user already added paypal"}, nil
 	}
 
-	accessToken,err:=paypal.GenerateAccessToken()
+	accessToken, err := paypal.GenerateAccessToken()
 	if err != nil {
-		return &auth.OnboardToPaypalRes{Status: http.StatusInternalServerError,Error: "error while generating paypal access token"},nil
+		return &auth.OnboardToPaypalRes{Status: http.StatusInternalServerError, Error: "error while generating paypal access token"}, nil
 	}
 
-	onboardURL,err:=paypal.OnboardFreelancer(req.UserId,accessToken)
+	onboardURL, err := paypal.OnboardFreelancer(req.UserId, accessToken)
 	if err != nil {
-		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest,Error: "error while onboarding freelancer to paypal"},nil
+		return &auth.OnboardToPaypalRes{Status: http.StatusBadRequest, Error: "error while onboarding freelancer to paypal"}, nil
 	}
-	return &auth.OnboardToPaypalRes{Status: http.StatusOK,OnboardURL: onboardURL},nil
+	return &auth.OnboardToPaypalRes{Status: http.StatusOK, OnboardURL: onboardURL}, nil
 }
 
-func (s *Service) AddPaymentEmail(ctx context.Context,req *auth.AddPaymentEmailReq) (*auth.AddPaymentEmailRes,error){
-	
-	err:=s.repo.AddPaymentEmail(req.UserId,req.Email)
+func (s *Service) AddPaymentEmail(ctx context.Context, req *auth.AddPaymentEmailReq) (*auth.AddPaymentEmailRes, error) {
+
+	err := s.repo.AddPaymentEmail(req.UserId, req.Email)
 	if err != nil {
-		return &auth.AddPaymentEmailRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &auth.AddPaymentEmailRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	return &auth.AddPaymentEmailRes{Status: http.StatusOK,Message: "paypal email updated successfully"},nil
+	return &auth.AddPaymentEmailRes{Status: http.StatusOK, Message: "paypal email updated successfully"}, nil
 }
 
-func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes,error) {
-	err:=s.repo.CheckFreelancerExist(req.FreelancerId)
+func (s *Service) ReviewFreelancer(ctx context.Context, req *auth.ReviewFlancerReq) (*auth.ReviewFlancerRes, error) {
+	err := s.repo.CheckFreelancerExist(req.FreelancerId)
 	if err != nil {
-		return &auth.ReviewFlancerRes{},nil
+		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest,Error: err.Error()}, nil
 	}
-	err = s.repo.CheckContractWithFreelancerAndClient(req.FreelancerId,req.ClientId)
-	if err != nil {
-		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
-	}
+	// err = s.repo.CheckContractWithFreelancerAndClient(req.FreelancerId, req.ClientId)
+	// if err != nil {
+	// 	return &auth.ReviewFlancerRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	// }
 	err = s.repo.AddReviewForFreelancer(req)
 	if err != nil {
-		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+		return &auth.ReviewFlancerRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	return &auth.ReviewFlancerRes{Status: http.StatusOK,Response: "review added successfully"},nil
+	return &auth.ReviewFlancerRes{Status: http.StatusOK, Response: "review added successfully"}, nil
 }
 
+func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UpdCompDtlReq) (*auth.UpdCompDtlRes, error) {
+	err := s.repo.UpdateCmpDtails(req)
+	if err != nil {
+		return &auth.UpdCompDtlRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	return &auth.UpdCompDtlRes{Status: http.StatusOK, Response: "updated company details in profile successfully"}, nil
+}
 
-// func (s *Service) UpdateCompanyDetails(ctx context.Context, req *auth.UPDCompanyDetailsReq) (*auth.UPDCompanyDetailsRes, error){
-// 	err:=s.repo.UpdateCmpDtails(req)
-// 	if err != nil{
-// 		return nil,nil
-// 	}
-// 	return &auth.UPDCompanyDetails{},nil
-// }
+func (s *Service) UpdateCompanyContact(ctx context.Context, req *auth.UpdCompContReq) (*auth.UpdCompContRes, error) {
+	err := s.repo.UpdateCompContact(req)
+	if err != nil {
+		return &auth.UpdCompContRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	return &auth.UpdCompContRes{Status: http.StatusOK, Response: "updated company details in profile successfully"}, nil
+}
 
+func (s *Service) GetProfileClient(ctx context.Context, req *auth.ClientProfileReq) (*auth.ClientProfileRes, error) {
+	client, err := s.repo.GetUserWithId(fmt.Sprintf("%d", req.UserId))
+	if err != nil {
+		return &auth.ClientProfileRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	CompanyDetails, err := s.repo.GetCompanyDetails(req.UserId)
+	if err != nil {
+		return &auth.ClientProfileRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+	Contact, err := s.repo.ContactDetails(req.UserId)
+	if err != nil {
+		return &auth.ClientProfileRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
+	}
+
+	return &auth.ClientProfileRes{Client: client, Status: http.StatusOK, CompanyDetails: CompanyDetails, Contact: Contact}, nil
+
+}
+
+func (s *Service) GetFreelancerReviews(ctx context.Context,req *auth.GetReviewReq) (*auth.GetReviewRes,error){
+	reviews,err:=s.repo.GetReviews(req.UserID)
+	if err != nil {
+		return &auth.GetReviewRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &auth.GetReviewRes{Status: http.StatusOK,Reviews: reviews},nil
+}
 // func (s *Service) GetClientProfileForFreelancer(ctx context.Context){}
 
 // func (s *Service) GetFreelancerProfileForClient(ctx context.Context){}
-
 
 // func (s *Service) ReviewFreelancer(ctx context.Context,){
 // 	c.Params()

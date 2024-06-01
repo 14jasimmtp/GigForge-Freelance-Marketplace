@@ -19,6 +19,17 @@ func NewAdminHandler(job Job.JobServiceClient, auth auth.AuthServiceClient) Admi
 	return AdminHandler{auth: auth,job: job}
 }
 
+// AdminLogin godoc
+// @Summary Admin login
+// @Description Authenticate an admin user with email and password
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param login body req.LoginRequest true "Login credentials"
+// @Success 200 {object} auth.LoginRes "Successfully authenticated"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /admin/login [post]
 func (h *AdminHandler) AdminLogin(ctx *fiber.Ctx) error {
 	var login req.LoginRequest
 
@@ -38,6 +49,17 @@ func (h *AdminHandler) AdminLogin(ctx *fiber.Ctx) error {
 	return ctx.Status(int(res.Status)).JSON(res)
 }
 
+// AddSkill godoc
+// @Summary Add a new skill
+// @Description Add a new skill with the provided details
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param skill body req.AddSkills true "Skill details"
+// @Success 200 {object} auth.AddSkillRes "Successfully added skill"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /admin/add-skill [post]
 func (h *AdminHandler) AddSkill(ctx *fiber.Ctx) error {
 	var skill req.AddSkills
 
@@ -56,6 +78,16 @@ func (h *AdminHandler) AddSkill(ctx *fiber.Ctx) error {
 	return ctx.Status(int(res.Status)).JSON(res)
 }
 
+// BlockUser godoc
+// @Summary Block a user
+// @Description Block a user by their ID
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param id query string true "User ID"
+// @Success 200 {object} auth.BlockRes "User blocked successfully"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /admin/block-user [put]
 func (h *AdminHandler) BlockUser(ctx *fiber.Ctx) error {
 	user_id := ctx.Query("id")
 
@@ -71,6 +103,16 @@ func (h *AdminHandler) BlockUser(ctx *fiber.Ctx) error {
 	return ctx.Status(int(res.Status)).JSON(res)
 }
 
+// UnBlockUser godoc
+// @Summary Unblock a user
+// @Description Unblock a user by their ID
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param id query string true "User ID"
+// @Success 200 {object} auth.BlockRes "User unblocked successfully"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /admin/unblock-user [put]
 func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 	user_id := ctx.Query("id")
 
@@ -84,6 +126,17 @@ func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 	return ctx.Status(int(res.Status)).JSON(res)
 }
 
+// AddCategory godoc
+// @Summary Add a new category
+// @Description Add a new category with the provided details
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param category body req.AddCategory true "Category details"
+// @Success 200 {object} Job.AddCategoryRes "Successfully added category"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /admin/add-category [post]
 func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 	var req req.AddCategory
 

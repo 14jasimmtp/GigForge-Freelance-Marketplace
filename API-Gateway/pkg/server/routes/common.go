@@ -12,4 +12,5 @@ func Common(api fiber.Router, job *handler.JobsHandler, project *handler.Project
 	api.Get("/projects", project.ListProjects)
 	api.Get("/talents", profile.GetTalents)
 	api.Get("/categories", job.GetCategories)
+	api.Get("/reviews/:Fid",profile.GetFreelancerReviews)
 }

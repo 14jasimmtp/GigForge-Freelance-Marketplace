@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"io"
 	"strconv"
 	"time"
 
@@ -21,6 +22,17 @@ func NewJobsHandler(job Job.JobServiceClient) *JobsHandler {
 	return &JobsHandler{job: job}
 }
 
+// PostJob godoc
+// @Summary Post a job
+// @Description Create a new job listing
+// @Tags jobs
+// @Accept json
+// @Produce json
+// @Param job body req.PostJob true "Job details"
+// @Success 200 {object} Job.PostjobRes "Successfully posted job"
+// @Failure 400 {object} res.CommonRes "Error validating request body"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Router /jobs/post [post]
 func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int64)
@@ -58,6 +70,18 @@ func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 
 }
 
+// SendProposal godoc
+// @Summary Send a proposal
+// @Description Send a proposal for a job
+// @Tags jobs
+// @Accept json
+// @Produce json
+// @Param jobID query string true "Job ID"
+// @Param proposal body req.Proposal true "Proposal details"
+// @Success 200 {object} Job.ProposalRes "Successfully sent proposal"
+// @Failure 400 {object} res.CommonRes "Error validating request body"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Router /jobs/proposal [post]
 func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	var req req.Proposal
 
@@ -94,6 +118,15 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetProposalsOfJob godoc
+// @Summary Get proposals of a job
+// @Description Get all proposals for a specific job
+// @Tags jobs
+// @Produce json
+// @Param id path string true "Job ID"
+// @Success 200 {object} Job.GJPRes "Successfully retrieved proposals"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/{id}/proposals [get]
 func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
 	client_id := strconv.Itoa(int(c.Locals("User_id").(int64)))
 	job_id := c.Params("id")
@@ -105,6 +138,14 @@ func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetMyJobs godoc
+// @Summary Get my jobs
+// @Description Get jobs posted by the authenticated user
+// @Tags jobs
+// @Produce json
+// @Success 200 {object} Job.GetMyJobsRes "Successfully retrieved jobs"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/my [get]
 func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int64)
 	id := strconv.Itoa(int(user_id))
@@ -115,15 +156,33 @@ func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-func (h *JobsHandler) GetCategories(c *fiber.Ctx) error{
-	query:=c.Query("q")
-	category, err := h.job.GetCategory(context.Background(),&Job.GetCategoryReq{Query: query})
+// GetCategories godoc
+// @Summary Get categories
+// @Description Get job categories based on a query
+// @Tags jobs
+// @Produce json
+// @Param q query string true "Query string"
+// @Success 200 {object} Job.GetCategoryRes "Successfully retrieved categories"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/categories [get]
+func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
+	query := c.Query("q")
+	category, err := h.job.GetCategory(context.Background(), &Job.GetCategoryReq{Query: query})
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"Error":err.Error()})
+		return c.Status(500).JSON(fiber.Map{"Error": err.Error()})
 	}
 	return c.Status(int(category.Status)).JSON(category)
 }
 
+// GetJobProposals godoc
+// @Summary Get job proposals
+// @Description Get all proposals for a specific job
+// @Tags jobs
+// @Produce json
+// @Param job_id path string true "Job ID"
+// @Success 200 {object} Job.GJPRes "Successfully retrieved proposals"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/{job_id}/proposals [get]
 func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
 	user_id := c.Locals("User_id").(string)
@@ -134,6 +193,17 @@ func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// EditJob godoc
+// @Summary Edit a job
+// @Description Edit an existing job listing
+// @Tags jobs
+// @Accept json
+// @Produce json
+// @Param job body req.PostJob true "Job details"
+// @Success 200 {object} Job.PostjobRes "Successfully edited job"
+// @Failure 400 {object} res.CommonRes "Error validating request body"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Router /jobs/edit [put]
 func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int64)
@@ -170,6 +240,17 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// SendOffer godoc
+// @Summary Send a job offer
+// @Description Send a job offer to a freelancer
+// @Tags jobs
+// @Accept json
+// @Produce json
+// @Param offer body req.SendOffer true "Offer details"
+// @Success 200 {object} Job.SendOfferRes "Successfully sent offer"
+// @Failure 400 {object} res.CommonRes "Error validating request body"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/offer [post]
 func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	var req req.SendOffer
 	user_id := c.Locals("User_id").(int64)
@@ -207,6 +288,15 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// AcceptOffer godoc
+// @Summary Accept a job offer
+// @Description Accept a job offer from a client
+// @Tags jobs
+// @Produce json
+// @Param offer_id path string true "Offer ID"
+// @Success 200 {object} Job.AcceptOfferRes "Successfully accepted offer"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/offer/{offer_id}/accept [post]
 func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(string)
 	of_id := c.Params("offer_id")
@@ -219,6 +309,14 @@ func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetJobs godoc
+// @Summary Get all jobs
+// @Description Get a list of all jobs
+// @Tags jobs
+// @Produce json
+// @Success 200 {object} Job.GetJobsRes "Successfully retrieved jobs"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs [get]
 func (h *JobsHandler) GetJobs(c *fiber.Ctx) error {
 	res, err := h.job.GetJobs(context.Background(), &Job.NoParam{})
 	if err != nil {
@@ -227,6 +325,15 @@ func (h *JobsHandler) GetJobs(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetJob godoc
+// @Summary Get a job
+// @Description Get details of a specific job
+// @Tags jobs
+// @Produce json
+// @Param id path string true "Job ID"
+// @Success 200 {object} Job.GetJobRes "Successfully retrieved job"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/{id} [get]
 func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 	job_id := c.Params("id")
 	println(job_id)
@@ -237,16 +344,36 @@ func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetAllJobOffersForFreelancer godoc
+// @Summary Get job offers for a freelancer
+// @Description Get all job offers for a specific freelancer
+// @Tags jobs
+// @Produce json
+// @Param status query string false "Offer status"
+// @Success 200 {object} Job.GetJobOfferForFreelancerRes "Successfully retrieved job offers"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/offers/freelancer [get]
 func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(string)
-	status:=c.Query("status")
-	res, err := h.job.GetJobOffersForFreelancer(context.Background(), &Job.GetJobOfferForFreelancerReq{UserId: user_id,Status: status})
+	status := c.Query("status")
+	res, err := h.job.GetJobOffersForFreelancer(context.Background(), &Job.GetJobOfferForFreelancerReq{UserId: user_id, Status: status})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// SendInvoice godoc
+// @Summary Send an invoice
+// @Description Send a weekly invoice for a contract
+// @Tags jobs
+// @Accept json
+// @Produce json
+// @Param invoice body req.SendInvoice true "Invoice details"
+// @Success 200 {object} Job.InvoiceRes "Successfully sent invoice"
+// @Failure 400 {object} res.CommonRes "Error validating request body"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/invoice [post]
 func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 	var req req.SendInvoice
 	user_id := c.Locals("User_id").(string)
@@ -267,6 +394,15 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// ExecutePaymentContract godoc
+// @Summary Execute payment contract
+// @Description Execute payment for a contract invoice
+// @Tags jobs
+// @Produce json
+// @Param invoiceID query string true "Invoice ID"
+// @Success 200 {object} Job.ExecutePaymentRes "Successfully executed payment"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/payment/execute [post]
 func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
 	invoiceID := c.Query("invoiceID")
 	fmt.Println("1")
@@ -277,21 +413,39 @@ func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
 	fmt.Println("2")
 
 	return c.Status(int(res.Status)).JSON(fiber.Map{
-        "orderID":     res.PaymentID,
-        "merchantIDs": res.MerchantID,
-    })
+		"orderID":     res.PaymentID,
+		"merchantIDs": res.MerchantID,
+	})
 }
 
-func (h *JobsHandler) GetPaymentContract(c *fiber.Ctx) error{
-	invoiceID:=c.Query("invoiceID")
+// GetPaymentContract godoc
+// @Summary Get payment contract
+// @Description Get details of a payment contract
+// @Tags jobs
+// @Produce html
+// @Param invoiceID query string true "Invoice ID"
+// @Success 200 {string} string "Payment contract details"
+// @Router /jobs/payment [get]
+func (h *JobsHandler) GetPaymentContract(c *fiber.Ctx) error {
+	invoiceID := c.Query("invoiceID")
 	fmt.Println(invoiceID)
-	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html",nil)
+	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html", nil)
 }
 
-func (h *JobsHandler) CapturePaymentContract(c *fiber.Ctx) error{
+// CapturePaymentContract godoc
+// @Summary Capture payment contract
+// @Description Capture payment for a contract
+// @Tags jobs
+// @Produce json
+// @Param paymentID query string true "Payment ID"
+// @Param invoiceID query string true "Invoice ID"
+// @Success 200 {object} Job.CapturePaymentRes "Successfully captured payment"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/payment/capture [post]
+func (h *JobsHandler) CapturePaymentContract(c *fiber.Ctx) error {
 	paymentID := c.Query("paymentID")
 	invoiceID := c.Query("invoiceID")
-	res, err := h.job.CapturePaymentContract(context.Background(), &Job.CapturePaymentReq{PaymentID: paymentID,InvoiceID: invoiceID})
+	res, err := h.job.CapturePaymentContract(context.Background(), &Job.CapturePaymentReq{PaymentID: paymentID, InvoiceID: invoiceID})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -299,6 +453,19 @@ func (h *JobsHandler) CapturePaymentContract(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res.UserName)
 }
 
+// Search godoc
+// @Summary Search jobs
+// @Description Search for jobs based on various criteria
+// @Tags jobs
+// @Produce json
+// @Param q query string true "Query string"
+// @Param t query string false "Pay type"
+// @Param hourly_rate query string false "Hourly rate"
+// @Param fixed_rate query string false "Fixed rate"
+// @Param c query string false "Category"
+// @Success 200 {object} Job.SearchJobsRes "Successfully retrieved search results"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /jobs/search [get]
 func (h *JobsHandler) Search(c *fiber.Ctx) error {
 	query := c.Query("q")
 	PayType := c.Query("t")
@@ -315,33 +482,106 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error {
 
 }
 
-func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error{
-	userID:=c.Locals("User_id").(int64)
-	Status:=c.Query("status")
-	contracts,err:=h.job.GetAllContractsForClient(context.Background(),&Job.GetAllContractsForClientReq{UserId: userID,Status: Status})
+// GetAllContractsForClient godoc
+// @Summary Get all contracts for a client
+// @Description Get all contracts for a specific client
+// @Tags contracts
+// @Produce json
+// @Param status query string false "Contract status"
+// @Success 200 {object} Job.GetAllContractsForClientRes "Successfully retrieved contracts"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /contracts/client [get]
+func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
+	userID := c.Locals("User_id").(int64)
+	Status := c.Query("status")
+	contracts, err := h.job.GetAllContractsForClient(context.Background(), &Job.GetAllContractsForClientReq{UserId: userID, Status: Status})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(int(contracts.Status)).JSON(contracts)
 }
 
-func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error{
-	userID:=c.Locals("User_id").(int64)
-	contractID:=c.Params("id")
-	contracts,err:=h.job.GetOneContractForClient(context.Background(),&Job.GetOneContractForClientReq{UserId: userID,ContractID: contractID})
+// GetOneContract godoc
+// @Summary Get a contract
+// @Description Get details of a specific contract
+// @Tags contracts
+// @Produce json
+// @Param id path string true "Contract ID"
+// @Success 200 {object} Job.GetOneContractForClientRes "Successfully retrieved contract"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /contracts/{id} [get]
+func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
+	userID := c.Locals("User_id").(int64)
+	contractID := c.Params("id")
+	contracts, err := h.job.GetOneContractForClient(context.Background(), &Job.GetOneContractForClientReq{UserId: userID, ContractID: contractID})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(int(contracts.Status)).JSON(contracts)
 }
 
-func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error{
-	userID:=c.Locals("User_id").(int64)
+// GetAllInvoicesOfContract godoc
+// @Summary Get all invoices of a contract
+// @Description Get all invoices for a specific contract
+// @Tags contracts
+// @Produce json
+// @Param contractID path string true "Contract ID"
+// @Success 200 {object} Job.GetInvoiceContractRes "Successfully retrieved invoices"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /contracts/{contractID}/invoices [get]
+func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
+	userID := c.Locals("User_id").(int64)
+	cid := c.Params("contractID")
+	contracts, err := h.job.GetInvoiceContract(context.Background(), &Job.GetInvoiceContractReq{UserID: userID, ContractID: cid})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(contracts.Status)).JSON(contracts)
+}
+
+func (h *JobsHandler) AddContractAttachment(c *fiber.Ctx) error {
+	var req req.AddContractAttachment
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(
+			res.CommonRes{
+				Status:  "failed",
+				Message: "Error validating request body",
+				Error:   err.Error(),
+				Body:    nil,
+			},
+		)
+	}
+	file, err := c.FormFile("attachment")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": Error})
+	}
+
+	fileContent, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	defer fileContent.Close()
+
+	fileBytes, err := io.ReadAll(fileContent)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	res,err:=h.job.AddAttachmentToContract(context.Background(),&Job.AddAttachmentReq{Attachment: fileBytes,Filename: file.Filename,ContractID: strconv.Itoa(req.ContractID),Description: req.Description})
+	if err != nil {
+		return c.Status(int(res.Status)).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *JobsHandler) GetAttachments(c *fiber.Ctx) error{
 	cid:=c.Params("contractID")
-	contracts,err:=h.job.GetInvoiceContract(context.Background(),&Job.GetInvoiceContractReq{UserID: userID,ContractID: cid})
+	res,err:=h.job.GetAttachments(context.Background(),&Job.GetAttachmentReq{ContractID: cid})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.Status(int(contracts.Status)).JSON(contracts)
+	return c.Status(int(res.Status)).JSON(res)
 }
-

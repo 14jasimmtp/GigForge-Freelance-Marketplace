@@ -42,6 +42,8 @@ type JobServiceClient interface {
 	CapturePaymentContract(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
 	SaveJobs(ctx context.Context, in *SaveJobsReq, opts ...grpc.CallOption) (*SaveJobsRes, error)
 	GetInvoiceContract(ctx context.Context, in *GetInvoiceContractReq, opts ...grpc.CallOption) (*GetInvoiceContractRes, error)
+	AddAttachmentToContract(ctx context.Context, in *AddAttachmentReq, opts ...grpc.CallOption) (*AddAttachmentRes, error)
+	GetAttachments(ctx context.Context, in *GetAttachmentReq, opts ...grpc.CallOption) (*GetAttachmentRes, error)
 }
 
 type jobServiceClient struct {
@@ -232,6 +234,24 @@ func (c *jobServiceClient) GetInvoiceContract(ctx context.Context, in *GetInvoic
 	return out, nil
 }
 
+func (c *jobServiceClient) AddAttachmentToContract(ctx context.Context, in *AddAttachmentReq, opts ...grpc.CallOption) (*AddAttachmentRes, error) {
+	out := new(AddAttachmentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/AddAttachmentToContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) GetAttachments(ctx context.Context, in *GetAttachmentReq, opts ...grpc.CallOption) (*GetAttachmentRes, error) {
+	out := new(GetAttachmentRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/GetAttachments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -256,6 +276,8 @@ type JobServiceServer interface {
 	CapturePaymentContract(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
 	SaveJobs(context.Context, *SaveJobsReq) (*SaveJobsRes, error)
 	GetInvoiceContract(context.Context, *GetInvoiceContractReq) (*GetInvoiceContractRes, error)
+	AddAttachmentToContract(context.Context, *AddAttachmentReq) (*AddAttachmentRes, error)
+	GetAttachments(context.Context, *GetAttachmentReq) (*GetAttachmentRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -322,6 +344,12 @@ func (UnimplementedJobServiceServer) SaveJobs(context.Context, *SaveJobsReq) (*S
 }
 func (UnimplementedJobServiceServer) GetInvoiceContract(context.Context, *GetInvoiceContractReq) (*GetInvoiceContractRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInvoiceContract not implemented")
+}
+func (UnimplementedJobServiceServer) AddAttachmentToContract(context.Context, *AddAttachmentReq) (*AddAttachmentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAttachmentToContract not implemented")
+}
+func (UnimplementedJobServiceServer) GetAttachments(context.Context, *GetAttachmentReq) (*GetAttachmentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAttachments not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -696,6 +724,42 @@ func _JobService_GetInvoiceContract_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_AddAttachmentToContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddAttachmentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).AddAttachmentToContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/AddAttachmentToContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).AddAttachmentToContract(ctx, req.(*AddAttachmentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_GetAttachments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAttachmentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetAttachments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/GetAttachments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetAttachments(ctx, req.(*GetAttachmentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -782,6 +846,14 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetInvoiceContract",
 			Handler:    _JobService_GetInvoiceContract_Handler,
+		},
+		{
+			MethodName: "AddAttachmentToContract",
+			Handler:    _JobService_AddAttachmentToContract_Handler,
+		},
+		{
+			MethodName: "GetAttachments",
+			Handler:    _JobService_GetAttachments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

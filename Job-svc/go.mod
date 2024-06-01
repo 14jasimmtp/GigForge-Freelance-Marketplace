@@ -3,6 +3,8 @@ module github.com/14jasimmtp/GigForge-Freelance-Marketplace/Job-svc
 go 1.22.0
 
 require (
+	github.com/aws/aws-sdk-go v1.53.14
+	github.com/google/uuid v1.4.0
 	github.com/plutov/paypal/v4 v4.7.1
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.59.0
@@ -20,6 +22,7 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect

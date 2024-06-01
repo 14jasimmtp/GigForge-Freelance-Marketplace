@@ -309,9 +309,12 @@ func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours flo
 
 func (r *Repo) GetJobs() ([]*job.Job, error) {
 	var jobs []domain.Jobs
-	err := r.DB.Raw(`SELECT * FROM jobs `).Scan(&jobs).Error
-	if err != nil {
+	query := r.DB.Raw(`SELECT * FROM jobs `).Scan(&jobs)
+	if query.Error != nil {
 		return nil, errors.New(`error while fetching jobs`) // return the actual error instead of a generic one
+	}
+	if query.RowsAffected == 0{
+		return nil, errors.New("no jobs found ")
 	}
 
 	var resultJobs []*job.Job
@@ -525,4 +528,40 @@ func (r *Repo) GetInvoices(client_id int64,contractID string) ([]domain.Invoice,
 		return nil, errors.New(`no invoices found`)
 	}
 	return invoices,nil
+}
+
+func (r *Repo) StoreAttachmentUrl(url string, req *job.AddAttachmentReq) error{
+	cid,_:=strconv.Atoi(req.ContractID)
+	attachment:= &domain.Attachment{
+		ContractID: cid,
+		UploadTime: time.Now(),
+		AttachmentURL: url,
+		Description: req.Description,
+	}
+	query:=r.DB.Create(attachment)
+	if query.Error != nil{
+		return errors.New(`something went wrong`)
+	}
+	return nil
+}
+
+func (r *Repo) GetAttachments(contractId string) ([]*job.Attachment,error){
+	var attachments []domain.Attachment
+	query:=r.DB.Raw(`select * From attachments where contract_id = ?`,contractId).Scan(&attachments)
+	if query.Error != nil {
+		return nil,errors.New(`something went wrong`)
+	}
+	if query.RowsAffected == 0{
+		return nil,errors.New(`no attachments found`)
+	}
+	var aa []*job.Attachment
+	for _,a:=range attachments{
+		aa = append(aa, &job.Attachment{
+			ContractID: int32(a.ContractID),
+			AttachmentUrl: a.AttachmentURL,
+			Description: a.Description,
+			PostedDate: a.UploadTime.Format("02-01-2006"),
+		})
+	}
+	return aa,nil
 }

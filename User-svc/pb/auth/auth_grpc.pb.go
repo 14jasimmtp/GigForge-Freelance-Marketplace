@@ -37,6 +37,8 @@ type AuthServiceClient interface {
 	AddExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error)
 	UpdateExperience(ctx context.Context, in *ExpReq, opts ...grpc.CallOption) (*ExpRes, error)
 	DeleteExperience(ctx context.Context, in *DltExpReq, opts ...grpc.CallOption) (*DltExpRes, error)
+	UpdateCompanyDetails(ctx context.Context, in *UpdCompDtlReq, opts ...grpc.CallOption) (*UpdCompDtlRes, error)
+	UpdateCompanyContact(ctx context.Context, in *UpdCompContReq, opts ...grpc.CallOption) (*UpdCompContRes, error)
 	GetProfileClient(ctx context.Context, in *ClientProfileReq, opts ...grpc.CallOption) (*ClientProfileRes, error)
 	BlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
 	UnBlockUser(ctx context.Context, in *BlockReq, opts ...grpc.CallOption) (*BlockRes, error)
@@ -46,6 +48,7 @@ type AuthServiceClient interface {
 	OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error)
 	AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error)
+	GetFreelancerReviews(ctx context.Context, in *GetReviewReq, opts ...grpc.CallOption) (*GetReviewRes, error)
 }
 
 type authServiceClient struct {
@@ -191,6 +194,24 @@ func (c *authServiceClient) DeleteExperience(ctx context.Context, in *DltExpReq,
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateCompanyDetails(ctx context.Context, in *UpdCompDtlReq, opts ...grpc.CallOption) (*UpdCompDtlRes, error) {
+	out := new(UpdCompDtlRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateCompanyDetails", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateCompanyContact(ctx context.Context, in *UpdCompContReq, opts ...grpc.CallOption) (*UpdCompContRes, error) {
+	out := new(UpdCompContRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateCompanyContact", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) GetProfileClient(ctx context.Context, in *ClientProfileReq, opts ...grpc.CallOption) (*ClientProfileRes, error) {
 	out := new(ClientProfileRes)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/GetProfileClient", in, out, opts...)
@@ -272,6 +293,15 @@ func (c *authServiceClient) AddPaymentEmail(ctx context.Context, in *AddPaymentE
 	return out, nil
 }
 
+func (c *authServiceClient) GetFreelancerReviews(ctx context.Context, in *GetReviewReq, opts ...grpc.CallOption) (*GetReviewRes, error) {
+	out := new(GetReviewRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/GetFreelancerReviews", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -291,6 +321,8 @@ type AuthServiceServer interface {
 	AddExperience(context.Context, *ExpReq) (*ExpRes, error)
 	UpdateExperience(context.Context, *ExpReq) (*ExpRes, error)
 	DeleteExperience(context.Context, *DltExpReq) (*DltExpRes, error)
+	UpdateCompanyDetails(context.Context, *UpdCompDtlReq) (*UpdCompDtlRes, error)
+	UpdateCompanyContact(context.Context, *UpdCompContReq) (*UpdCompContRes, error)
 	GetProfileClient(context.Context, *ClientProfileReq) (*ClientProfileRes, error)
 	BlockUser(context.Context, *BlockReq) (*BlockRes, error)
 	UnBlockUser(context.Context, *BlockReq) (*BlockRes, error)
@@ -300,6 +332,7 @@ type AuthServiceServer interface {
 	OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error)
 	AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error)
+	GetFreelancerReviews(context.Context, *GetReviewReq) (*GetReviewRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -352,6 +385,12 @@ func (UnimplementedAuthServiceServer) UpdateExperience(context.Context, *ExpReq)
 func (UnimplementedAuthServiceServer) DeleteExperience(context.Context, *DltExpReq) (*DltExpRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExperience not implemented")
 }
+func (UnimplementedAuthServiceServer) UpdateCompanyDetails(context.Context, *UpdCompDtlReq) (*UpdCompDtlRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCompanyDetails not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateCompanyContact(context.Context, *UpdCompContReq) (*UpdCompContRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCompanyContact not implemented")
+}
 func (UnimplementedAuthServiceServer) GetProfileClient(context.Context, *ClientProfileReq) (*ClientProfileRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfileClient not implemented")
 }
@@ -378,6 +417,9 @@ func (UnimplementedAuthServiceServer) ReviewFreelancer(context.Context, *ReviewF
 }
 func (UnimplementedAuthServiceServer) AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPaymentEmail not implemented")
+}
+func (UnimplementedAuthServiceServer) GetFreelancerReviews(context.Context, *GetReviewReq) (*GetReviewRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFreelancerReviews not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -662,6 +704,42 @@ func _AuthService_DeleteExperience_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateCompanyDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdCompDtlReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateCompanyDetails(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateCompanyDetails",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateCompanyDetails(ctx, req.(*UpdCompDtlReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateCompanyContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdCompContReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateCompanyContact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateCompanyContact",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateCompanyContact(ctx, req.(*UpdCompContReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetProfileClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ClientProfileReq)
 	if err := dec(in); err != nil {
@@ -824,6 +902,24 @@ func _AuthService_AddPaymentEmail_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetFreelancerReviews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReviewReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetFreelancerReviews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/GetFreelancerReviews",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetFreelancerReviews(ctx, req.(*GetReviewReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -892,6 +988,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_DeleteExperience_Handler,
 		},
 		{
+			MethodName: "UpdateCompanyDetails",
+			Handler:    _AuthService_UpdateCompanyDetails_Handler,
+		},
+		{
+			MethodName: "UpdateCompanyContact",
+			Handler:    _AuthService_UpdateCompanyContact_Handler,
+		},
+		{
 			MethodName: "GetProfileClient",
 			Handler:    _AuthService_GetProfileClient_Handler,
 		},
@@ -926,6 +1030,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddPaymentEmail",
 			Handler:    _AuthService_AddPaymentEmail_Handler,
+		},
+		{
+			MethodName: "GetFreelancerReviews",
+			Handler:    _AuthService_GetFreelancerReviews_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

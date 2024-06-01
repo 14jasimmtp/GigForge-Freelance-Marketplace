@@ -62,14 +62,26 @@ type Freelancer_Experiences struct{
 	User_id int64
 }
 
-type Client struct {
+type ClientCompany struct{
 	gorm.Model
-	User_id         int
-	Company_name    string
-	Industry        string
-	Phone           string
-	Billing_address string
-	Contact_person  string
+	ClientID int
+	CompanyName string
+	Website string
+	NumberOfEmployees int
+	Tagline string
+	Industry string
+}
+
+type CompanyAddress struct{
+	gorm.Model
+	ClientID int
+	OwnerName string
+	Phone string
+	Country string
+	State string 
+	District string
+	City string 
+	Pincode string
 }
 
 type Skill struct {

@@ -71,3 +71,12 @@ type Invoice struct{
 	Status string
 	ContractID int
 }
+
+type Attachment struct{
+	gorm.Model
+	ContractID int
+	UploadTime time.Time
+	UploadedBy int
+	Description string
+	AttachmentURL string
+}

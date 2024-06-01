@@ -20,6 +20,8 @@ service AuthService{
     rpc AddExperience(ExpReq) returns (ExpRes) {};
     rpc UpdateExperience(ExpReq) returns (ExpRes) {};
     rpc DeleteExperience(DltExpReq) returns (DltExpRes) {};
+    rpc UpdateCompanyDetails(UpdCompDtlReq) returns (UpdCompDtlRes) {};
+    rpc UpdateCompanyContact(UpdCompContReq) returns (UpdCompContRes) {};
     rpc GetProfileClient(ClientProfileReq) returns(ClientProfileRes) {};
     rpc BlockUser(BlockReq) returns (BlockRes) {};
     rpc UnBlockUser(BlockReq) returns (BlockRes) {};
@@ -29,6 +31,59 @@ service AuthService{
     rpc OnboardFreelancerToPaypal(OnboardToPaypalReq) returns (OnboardToPaypalRes) {};
     rpc ReviewFreelancer(ReviewFlancerReq) returns (ReviewFlancerRes) {};
     rpc AddPaymentEmail(AddPaymentEmailReq) returns (AddPaymentEmailRes) {};
+    rpc GetFreelancerReviews(GetReviewReq) returns (GetReviewRes) {};
+
+}
+
+message GetReviewReq{
+    string userID = 1;
+}
+
+message reviews{
+    string review =1 ;
+    int32 rating =2;
+    string clientID = 3;
+}
+
+message GetReviewRes{
+    repeated reviews reviews = 1;
+    int32 status = 2;
+    string Error = 3;
+}
+message Address{
+    string country = 1;
+    string state =2;
+    string district=3;
+    string city = 4;
+    string pincode = 5;
+}
+
+message UpdCompContReq{
+    int64 user_id = 1;
+    string OwnerName = 2;
+    string Phone = 3;
+    Address Address = 4;
+}
+
+message UpdCompContRes{
+    int64 Status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message UpdCompDtlRes{
+    int64 Status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message UpdCompDtlReq{
+    string company_name = 1;
+    string website = 2;
+    int32 number_of_employees = 3;
+    string tagline = 4;
+    string industry = 5;
+    int32 user_id = 6;
 }
 
 message AddPaymentEmailReq{
@@ -320,11 +375,15 @@ message DltExpRes{
 }
 
 message ClientProfileReq{
-
+    int32 user_id = 1;
 }
 
 message ClientProfileRes{
-
+    User client = 1;
+    UpdCompDtlReq CompanyDetails = 2;
+    UpdCompContReq Contact = 3;
+    int32 status = 4;
+    string Error = 5;
 }
 
 message BlockReq{

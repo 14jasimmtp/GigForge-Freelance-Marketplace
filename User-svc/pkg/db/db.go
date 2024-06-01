@@ -40,7 +40,6 @@ func ConnectToDB() *gorm.DB {
 	}
 
 	db.AutoMigrate(&domain.User{})
-	db.AutoMigrate(&domain.Client{})
 	db.AutoMigrate(&domain.Freelancer_Description{})
 	db.AutoMigrate(&domain.OtpInfo{})
 	db.AutoMigrate(&domain.Freelancer_Education{})
@@ -49,6 +48,9 @@ func ConnectToDB() *gorm.DB {
 	db.AutoMigrate(&domain.Freelancer_Experiences{})
 	db.AutoMigrate(&domain.Admin{})
 	db.AutoMigrate(&domain.Freelancer_paypal{})
+	db.AutoMigrate(&domain.FreelancerReview{})
+	db.AutoMigrate(&domain.ClientCompany{})
+	db.AutoMigrate(&domain.CompanyAddress{})
 	createAdmin(db)
 	log.Println("migrated table")
 	return db

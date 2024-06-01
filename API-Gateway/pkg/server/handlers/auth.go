@@ -19,6 +19,17 @@ func NewAuthHandler(auth auth.AuthServiceClient) *Handler {
 	return &Handler{auth: auth}
 }
 
+// Login godoc
+// @Summary User login
+// @Description Authenticate a user with email and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param login body req.LoginRequest true "Login credentials"
+// @Success 200 {object} auth.UserLoginRes "Successfully authenticated"
+// @Failure 400 {object} res.CommonRes "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/login [post]
 func (h *Handler) Login(c *fiber.Ctx) error {
 	var Login req.LoginRequest
 
@@ -50,6 +61,18 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 
 }
 
+// Signup godoc
+// @Summary User signup
+// @Description Register a new user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param role query string true "User role"
+// @Param user body req.SignupRequest true "User details"
+// @Success 200 {object} auth.UserSignupRes "Successfully signed up"
+// @Failure 400 {object} res.CommonRes "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/signup [post]
 func (h *Handler) Signup(c *fiber.Ctx) error {
 	var user req.SignupRequest
 
@@ -88,6 +111,17 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// ForgotPassword godoc
+// @Summary Forgot password
+// @Description Request to reset user password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param req body req.ForgotPassword true "Request details"
+// @Success 200 {object} auth.FPres "Password reset request successful"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/forgot-password [post]
 func (h *Handler) ForgotPassword(c *fiber.Ctx) error {
 	var req req.ForgotPassword
 
@@ -110,6 +144,18 @@ func (h *Handler) ForgotPassword(c *fiber.Ctx) error {
 
 }
 
+// ResetPassword godoc
+// @Summary Reset password
+// @Description Reset user password using OTP and token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param req body req.ResetPassword true "Request details"
+// @Param Authorization header string true "Authentication token"
+// @Success 200 {object} auth.RPres "Password reset successful"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/reset-password [post]
 func (h *Handler) ResetPassword(c *fiber.Ctx) error {
 	var req req.ResetPassword
 
@@ -135,6 +181,18 @@ func (h *Handler) ResetPassword(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// Verify godoc
+// @Summary Verify OTP
+// @Description Verify OTP for user authentication
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param req body req.Verify true "Verification details"
+// @Param Authorization header string true "Authentication token"
+// @Success 200 {object} auth.VerifyRes "OTP verification successful"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/verify [post]
 func (h *Handler) Verify(c *fiber.Ctx) error {
 	var req req.Verify
 

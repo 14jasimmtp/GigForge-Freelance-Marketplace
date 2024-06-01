@@ -13,7 +13,7 @@ type Config struct {
 
 func LoadConfig() (err error) {
 	viper.AddConfigPath("./")
-	viper.SetConfigName("api-gateway_config")
+	viper.SetConfigName("config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()

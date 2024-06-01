@@ -11,7 +11,7 @@ type Config struct{
 func LoadConfig() (err error){
 	var config Config
 	viper.AddConfigPath(".")
-	viper.SetConfigName("chat-svc_config")
+	viper.SetConfigName("config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()

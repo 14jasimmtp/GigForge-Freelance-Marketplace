@@ -6,18 +6,17 @@ type Config struct{
 	PORT string `mapstructure:"PORT"`
 	DB_URL string `mapstructure:"DB_URL"`
 	User_SVC string `mapstructure:"USER_SVC"`
+	AWS_ACCESS string `mapstructure:"AWS_ACCESS"`
+	AWS_SECRET string `mapstructure:"AWS_SECRET"`
+	AWS_REGION string `mapstructure:"AWS_REGION"`
 }
 
 func LoadConfig() (err error){
 	viper.AddConfigPath("./")
-	viper.SetConfigName("job-svc_config")
+	viper.SetConfigName("config")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
-
-	viper.BindEnv("PORT", "PORT")
-	viper.BindEnv("DB_URL", "DB_URL")
-	viper.BindEnv("USER_SVC", "USER_SVC")
 
 	err = viper.ReadInConfig()
 	if err != nil{

@@ -25,7 +25,42 @@ service JobService{
     rpc CapturePaymentContract(CapturePaymentReq) returns (CapturePaymentRes) {};
     rpc SaveJobs(SaveJobsReq) returns (SaveJobsRes) {};
     rpc GetInvoiceContract(GetInvoiceContractReq) returns (GetInvoiceContractRes) {};
+    rpc AddAttachmentToContract(AddAttachmentReq) returns (AddAttachmentRes) {};
+    rpc GetAttachments(GetAttachmentReq) returns (GetAttachmentRes) {};
+
 }
+
+message GetAttachmentReq{
+    string contractID= 1;
+}
+
+message Attachment{
+    int32 contractID = 1;
+    string AttachmentUrl= 2;
+    string description = 3;
+    string postedDate = 4;
+}
+
+message GetAttachmentRes{
+    repeated Attachment attachment = 1;
+    int32 status = 2;
+    string Error = 3;
+}
+
+message AddAttachmentReq{
+    bytes attachment = 1;
+    string filename = 2;
+    string contractID  = 3;
+    string description  = 4;
+    string userID = 5;
+}
+
+message AddAttachmentRes{
+    int32 status = 1;
+    string Error = 2;
+    string Response =3;
+}
+
 message GetInvoiceContractReq{
     int64 userID= 1;
     string contractID = 2;

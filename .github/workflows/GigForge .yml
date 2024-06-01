@@ -25,11 +25,11 @@ jobs:
     - name: Create config files
       run: |
           pwd
-          echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./API-Gateway/api-gateway_config.env
-          echo "${{ secrets.USERSVC_CONFIG }}" > ./User-svc/user-svc_config.env
-          echo "${{ secrets.JOBSVC_CONFIG }}" > ./Job-svc/job-svc_config.env
-          echo "${{ secrets.PROJECTSVC_CONFIG }}" > ./project-svc/project-svc_config.env
-          echo "${{ secrets.CHATSVC_CONFIG }}" > ./chat-svc/chat-svc_config.env
+          echo "${{ secrets.API_GATEWAY_CONFIG }}" > ./API-Gateway/config.env
+          echo "${{ secrets.USERSVC_CONFIG }}" > ./User-svc/config.env
+          echo "${{ secrets.JOBSVC_CONFIG }}" > ./Job-svc/config.env
+          echo "${{ secrets.PROJECTSVC_CONFIG }}" > ./project-svc/config.env
+          echo "${{ secrets.CHATSVC_CONFIG }}" > ./chat-svc/config.env
 
 
     - name: Build and push Docker images

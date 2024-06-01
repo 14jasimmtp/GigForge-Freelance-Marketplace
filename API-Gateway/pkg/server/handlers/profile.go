@@ -354,60 +354,79 @@ func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 
 // }
 
-// func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
+func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
+	var req req.UpdateCompanyDetails
+	user_id:=c.Locals("User_id").(int64)
+	if err := c.BodyParser(&req); err != nil{
+		return c.Status(400).JSON("error while parsing body.Check syntax")
+	}
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error":Error})
+	}
+	res,err:=h.profile.UpdateCompanyDetails(context.Background(),&auth.UpdCompDtlReq{
+		CompanyName: req.CompanyName,
+		Website: req.Website,
+		NumberOfEmployees: int32(req.NoOfEmployees),
+		Tagline: req.Tagline,
+		Industry: req.Industry,
+		UserId: int32(user_id),
+	})
+	if err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
 
-// }
-// func (h *ProfileHandler) AddCompanyDetails(c *fiber.Ctx) error{
-// 	// var req req.
-// 	user_id:=c.Locals("User_id").(string)
-// 	if err := c.BodyParser(&req); err != nil{
-// 		return c.Status(400).JSON("error while parsing body.Check syntax")
-// 	}
-// 	Error, err := validation.Validation(req)
-// 	if err != nil {
-// 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
-// 	}
-// 	res,err:=h.profile.AddExperience(context.Background(),&auth.ACDReq{
-// 		Company: req.Company,
-// 		City: req.City,
-// 		Country: req.Country,
-// 		Title: req.Title,
-// 		FromDate: req.FromDate,
-// 		ToDate: req.ToDate,
-// 		Description: req.Description,
-// 		UserId: user_id,
-// 	})
-// 	if err != nil {
-// 		return c.Status(400).JSON(err.Error())
-// 	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
+func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
+	user_id := c.Locals("User_id").(int64)
+	
+	res, err := h.profile.GetProfileClient(context.Background(), &auth.ClientProfileReq{UserId:int32(user_id)})
+	if err != nil {
+		return c.Status(403).JSON(err.Error())
+	}
 
-// func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
-// 	var req req.Profile
-// 	user_id := c.Locals("User_id")
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return c.Status(400).JSON(
-// 			res.CommonRes{
-// 				Status:  "failed",
-// 				Message: "Error validating request body",
-// 				Error:   err.Error(),
-// 				Body:    nil,
-// 			},
-// 		)
-// 	}
-// 	Error, err := validation.Validation(req)
-// 	if err != nil {
-// 		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
-// 	}
-// 	res, err := h.profile.GetProfileClient(context.Background(), &auth.ProfileClientReq{UserId:user_id})
-// 	if err != nil {
-// 		return c.Status(403).JSON(err.Error())
-// 	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
-// 	return c.Status(int(res.Status)).JSON(res)
-// }
+func (h *ProfileHandler) UpdateCompanyContacts(c *fiber.Ctx) error{
+	var req req.UpdateCompanyContact
+	user_id:=c.Locals("User_id").(int64)
+	if err := c.BodyParser(&req); err != nil{
+		return c.Status(400).JSON("error while parsing body.Check syntax")
+	}
+	Error, err := validation.Validation(req)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error":Error})
+	}
+	res,err:=h.profile.UpdateCompanyContact(context.Background(),&auth.UpdCompContReq{
+		UserId: int64(user_id),
+		OwnerName: req.OwnerName,
+		Phone: req.Phone,
+		Address: &auth.Address{
+			Country: req.Address.Country,
+			State: req.Address.State,
+			District: req.Address.District,
+			City: req.Address.City,
+			Pincode: req.Address.PinCode,
+		},
+	})
+	if err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+
+	return c.Status(int(res.Status)).JSON(res)
+}
+
+func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
+	fid:=c.Params("Fid")
+	res,err:=h.profile.GetFreelancerReviews(context.Background(),&auth.GetReviewReq{UserID:fid })
+	if err != nil{
+		return c.Status(400).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}
 
 
 // func (h *ProfileHandler) GetPaymentHistory(c *fiber.Ctx) error{
