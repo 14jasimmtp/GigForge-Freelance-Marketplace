@@ -32,7 +32,7 @@ func NewJobsHandler(job Job.JobServiceClient) *JobsHandler {
 // @Success 200 {object} Job.PostjobRes "Successfully posted job"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 403 {object} map[string]string "Forbidden"
-// @Router /jobs/post [post]
+// @Router /job [post]
 func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int64)

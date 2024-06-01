@@ -59,7 +59,7 @@ func (h *AdminHandler) AdminLogin(ctx *fiber.Ctx) error {
 // @Success 200 {object} auth.AddSkillRes "Successfully added skill"
 // @Failure 400 {object} map[string]string "Bad request"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /admin/add-skill [post]
+// @Router /admin/skills [post]
 func (h *AdminHandler) AddSkill(ctx *fiber.Ctx) error {
 	var skill req.AddSkills
 
@@ -87,7 +87,7 @@ func (h *AdminHandler) AddSkill(ctx *fiber.Ctx) error {
 // @Param id query string true "User ID"
 // @Success 200 {object} auth.BlockRes "User blocked successfully"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /admin/block-user [put]
+// @Router /admin/user/block [put]
 func (h *AdminHandler) BlockUser(ctx *fiber.Ctx) error {
 	user_id := ctx.Query("id")
 
@@ -112,7 +112,7 @@ func (h *AdminHandler) BlockUser(ctx *fiber.Ctx) error {
 // @Param id query string true "User ID"
 // @Success 200 {object} auth.BlockRes "User unblocked successfully"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /admin/unblock-user [put]
+// @Router /admin/user/unblock [put]
 func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 	user_id := ctx.Query("id")
 
@@ -136,7 +136,7 @@ func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} Job.AddCategoryRes "Successfully added category"
 // @Failure 400 {object} map[string]string "Bad request"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /admin/add-category [post]
+// @Router /admin/category [post]
 func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 	var req req.AddCategory
 
@@ -151,3 +151,10 @@ func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 
 	return c.Status(int(res.Status)).JSON(res)
 }
+
+// func (h *AdminHandler) AdminDashboard(c *fiber.Ctx) error{
+// 	dashboard,err:=h.auth.AdminDashboard()
+// 	if err != nil {
+// 		return
+// 	}
+// }

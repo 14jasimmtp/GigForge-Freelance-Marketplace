@@ -81,12 +81,18 @@ func (r *Repo) AdminLogin(email string) (*domain.Admin, error) {
 
 func (r *Repo) GetUser(email string) (*domain.UserModel, error) {
 	var user domain.User
+	var count int
 	query := r.db.Raw(`SELECT * FROM users WHERE email = ? `, email).Scan(&user)
 	if query.Error != nil {
 		return nil, errors.New("something went wrong")
 
 	}
-	if query.RowsAffected < 1{
+	query = r.db.Raw(`SELECT count(*) FROM users WHERE email = ? `, email).Scan(&count)
+	if query.Error != nil {
+		return nil, errors.New("something went wrong")
+
+	}
+	if count < 1{
 		return nil, errors.New(`user doesn't exist`)
 	}
 
@@ -598,7 +604,7 @@ func (r *Repo) ContactDetails(userID int32) (*auth.UpdCompContReq,error){
 
 func (r *Repo) GetReviews(userID string) ([]*auth.Reviews,error){
 	var reviews []domain.FreelancerReview
-	query:=r.db.Raw(`select * from freelancer_reviews where user_id = ?`,userID).Scan(&reviews)
+	query:=r.db.Raw(`select * from freelancer_reviews where freelancer_id = ?`,userID).Scan(&reviews)
 	if query.Error!= nil{
 		return nil,errors.New(`something went wrong`)
 	}
