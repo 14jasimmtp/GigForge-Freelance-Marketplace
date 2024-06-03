@@ -206,7 +206,7 @@ func (s *Service) GetProfile(ctx context.Context, req *auth.GetProfileReq) (*aut
 
 func (s *Service) UpdateProfilePhoto(ctx context.Context, req *auth.PhotoReq) (*auth.PhotoRes, error) {
 	sess := s3.CreateSession()
-	url, err := s3.UploadImageToS3(req.Image, sess)
+	url, err := s3.UploadImageToS3(req.Image,req.UserId,req.Filename, sess)
 	if err != nil {
 		return &auth.PhotoRes{
 			Status:   500,

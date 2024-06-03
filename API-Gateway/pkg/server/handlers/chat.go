@@ -121,10 +121,10 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 		return err
 	}
 	err = ch.PublishWithContext(ctx,
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
+		"",    
+		q.Name,
+		false, 
+		false, 
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        msgbyte,

@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/google/uuid"
 	"github.com/spf13/viper"
 )
 
@@ -26,11 +25,11 @@ func CreateSession() *session.Session {
 	return sess
 }
 
-func UploadImageToS3(image []byte, sess *session.Session) (string, error) {
+func UploadImageToS3(image []byte, userID string, filename string, sess *session.Session) (string, error) {
 	uploader := s3manager.NewUploader(sess)
-	key := uuid.New().String() // Generating a unique key for the image
+	key := fmt.Sprintf("profile-photo/%v/%v", userID, filename)
 	upload, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("gigforge/profile-images/"),
+		Bucket: aws.String("gigforge"),
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(image),
 		ACL:    aws.String("public-read"),
@@ -41,5 +40,3 @@ func UploadImageToS3(image []byte, sess *session.Session) (string, error) {
 	}
 	return upload.Location, nil
 }
-
-

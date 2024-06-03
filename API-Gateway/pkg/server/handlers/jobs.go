@@ -25,6 +25,7 @@ func NewJobsHandler(job Job.JobServiceClient) *JobsHandler {
 // PostJob godoc
 // @Summary Post a job
 // @Description Create a new job listing
+// @security ClientAccessToken
 // @Tags jobs
 // @Accept json
 // @Produce json
@@ -32,7 +33,7 @@ func NewJobsHandler(job Job.JobServiceClient) *JobsHandler {
 // @Success 200 {object} Job.PostjobRes "Successfully posted job"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 403 {object} map[string]string "Forbidden"
-// @Router /job [post]
+// @Router /client/job [post]
 func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int64)
@@ -73,6 +74,7 @@ func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 // SendProposal godoc
 // @Summary Send a proposal
 // @Description Send a proposal for a job
+// @security FreelancerAccessToken
 // @Tags jobs
 // @Accept json
 // @Produce json
@@ -81,7 +83,7 @@ func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 // @Success 200 {object} Job.ProposalRes "Successfully sent proposal"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 403 {object} map[string]string "Forbidden"
-// @Router /jobs/proposal [post]
+// @Router /freelancer/job/send-proposal [post]
 func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	var req req.Proposal
 
@@ -121,12 +123,13 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 // GetProposalsOfJob godoc
 // @Summary Get proposals of a job
 // @Description Get all proposals for a specific job
+// @security ClientAccessToken
 // @Tags jobs
 // @Produce json
 // @Param id path string true "Job ID"
 // @Success 200 {object} Job.GJPRes "Successfully retrieved proposals"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/{id}/proposals [get]
+// @Router /client/job/proposals/{id} [get]
 func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
 	client_id := strconv.Itoa(int(c.Locals("User_id").(int64)))
 	job_id := c.Params("id")
@@ -141,11 +144,12 @@ func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
 // GetMyJobs godoc
 // @Summary Get my jobs
 // @Description Get jobs posted by the authenticated user
+// @security ClientAccessToken
 // @Tags jobs
 // @Produce json
 // @Success 200 {object} Job.GetMyJobsRes "Successfully retrieved jobs"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/my [get]
+// @Router /client/job [get]
 func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int64)
 	id := strconv.Itoa(int(user_id))
@@ -164,7 +168,7 @@ func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 // @Param q query string true "Query string"
 // @Success 200 {object} Job.GetCategoryRes "Successfully retrieved categories"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/categories [get]
+// @Router /job/categories [get]
 func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
 	query := c.Query("q")
 	category, err := h.job.GetCategory(context.Background(), &Job.GetCategoryReq{Query: query})
@@ -182,7 +186,7 @@ func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
 // @Param job_id path string true "Job ID"
 // @Success 200 {object} Job.GJPRes "Successfully retrieved proposals"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/{job_id}/proposals [get]
+// @Router /job/{job_id}/proposals [get]
 func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
 	user_id := c.Locals("User_id").(string)
@@ -196,6 +200,7 @@ func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 // EditJob godoc
 // @Summary Edit a job
 // @Description Edit an existing job listing
+// @security ClientAccessToken
 // @Tags jobs
 // @Accept json
 // @Produce json
@@ -203,7 +208,7 @@ func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 // @Success 200 {object} Job.PostjobRes "Successfully edited job"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 403 {object} map[string]string "Forbidden"
-// @Router /jobs/edit [put]
+// @Router /client/job [put]
 func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int64)
@@ -243,6 +248,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 // SendOffer godoc
 // @Summary Send a job offer
 // @Description Send a job offer to a freelancer
+// @security ClientAccessToken
 // @Tags jobs
 // @Accept json
 // @Produce json
@@ -250,7 +256,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 // @Success 200 {object} Job.SendOfferRes "Successfully sent offer"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/offer [post]
+// @Router /client/job/send-offer [post]
 func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	var req req.SendOffer
 	user_id := c.Locals("User_id").(int64)
@@ -291,12 +297,13 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 // AcceptOffer godoc
 // @Summary Accept a job offer
 // @Description Accept a job offer from a client
+// @security FreelancerAccessToken
 // @Tags jobs
 // @Produce json
 // @Param offer_id path string true "Offer ID"
 // @Success 200 {object} Job.AcceptOfferRes "Successfully accepted offer"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/offer/{offer_id}/accept [post]
+// @Router /freelancer/job/accept-offer/{offer_id} [post]
 func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(string)
 	of_id := c.Params("offer_id")
@@ -333,7 +340,7 @@ func (h *JobsHandler) GetJobs(c *fiber.Ctx) error {
 // @Param id path string true "Job ID"
 // @Success 200 {object} Job.GetJobRes "Successfully retrieved job"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/{id} [get]
+// @Router /job/{id} [get]
 func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 	job_id := c.Params("id")
 	println(job_id)
@@ -347,12 +354,13 @@ func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 // GetAllJobOffersForFreelancer godoc
 // @Summary Get job offers for a freelancer
 // @Description Get all job offers for a specific freelancer
+// @security FreelancerAccessToken
 // @Tags jobs
 // @Produce json
 // @Param status query string false "Offer status"
 // @Success 200 {object} Job.GetJobOfferForFreelancerRes "Successfully retrieved job offers"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/offers/freelancer [get]
+// @Router /freelancer/job/offers [get]
 func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(string)
 	status := c.Query("status")
@@ -366,6 +374,7 @@ func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
 // SendInvoice godoc
 // @Summary Send an invoice
 // @Description Send a weekly invoice for a contract
+// @security FreelancerAccessToken
 // @Tags jobs
 // @Accept json
 // @Produce json
@@ -373,7 +382,7 @@ func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
 // @Success 200 {object} Job.InvoiceRes "Successfully sent invoice"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/invoice [post]
+// @Router /freelancer/job/invoice [post]
 func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 	var req req.SendInvoice
 	user_id := c.Locals("User_id").(string)
@@ -402,7 +411,7 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 // @Param invoiceID query string true "Invoice ID"
 // @Success 200 {object} Job.ExecutePaymentRes "Successfully executed payment"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /jobs/payment/execute [post]
+// @Router /job/payment/execute [post]
 func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
 	invoiceID := c.Query("invoiceID")
 	fmt.Println("1")
@@ -485,12 +494,13 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error {
 // GetAllContractsForClient godoc
 // @Summary Get all contracts for a client
 // @Description Get all contracts for a specific client
+// @security ClientAccessToken
 // @Tags contracts
 // @Produce json
 // @Param status query string false "Contract status"
 // @Success 200 {object} Job.GetAllContractsForClientRes "Successfully retrieved contracts"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /contracts/client [get]
+// @Router /client/contracts [get]
 func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
 	userID := c.Locals("User_id").(int64)
 	Status := c.Query("status")
@@ -504,12 +514,13 @@ func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
 // GetOneContract godoc
 // @Summary Get a contract
 // @Description Get details of a specific contract
+// @security ClientAccessToken
 // @Tags contracts
 // @Produce json
 // @Param id path string true "Contract ID"
 // @Success 200 {object} Job.GetOneContractForClientRes "Successfully retrieved contract"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /contracts/{id} [get]
+// @Router /client/contracts/{id} [get]
 func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
 	userID := c.Locals("User_id").(int64)
 	contractID := c.Params("id")
@@ -523,12 +534,13 @@ func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
 // GetAllInvoicesOfContract godoc
 // @Summary Get all invoices of a contract
 // @Description Get all invoices for a specific contract
+// @security ClientAccessToken
 // @Tags contracts
 // @Produce json
 // @Param contractID path string true "Contract ID"
 // @Success 200 {object} Job.GetInvoiceContractRes "Successfully retrieved invoices"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /contracts/{contractID}/invoices [get]
+// @Router /contracts/invoices/{contractID} [get]
 func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
 	userID := c.Locals("User_id").(int64)
 	cid := c.Params("contractID")

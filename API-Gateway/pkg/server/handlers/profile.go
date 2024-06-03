@@ -21,7 +21,6 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 	return &ProfileHandler{profile: profile}
 }
 
-//Freelancer profile
 
 func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	var req req.Education
@@ -217,6 +216,7 @@ func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 	res, err := h.profile.UpdateProfilePhoto(context.Background(), &auth.PhotoReq{
 		UserId: userID,
 		Image:  imageData,
+		Filename: file.Filename,
 	})
 	if err != nil {
 		return c.Status(400).JSON(err)

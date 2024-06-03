@@ -124,6 +124,7 @@ message OnboardToPaypalRes{
 message PhotoReq{
     string user_id = 1;
     bytes image = 2;
+    string Filename = 3;
 }
 
 message PhotoRes{

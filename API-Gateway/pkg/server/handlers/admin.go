@@ -52,6 +52,7 @@ func (h *AdminHandler) AdminLogin(ctx *fiber.Ctx) error {
 // AddSkill godoc
 // @Summary Add a new skill
 // @Description Add a new skill with the provided details
+// @security AdminAccessToken
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -81,6 +82,7 @@ func (h *AdminHandler) AddSkill(ctx *fiber.Ctx) error {
 // BlockUser godoc
 // @Summary Block a user
 // @Description Block a user by their ID
+// @security AdminAccessToken
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -106,6 +108,7 @@ func (h *AdminHandler) BlockUser(ctx *fiber.Ctx) error {
 // UnBlockUser godoc
 // @Summary Unblock a user
 // @Description Unblock a user by their ID
+// @security AdminAccessToken
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -129,6 +132,7 @@ func (h *AdminHandler) UnBlockUser(ctx *fiber.Ctx) error {
 // AddCategory godoc
 // @Summary Add a new category
 // @Description Add a new category with the provided details
+// @security AdminAccessToken
 // @Tags admin
 // @Accept json
 // @Produce json

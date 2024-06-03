@@ -14,7 +14,23 @@ import (
 	"github.com/spf13/viper"
 )
 
+// @title          GigForge
+// @version        1.0
+// @description    Freelance Marketplace.
+// @termsOfService http://swagger.io/terms/
 
+// @host     gigforge.jasim.online
+// @BasePath /
+
+// @securityDefinitions.apikey FreelancerAccessToken
+// @in                         header
+// @name                       Authorization
+// @securityDefinitions.apikey ClientAccessToken
+// @in                         header
+// @name                       Authorization
+// @securityDefinitions.apikey AdminAccessToken
+// @in                         header
+// @name                       Authorization
 
 func main() {
 
@@ -31,23 +47,7 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-// @title          GigForge
-// @version        1.0
-// @description    Freelance Marketplace.
-// @termsOfService http://swagger.io/terms/
-
-// @host     gigforge.jasim.online
-// @BasePath /
-
-// @securityDefinitions.apikey UserAuthorization
-// @in                         header
-// @name                       AccessToken
-// @securityDefinitions.apikey UserConfirmToken
-// @in                         header
-// @name                       ConfirmToken
-// @securityDefinitions.apikey AdminAutherisation
-// @in                         header
-// @name                       AccessToken
+	
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	app.Static("/template", "./template")

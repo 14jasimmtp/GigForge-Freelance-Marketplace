@@ -661,6 +661,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - AdminAccessToken: []
       summary: Add a new category
       tags:
       - admin
@@ -729,6 +731,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - AdminAccessToken: []
       summary: Add a new skill
       tags:
       - admin
@@ -756,6 +760,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - AdminAccessToken: []
       summary: Block a user
       tags:
       - admin
@@ -783,6 +789,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - AdminAccessToken: []
       summary: Unblock a user
       tags:
       - admin
@@ -967,32 +975,33 @@ paths:
       summary: Verify OTP
       tags:
       - auth
-  /contracts/{contractID}/invoices:
+  /client/contracts:
     get:
-      description: Get all invoices for a specific contract
+      description: Get all contracts for a specific client
       parameters:
-      - description: Contract ID
-        in: path
-        name: contractID
-        required: true
+      - description: Contract status
+        in: query
+        name: status
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved invoices
+          description: Successfully retrieved contracts
           schema:
-            $ref: '#/definitions/Job.GetInvoiceContractRes'
+            $ref: '#/definitions/Job.GetAllContractsForClientRes'
         "500":
           description: Internal server error
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get all invoices of a contract
+      security:
+      - ClientAccessToken: []
+      summary: Get all contracts for a client
       tags:
       - contracts
-  /contracts/{id}:
+  /client/contracts/{id}:
     get:
       description: Get details of a specific contract
       parameters:
@@ -1014,34 +1023,32 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ClientAccessToken: []
       summary: Get a contract
       tags:
       - contracts
-  /contracts/client:
+  /client/job:
     get:
-      description: Get all contracts for a specific client
-      parameters:
-      - description: Contract status
-        in: query
-        name: status
-        type: string
+      description: Get jobs posted by the authenticated user
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved contracts
+          description: Successfully retrieved jobs
           schema:
-            $ref: '#/definitions/Job.GetAllContractsForClientRes'
+            $ref: '#/definitions/Job.GetMyJobsRes'
         "500":
           description: Internal server error
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get all contracts for a client
+      security:
+      - ClientAccessToken: []
+      summary: Get my jobs
       tags:
-      - contracts
-  /job:
+      - jobs
     post:
       consumes:
       - application/json
@@ -1070,129 +1077,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ClientAccessToken: []
       summary: Post a job
       tags:
       - jobs
-  /jobs:
-    get:
-      description: Get a list of all jobs
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved jobs
-          schema:
-            $ref: '#/definitions/Job.GetJobsRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get all jobs
-      tags:
-      - jobs
-  /jobs/{id}:
-    get:
-      description: Get details of a specific job
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved job
-          schema:
-            $ref: '#/definitions/Job.GetJobRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get a job
-      tags:
-      - jobs
-  /jobs/{id}/proposals:
-    get:
-      description: Get all proposals for a specific job
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved proposals
-          schema:
-            $ref: '#/definitions/Job.GJPRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get proposals of a job
-      tags:
-      - jobs
-  /jobs/{job_id}/proposals:
-    get:
-      description: Get all proposals for a specific job
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved proposals
-          schema:
-            $ref: '#/definitions/Job.GJPRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get job proposals
-      tags:
-      - jobs
-  /jobs/categories:
-    get:
-      description: Get job categories based on a query
-      parameters:
-      - description: Query string
-        in: query
-        name: q
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved categories
-          schema:
-            $ref: '#/definitions/Job.GetCategoryRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get categories
-      tags:
-      - jobs
-  /jobs/edit:
     put:
       consumes:
       - application/json
@@ -1221,61 +1110,39 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ClientAccessToken: []
       summary: Edit a job
       tags:
       - jobs
-  /jobs/invoice:
-    post:
-      consumes:
-      - application/json
-      description: Send a weekly invoice for a contract
-      parameters:
-      - description: Invoice details
-        in: body
-        name: invoice
-        required: true
-        schema:
-          $ref: '#/definitions/req.SendInvoice'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully sent invoice
-          schema:
-            $ref: '#/definitions/Job.InvoiceRes'
-        "400":
-          description: Error validating request body
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Send an invoice
-      tags:
-      - jobs
-  /jobs/my:
+  /client/job/proposals/{id}:
     get:
-      description: Get jobs posted by the authenticated user
+      description: Get all proposals for a specific job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved jobs
+          description: Successfully retrieved proposals
           schema:
-            $ref: '#/definitions/Job.GetMyJobsRes'
+            $ref: '#/definitions/Job.GJPRes'
         "500":
           description: Internal server error
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get my jobs
+      security:
+      - ClientAccessToken: []
+      summary: Get proposals of a job
       tags:
       - jobs
-  /jobs/offer:
+  /client/job/send-offer:
     post:
       consumes:
       - application/json
@@ -1304,10 +1171,39 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ClientAccessToken: []
       summary: Send a job offer
       tags:
       - jobs
-  /jobs/offer/{offer_id}/accept:
+  /contracts/invoices/{contractID}:
+    get:
+      description: Get all invoices for a specific contract
+      parameters:
+      - description: Contract ID
+        in: path
+        name: contractID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved invoices
+          schema:
+            $ref: '#/definitions/Job.GetInvoiceContractRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ClientAccessToken: []
+      summary: Get all invoices of a contract
+      tags:
+      - contracts
+  /freelancer/job/accept-offer/{offer_id}:
     post:
       description: Accept a job offer from a client
       parameters:
@@ -1329,10 +1225,46 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: Accept a job offer
       tags:
       - jobs
-  /jobs/offers/freelancer:
+  /freelancer/job/invoice:
+    post:
+      consumes:
+      - application/json
+      description: Send a weekly invoice for a contract
+      parameters:
+      - description: Invoice details
+        in: body
+        name: invoice
+        required: true
+        schema:
+          $ref: '#/definitions/req.SendInvoice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully sent invoice
+          schema:
+            $ref: '#/definitions/Job.InvoiceRes'
+        "400":
+          description: Error validating request body
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - FreelancerAccessToken: []
+      summary: Send an invoice
+      tags:
+      - jobs
+  /freelancer/job/offers:
     get:
       description: Get all job offers for a specific freelancer
       parameters:
@@ -1353,7 +1285,167 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: Get job offers for a freelancer
+      tags:
+      - jobs
+  /freelancer/job/send-proposal:
+    post:
+      consumes:
+      - application/json
+      description: Send a proposal for a job
+      parameters:
+      - description: Job ID
+        in: query
+        name: jobID
+        required: true
+        type: string
+      - description: Proposal details
+        in: body
+        name: proposal
+        required: true
+        schema:
+          $ref: '#/definitions/req.Proposal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully sent proposal
+          schema:
+            $ref: '#/definitions/Job.ProposalRes'
+        "400":
+          description: Error validating request body
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - FreelancerAccessToken: []
+      summary: Send a proposal
+      tags:
+      - jobs
+  /job/{id}:
+    get:
+      description: Get details of a specific job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved job
+          schema:
+            $ref: '#/definitions/Job.GetJobRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a job
+      tags:
+      - jobs
+  /job/{job_id}/proposals:
+    get:
+      description: Get all proposals for a specific job
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved proposals
+          schema:
+            $ref: '#/definitions/Job.GJPRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get job proposals
+      tags:
+      - jobs
+  /job/categories:
+    get:
+      description: Get job categories based on a query
+      parameters:
+      - description: Query string
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved categories
+          schema:
+            $ref: '#/definitions/Job.GetCategoryRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get categories
+      tags:
+      - jobs
+  /job/payment/execute:
+    post:
+      description: Execute payment for a contract invoice
+      parameters:
+      - description: Invoice ID
+        in: query
+        name: invoiceID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully executed payment
+          schema:
+            $ref: '#/definitions/Job.ExecutePaymentRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Execute payment contract
+      tags:
+      - jobs
+  /jobs:
+    get:
+      description: Get a list of all jobs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved jobs
+          schema:
+            $ref: '#/definitions/Job.GetJobsRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all jobs
       tags:
       - jobs
   /jobs/payment:
@@ -1403,68 +1495,6 @@ paths:
               type: string
             type: object
       summary: Capture payment contract
-      tags:
-      - jobs
-  /jobs/payment/execute:
-    post:
-      description: Execute payment for a contract invoice
-      parameters:
-      - description: Invoice ID
-        in: query
-        name: invoiceID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully executed payment
-          schema:
-            $ref: '#/definitions/Job.ExecutePaymentRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Execute payment contract
-      tags:
-      - jobs
-  /jobs/proposal:
-    post:
-      consumes:
-      - application/json
-      description: Send a proposal for a job
-      parameters:
-      - description: Job ID
-        in: query
-        name: jobID
-        required: true
-        type: string
-      - description: Proposal details
-        in: body
-        name: proposal
-        required: true
-        schema:
-          $ref: '#/definitions/req.Proposal'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully sent proposal
-          schema:
-            $ref: '#/definitions/Job.ProposalRes'
-        "400":
-          description: Error validating request body
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "403":
-          description: Forbidden
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Send a proposal
       tags:
       - jobs
   /jobs/search:
@@ -1588,6 +1618,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: Add a single project
       tags:
       - projects
@@ -1613,6 +1645,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ClientAccessToken: []
       summary: Buy a project
       tags:
       - projects
@@ -1657,6 +1691,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: Edit a project
       tags:
       - projects
@@ -1676,6 +1712,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: List my projects
       tags:
       - projects
@@ -1773,6 +1811,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - FreelancerAccessToken: []
       summary: Remove a project
       tags:
       - projects

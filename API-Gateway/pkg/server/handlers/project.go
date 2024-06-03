@@ -23,6 +23,7 @@ func NewProjectHandler(p project.ProjectServiceClient) *ProjectHandler {
 // AddSingleProject godoc
 // @Summary Add a single project
 // @Description Create a new project listing
+// @security FreelancerAccessToken
 // @Tags projects
 // @Accept json
 // @Produce json
@@ -77,9 +78,10 @@ func (h *ProjectHandler) AddTieredProject(c *fiber.Ctx) error {
 
 	return c.Status(int(res.Status)).JSON(res)}
 
-	// EditProject godoc
+// EditProject godoc
 // @Summary Edit a project
 // @Description Edit an existing project listing
+// @security FreelancerAccessToken
 // @Tags projects
 // @Accept json
 // @Produce json
@@ -122,6 +124,7 @@ func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 // RemoveProject godoc
 // @Summary Remove a project
 // @Description Remove an existing project listing
+// @security FreelancerAccessToken
 // @Tags projects
 // @Param id path string true "Project ID"
 // @Success 200 {object} project.RemProjectRes "Successfully removed project"
@@ -176,6 +179,7 @@ func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
 // ListMyProjects godoc
 // @Summary List my projects
 // @Description Get a list of projects posted by the authenticated user
+// @security FreelancerAccessToken
 // @Tags projects
 // @Produce json
 // @Success 200 {object} project.ListMyProjectRes "Successfully retrieved projects"
@@ -194,6 +198,7 @@ func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 // BuyProject godoc
 // @Summary Buy a project
 // @Description Buy a specific project
+// @security ClientAccessToken
 // @Tags projects
 // @Produce json
 // @Param id path string true "Project ID"

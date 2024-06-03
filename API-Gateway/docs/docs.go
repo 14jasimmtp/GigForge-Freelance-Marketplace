@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/admin/category": {
             "post": {
+                "security": [
+                    {
+                        "AdminAccessToken": []
+                    }
+                ],
                 "description": "Add a new category with the provided details",
                 "consumes": [
                     "application/json"
@@ -121,6 +126,11 @@ const docTemplate = `{
         },
         "/admin/skills": {
             "post": {
+                "security": [
+                    {
+                        "AdminAccessToken": []
+                    }
+                ],
                 "description": "Add a new skill with the provided details",
                 "consumes": [
                     "application/json"
@@ -173,6 +183,11 @@ const docTemplate = `{
         },
         "/admin/user/block": {
             "put": {
+                "security": [
+                    {
+                        "AdminAccessToken": []
+                    }
+                ],
                 "description": "Block a user by their ID",
                 "consumes": [
                     "application/json"
@@ -214,6 +229,11 @@ const docTemplate = `{
         },
         "/admin/user/unblock": {
             "put": {
+                "security": [
+                    {
+                        "AdminAccessToken": []
+                    }
+                ],
                 "description": "Unblock a user by their ID",
                 "consumes": [
                     "application/json"
@@ -528,8 +548,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/contracts/client": {
+        "/client/contracts": {
             "get": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Get all contracts for a specific client",
                 "produces": [
                     "application/json"
@@ -565,46 +590,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/contracts/{contractID}/invoices": {
+        "/client/contracts/{id}": {
             "get": {
-                "description": "Get all invoices for a specific contract",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "contracts"
-                ],
-                "summary": "Get all invoices of a contract",
-                "parameters": [
+                "security": [
                     {
-                        "type": "string",
-                        "description": "Contract ID",
-                        "name": "contractID",
-                        "in": "path",
-                        "required": true
+                        "ClientAccessToken": []
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved invoices",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetInvoiceContractRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/contracts/{id}": {
-            "get": {
                 "description": "Get details of a specific contract",
                 "produces": [
                     "application/json"
@@ -641,8 +633,97 @@ const docTemplate = `{
                 }
             }
         },
-        "/job": {
+        "/client/job": {
+            "get": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
+                "description": "Get jobs posted by the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get my jobs",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved jobs",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetMyJobsRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
+                "description": "Edit an existing job listing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Edit a job",
+                "parameters": [
+                    {
+                        "description": "Job details",
+                        "name": "job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.PostJob"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully edited job",
+                        "schema": {
+                            "$ref": "#/definitions/Job.PostjobRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error validating request body",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Create a new job listing",
                 "consumes": [
                     "application/json"
@@ -690,59 +771,35 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs": {
+        "/client/job/proposals/{id}": {
             "get": {
-                "description": "Get a list of all jobs",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get all jobs",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved jobs",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetJobsRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                "security": [
+                    {
+                        "ClientAccessToken": []
                     }
-                }
-            }
-        },
-        "/jobs/categories": {
-            "get": {
-                "description": "Get job categories based on a query",
+                ],
+                "description": "Get all proposals for a specific job",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "jobs"
                 ],
-                "summary": "Get categories",
+                "summary": "Get proposals of a job",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Query string",
-                        "name": "q",
-                        "in": "query",
+                        "description": "Job ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved categories",
+                        "description": "Successfully retrieved proposals",
                         "schema": {
-                            "$ref": "#/definitions/Job.GetCategoryRes"
+                            "$ref": "#/definitions/Job.GJPRes"
                         }
                     },
                     "500": {
@@ -757,135 +814,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs/edit": {
-            "put": {
-                "description": "Edit an existing job listing",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Edit a job",
-                "parameters": [
-                    {
-                        "description": "Job details",
-                        "name": "job",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.PostJob"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully edited job",
-                        "schema": {
-                            "$ref": "#/definitions/Job.PostjobRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error validating request body",
-                        "schema": {
-                            "$ref": "#/definitions/res.CommonRes"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/invoice": {
+        "/client/job/send-offer": {
             "post": {
-                "description": "Send a weekly invoice for a contract",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Send an invoice",
-                "parameters": [
+                "security": [
                     {
-                        "description": "Invoice details",
-                        "name": "invoice",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.SendInvoice"
-                        }
+                        "ClientAccessToken": []
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully sent invoice",
-                        "schema": {
-                            "$ref": "#/definitions/Job.InvoiceRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error validating request body",
-                        "schema": {
-                            "$ref": "#/definitions/res.CommonRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/my": {
-            "get": {
-                "description": "Get jobs posted by the authenticated user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get my jobs",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved jobs",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetMyJobsRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/offer": {
-            "post": {
                 "description": "Send a job offer to a freelancer",
                 "consumes": [
                     "application/json"
@@ -933,8 +868,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs/offer/{offer_id}/accept": {
+        "/contracts/invoices/{contractID}": {
+            "get": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
+                "description": "Get all invoices for a specific contract",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contracts"
+                ],
+                "summary": "Get all invoices of a contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contract ID",
+                        "name": "contractID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved invoices",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetInvoiceContractRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/job/accept-offer/{offer_id}": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Accept a job offer from a client",
                 "produces": [
                     "application/json"
@@ -971,8 +954,67 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs/offers/freelancer": {
+        "/freelancer/job/invoice": {
+            "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Send a weekly invoice for a contract",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Send an invoice",
+                "parameters": [
+                    {
+                        "description": "Invoice details",
+                        "name": "invoice",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.SendInvoice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully sent invoice",
+                        "schema": {
+                            "$ref": "#/definitions/Job.InvoiceRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error validating request body",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/job/offers": {
             "get": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Get all job offers for a specific freelancer",
                 "produces": [
                     "application/json"
@@ -994,6 +1036,248 @@ const docTemplate = `{
                         "description": "Successfully retrieved job offers",
                         "schema": {
                             "$ref": "#/definitions/Job.GetJobOfferForFreelancerRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/job/send-proposal": {
+            "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Send a proposal for a job",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Send a proposal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "jobID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Proposal details",
+                        "name": "proposal",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Proposal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully sent proposal",
+                        "schema": {
+                            "$ref": "#/definitions/Job.ProposalRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error validating request body",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/job/categories": {
+            "get": {
+                "description": "Get job categories based on a query",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Query string",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved categories",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetCategoryRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/job/payment/execute": {
+            "post": {
+                "description": "Execute payment for a contract invoice",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Execute payment contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Invoice ID",
+                        "name": "invoiceID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully executed payment",
+                        "schema": {
+                            "$ref": "#/definitions/Job.ExecutePaymentRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/job/{id}": {
+            "get": {
+                "description": "Get details of a specific job",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get a job",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved job",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetJobRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/job/{job_id}/proposals": {
+            "get": {
+                "description": "Get all proposals for a specific job",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get job proposals",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved proposals",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GJPRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs": {
+            "get": {
+                "description": "Get a list of all jobs",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get all jobs",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved jobs",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetJobsRes"
                         }
                     },
                     "500": {
@@ -1082,100 +1366,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs/payment/execute": {
-            "post": {
-                "description": "Execute payment for a contract invoice",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Execute payment contract",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Invoice ID",
-                        "name": "invoiceID",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully executed payment",
-                        "schema": {
-                            "$ref": "#/definitions/Job.ExecutePaymentRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/proposal": {
-            "post": {
-                "description": "Send a proposal for a job",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Send a proposal",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "jobID",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Proposal details",
-                        "name": "proposal",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.Proposal"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully sent proposal",
-                        "schema": {
-                            "$ref": "#/definitions/Job.ProposalRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error validating request body",
-                        "schema": {
-                            "$ref": "#/definitions/res.CommonRes"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/jobs/search": {
             "get": {
                 "description": "Search for jobs based on various criteria",
@@ -1238,120 +1428,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/jobs/{id}": {
-            "get": {
-                "description": "Get details of a specific job",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get a job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved job",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetJobRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/{id}/proposals": {
-            "get": {
-                "description": "Get all proposals for a specific job",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get proposals of a job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved proposals",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GJPRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/{job_id}/proposals": {
-            "get": {
-                "description": "Get all proposals for a specific job",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get job proposals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved proposals",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GJPRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/projects": {
             "get": {
                 "description": "Get a list of all projects",
@@ -1383,6 +1459,11 @@ const docTemplate = `{
         },
         "/projects/add": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Create a new project listing",
                 "consumes": [
                     "application/json"
@@ -1442,6 +1523,11 @@ const docTemplate = `{
         },
         "/projects/buy/{id}": {
             "post": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Buy a specific project",
                 "produces": [
                     "application/json"
@@ -1480,6 +1566,11 @@ const docTemplate = `{
         },
         "/projects/edit/{id}": {
             "put": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Edit an existing project listing",
                 "consumes": [
                     "application/json"
@@ -1546,6 +1637,11 @@ const docTemplate = `{
         },
         "/projects/my": {
             "get": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Get a list of projects posted by the authenticated user",
                 "produces": [
                     "application/json"
@@ -1687,6 +1783,11 @@ const docTemplate = `{
         },
         "/projects/remove/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Remove an existing project listing",
                 "tags": [
                     "projects"
