@@ -24,14 +24,14 @@ func NewChatHandler(chat chat.ChatServiceClient) ChatHandler {
 }
 
 var (
-	users = make(map[string]*websocket.Conn)
+	users = make(map[int]*websocket.Conn)
 )
 
 func (h *ChatHandler) Chat(c *websocket.Conn) {
-	defer delete(users, c.Locals("User_id").(string))
+	defer delete(users, c.Locals("User_id").(int))
 	defer c.Close()
 
-	users[c.Locals("User_id").(string)] = c
+	users[c.Locals("User_id").(int)] = c
 
 	for {
 		fmt.Println("loop starts", c.Locals("User_id"), users)
@@ -41,7 +41,7 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			c.WriteJSON(fiber.Map{"Error": err.Error()})
 		}
 
-		h.SendMessageToUser(users, msg, c.Locals("User_id").(string))
+		h.SendMessageToUser(users, msg, c.Locals("User_id").(int))
 	}
 }
 
@@ -49,7 +49,7 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 
 // }
 
-func (h *ChatHandler) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
+func (h *ChatHandler) SendMessageToUser(User map[int]*websocket.Conn, msg []byte, userID int) {
 	senderConn, ok := User[userID]
 
 	var message req.Message
@@ -64,7 +64,7 @@ func (h *ChatHandler) SendMessageToUser(User map[string]*websocket.Conn, msg []b
 	message.Status = "send"
 	message.SenderID = userID
 
-	recipientConn, ok := User[message.RecipientID]
+	recipientConn, ok := (User[message.RecipientID])
 	if !ok {
 		message.Status = "pending"
 		delete(User, message.RecipientID)
@@ -121,10 +121,10 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 		return err
 	}
 	err = ch.PublishWithContext(ctx,
-		"",    
+		"",
 		q.Name,
-		false, 
-		false, 
+		false,
+		false,
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        msgbyte,

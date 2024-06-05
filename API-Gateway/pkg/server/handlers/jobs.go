@@ -36,7 +36,7 @@ func NewJobsHandler(job Job.JobServiceClient) *JobsHandler {
 // @Router /client/job [post]
 func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 	var req req.PostJob
-	user_id := c.Locals("User_id").(int64)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -61,7 +61,7 @@ func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 		TimePeriod:  req.TimePeriod,
 		Type:        req.Type,
 		Budget:      float32(req.Budget),
-		UserId:      user_id,
+		UserId:      int64(user_id),
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
@@ -88,7 +88,7 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	var req req.Proposal
 
 	job_id := c.Query("jobID")
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -108,7 +108,7 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 	res, err := h.job.SendProposal(context.Background(), &Job.ProposalReq{
 		Budget:      req.Budget,
 		CoverLetter: req.Coverletter,
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 		JobId:       job_id,
 		// Attachments: attachments,
 	})
@@ -131,7 +131,7 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /client/job/proposals/{id} [get]
 func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
-	client_id := strconv.Itoa(int(c.Locals("User_id").(int64)))
+	client_id := strconv.Itoa(int(c.Locals("User_id").(int)))
 	job_id := c.Params("id")
 
 	res, err := h.job.GetJobProposals(context.Background(), &Job.GJPReq{UserId: client_id, JobId: job_id})
@@ -151,7 +151,7 @@ func (h *JobsHandler) GetProposalsOfJob(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /client/job [get]
 func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(int64)
+	user_id := c.Locals("User_id").(int)
 	id := strconv.Itoa(int(user_id))
 	res, err := h.job.GetMyJobs(context.Background(), &Job.GetMyJobsReq{UserId: id})
 	if err != nil {
@@ -189,8 +189,8 @@ func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
 // @Router /job/{job_id}/proposals [get]
 func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
-	user_id := c.Locals("User_id").(string)
-	res, err := h.job.GetJobProposals(context.Background(), &Job.GJPReq{JobId: jobID, UserId: user_id})
+	user_id := c.Locals("User_id").(int)
+	res, err := h.job.GetJobProposals(context.Background(), &Job.GJPReq{JobId: jobID, UserId: strconv.Itoa(user_id)})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -211,7 +211,7 @@ func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 // @Router /client/job [put]
 func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 	var req req.PostJob
-	user_id := c.Locals("User_id").(int64)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -236,7 +236,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 		TimePeriod:  req.TimePeriod,
 		Type:        req.Type,
 		Budget:      float32(req.Budget),
-		UserId:      user_id,
+		UserId:      int64(user_id),
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
@@ -259,7 +259,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 // @Router /client/job/send-offer [post]
 func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	var req req.SendOffer
-	user_id := c.Locals("User_id").(int64)
+	user_id := c.Locals("User_id").(int)
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
@@ -305,10 +305,10 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /freelancer/job/accept-offer/{offer_id} [post]
 func (h *JobsHandler) AcceptOffer(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	of_id := c.Params("offer_id")
 
-	res, err := h.job.AcceptOffer(context.Background(), &Job.AcceptOfferReq{UserId: user_id, OfferID: of_id})
+	res, err := h.job.AcceptOffer(context.Background(), &Job.AcceptOfferReq{UserId: strconv.Itoa(user_id), OfferID: of_id})
 	if err != nil {
 		print(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "something went wrong"})
@@ -362,9 +362,9 @@ func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /freelancer/job/offers [get]
 func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	status := c.Query("status")
-	res, err := h.job.GetJobOffersForFreelancer(context.Background(), &Job.GetJobOfferForFreelancerReq{UserId: user_id, Status: status})
+	res, err := h.job.GetJobOffersForFreelancer(context.Background(), &Job.GetJobOfferForFreelancerReq{UserId: strconv.Itoa(user_id), Status: status})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
 	}
@@ -385,7 +385,7 @@ func (h *JobsHandler) GetAllJobOffersForFreelancer(c *fiber.Ctx) error {
 // @Router /freelancer/job/invoice [post]
 func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 	var req req.SendInvoice
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -396,7 +396,7 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 			},
 		)
 	}
-	res, err := h.job.SendWeeklyInvoice(context.Background(), &Job.InvoiceReq{ContractID: int32(req.ContractId), TotalHourWorked: float32(req.TotalHoursWorked), SuserId: user_id})
+	res, err := h.job.SendWeeklyInvoice(context.Background(), &Job.InvoiceReq{ContractID: int32(req.ContractId), TotalHourWorked: float32(req.TotalHoursWorked), SuserId: strconv.Itoa(user_id)})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
 	}
@@ -502,9 +502,9 @@ func (h *JobsHandler) Search(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /client/contracts [get]
 func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
-	userID := c.Locals("User_id").(int64)
+	userID := c.Locals("User_id").(int)
 	Status := c.Query("status")
-	contracts, err := h.job.GetAllContractsForClient(context.Background(), &Job.GetAllContractsForClientReq{UserId: userID, Status: Status})
+	contracts, err := h.job.GetAllContractsForClient(context.Background(), &Job.GetAllContractsForClientReq{UserId: int64(userID), Status: Status})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -522,9 +522,9 @@ func (h *JobsHandler) GetAllContractsForClient(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /client/contracts/{id} [get]
 func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
-	userID := c.Locals("User_id").(int64)
+	userID := c.Locals("User_id").(int)
 	contractID := c.Params("id")
-	contracts, err := h.job.GetOneContractForClient(context.Background(), &Job.GetOneContractForClientReq{UserId: userID, ContractID: contractID})
+	contracts, err := h.job.GetOneContractForClient(context.Background(), &Job.GetOneContractForClientReq{UserId: int64(userID), ContractID: contractID})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -542,9 +542,9 @@ func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /contracts/invoices/{contractID} [get]
 func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
-	userID := c.Locals("User_id").(int64)
+	userID := c.Locals("User_id").(int)
 	cid := c.Params("contractID")
-	contracts, err := h.job.GetInvoiceContract(context.Background(), &Job.GetInvoiceContractReq{UserID: userID, ContractID: cid})
+	contracts, err := h.job.GetInvoiceContract(context.Background(), &Job.GetInvoiceContractReq{UserID: int64(userID), ContractID: cid})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/auth"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
@@ -24,7 +25,7 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 
 func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	var req req.Education
-	user_id, _ := c.Locals("User_id").(string)
+	user_id, _ := c.Locals("User_id").(int)
 	fmt.Println("user", user_id)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
@@ -42,7 +43,7 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	}
 	res, err := h.profile.AddEducation(context.Background(), &auth.AddEducationReq{
 		School:       req.School,
-		UserId:       user_id,
+		UserId:       strconv.Itoa(user_id),
 		Course:       req.Course,
 		Date_Started: req.Date_Started,
 		Date_Ended:   req.Date_Ended,
@@ -58,7 +59,7 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 	var req req.Education
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	e_id := c.Params("id")
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
@@ -77,7 +78,7 @@ func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 	res, err := h.profile.UpdateEducation(context.Background(), &auth.UpdateEducationReq{
 		EducationId:  e_id,
 		School:       req.School,
-		UserId:       user_id,
+		UserId:       strconv.Itoa(user_id),
 		Course:       req.Course,
 		Date_Started: req.Date_Started,
 		Date_Ended:   req.Date_Ended,
@@ -92,10 +93,10 @@ func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 }
 
 func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	e_id := c.Params("id")
 	res, err := h.profile.DeleteEducation(context.Background(), &auth.DeleteEducationReq{
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 		EducationId: e_id,
 	})
 	if err != nil {
@@ -107,7 +108,7 @@ func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 	var req req.Profile
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -126,7 +127,7 @@ func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 		Title:       req.Title,
 		Description: req.Description,
 		HourlyRate:  req.Hourly_rate,
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
@@ -137,7 +138,7 @@ func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 	var req req.Profile
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -156,7 +157,7 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 		Title:       req.Title,
 		Description: req.Description,
 		HourlyRate:  req.Hourly_rate,
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
@@ -167,7 +168,7 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 	var skill req.Skills
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&skill); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -184,7 +185,7 @@ func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 	}
 	res, err := h.profile.EditSkill(context.Background(), &auth.EditSkillReq{
 		Skills: skill.Skills,
-		UserId: user_id,
+		UserId: strconv.Itoa(user_id),
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
@@ -194,7 +195,7 @@ func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 }
 
 func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
-	userID := c.Locals("User_id").(string)
+	userID := c.Locals("User_id").(int)
 	file, err := c.FormFile("profile-photo")
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error":"file not found"})
@@ -214,7 +215,7 @@ func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 		return c.Status(400).JSON(err)
 	}
 	res, err := h.profile.UpdateProfilePhoto(context.Background(), &auth.PhotoReq{
-		UserId: userID,
+		UserId: strconv.Itoa(userID),
 		Image:  imageData,
 		Filename: file.Filename,
 	})
@@ -226,7 +227,7 @@ func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 	var req req.Experience
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON("error while parsing body.Check syntax")
 	}
@@ -242,7 +243,7 @@ func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 		FromDate:    req.FromDate,
 		ToDate:      req.ToDate,
 		Description: req.Description,
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 	})
 	if err != nil {
 		return c.Status(400).JSON(err.Error())
@@ -253,7 +254,7 @@ func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 
 func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 	var req req.Experience
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	exp_id := c.Params("id")
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON("error while parsing body.Check syntax")
@@ -270,7 +271,7 @@ func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 		FromDate:    req.FromDate,
 		ToDate:      req.ToDate,
 		Description: req.Description,
-		UserId:      user_id,
+		UserId:      strconv.Itoa(user_id),
 		ExpId:       exp_id,
 	})
 	if err != nil {
@@ -281,10 +282,10 @@ func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 }
 
 func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(string)
+	user_id := c.Locals("User_id").(int)
 	exp_id := c.Params(":id")
 	res, err := h.profile.DeleteExperience(context.Background(), &auth.DltExpReq{
-		UserId:       user_id,
+		UserId:       strconv.Itoa(user_id),
 		ExperienceId: exp_id,
 	})
 	if err != nil {
@@ -295,8 +296,8 @@ func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
 }
 
 func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
-	user_id := c.Locals("User_id").(string)
-	res, err := h.profile.GetProfile(context.Background(), &auth.GetProfileReq{UserId: user_id})
+	user_id := c.Locals("User_id").(int)
+	res, err := h.profile.GetProfile(context.Background(), &auth.GetProfileReq{UserId: strconv.Itoa(user_id)})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
 	}
@@ -304,8 +305,8 @@ func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
 }
 
 func (h *ProfileHandler) OnboardFreelancersToPaypal(c *fiber.Ctx) error{
-	user_id:=c.Locals("User_id").(string)
-	res, err := h.profile.OnboardFreelancerToPaypal(context.Background(), &auth.OnboardToPaypalReq{UserId: user_id})
+	user_id:=c.Locals("User_id").(int)
+	res, err := h.profile.OnboardFreelancerToPaypal(context.Background(), &auth.OnboardToPaypalReq{UserId: strconv.Itoa(user_id)})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())
 	}
@@ -313,13 +314,13 @@ func (h *ProfileHandler) OnboardFreelancersToPaypal(c *fiber.Ctx) error{
 }
 
 func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
-	user_id:=c.Locals("User_id").(int64)
+	user_id:=c.Locals("User_id").(int)
 	var req req.AddReview
 
 	if err:=c.BodyParser(&req);err != nil {
 		return c.Status(400).JSON(fiber.Map{"error":"error in parsing body. enter fields correctly"})
 	}
-	res,err:=h.profile.ReviewFreelancer(context.Background(),&auth.ReviewFlancerReq{Review: req.Review,FreelancerId: int32(req.Freelancer_id),Rating: int32(req.Rating),ClientId: user_id})
+	res,err:=h.profile.ReviewFreelancer(context.Background(),&auth.ReviewFlancerReq{Review: req.Review,FreelancerId: int32(req.Freelancer_id),Rating: int32(req.Rating),ClientId: int64(user_id)})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 	}
@@ -356,7 +357,7 @@ func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 
 func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
 	var req req.UpdateCompanyDetails
-	user_id:=c.Locals("User_id").(int64)
+	user_id:=c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil{
 		return c.Status(400).JSON("error while parsing body.Check syntax")
 	}
@@ -380,7 +381,7 @@ func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
 }
 
 func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
-	user_id := c.Locals("User_id").(int64)
+	user_id := c.Locals("User_id").(int)
 	
 	res, err := h.profile.GetProfileClient(context.Background(), &auth.ClientProfileReq{UserId:int32(user_id)})
 	if err != nil {
@@ -392,7 +393,7 @@ func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
 
 func (h *ProfileHandler) UpdateCompanyContacts(c *fiber.Ctx) error{
 	var req req.UpdateCompanyContact
-	user_id:=c.Locals("User_id").(int64)
+	user_id:=c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil{
 		return c.Status(400).JSON("error while parsing body.Check syntax")
 	}
@@ -427,6 +428,18 @@ func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
+
+func (h *ProfileHandler) GetNotifications(c *fiber.Ctx) error{
+	userID:=c.Locals("UserId").(int)
+	notifications,err:=h.profile.GetNotifications(context.Background(),&auth.GetNotificationReq{UserID: strconv.Itoa(userID)})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+	}
+	return c.Status(int(notifications.Status)).JSON(notifications)
+}
+
+
+
 
 // func (h *ProfileHandler) GetPaymentHistory(c *fiber.Ctx) error{
 	

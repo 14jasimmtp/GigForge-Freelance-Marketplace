@@ -35,7 +35,7 @@ func NewProjectHandler(p project.ProjectServiceClient) *ProjectHandler {
 // @Router /projects/add [post]
 func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
 	var req req.AddSingleProject
-	user_id:=c.Locals("User_id").(string)
+	user_id:=c.Locals("User_id").(int)
 	if err:=c.BodyParser(&req);err != nil {
 		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
 	}
@@ -46,7 +46,7 @@ func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
 	}
 	grpcReq := &project.AddSingleProjectReq{}
 	copier.Copy(grpcReq, &req)
-	grpcReq.UserId=user_id
+	grpcReq.UserId = strconv.Itoa(user_id)
 
 	res, err := h.project.AddProject(context.Background(), grpcReq)
 	if err != nil {
@@ -95,7 +95,7 @@ func (h *ProjectHandler) AddTieredProject(c *fiber.Ctx) error {
 func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 	var req req.AddSingleProject
 	prjt_id:=c.Params("id")
-	user_id:=c.Locals("User_id").(string)
+	user_id:=c.Locals("User_id").(int)
 	if err:=c.BodyParser(&req);err != nil {
 		return c.JSON(fiber.Map{"error": "error parsing datas","message":err.Error()})
 	}
@@ -113,7 +113,7 @@ func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 		DeliveryDays: req.DeliveryDays,
 		NumberOfRevisions: req.NumberOfRevisions,
 		ProjectId: prjt_id,
-		UserId: user_id,
+		UserId: strconv.Itoa(user_id),
 	})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error":err.Error()})
@@ -132,9 +132,9 @@ func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 // @Router /projects/remove/{id} [delete]
 func (h *ProjectHandler) RemoveProject(c *fiber.Ctx) error {
 	prjt_id:=c.Params("id")
-	user_id:=c.Locals("User_id").(string)
+	user_id:=c.Locals("User_id").(int)
 
-	res,err:=h.project.RemoveProject(context.Background(),&project.RemProjectReq{UserId: user_id,ProjectId: prjt_id})
+	res,err:=h.project.RemoveProject(context.Background(),&project.RemProjectReq{UserId: strconv.Itoa(user_id),ProjectId: prjt_id})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 	}
@@ -186,8 +186,8 @@ func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /projects/my [get]
 func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
-	user_id:=c.Locals("User_id").(string)
-	res,err:=h.project.ListMyProjects(context.Background(),&project.ListMyProjectReq{UserId: user_id})
+	user_id:=c.Locals("User_id").(int)
+	res,err:=h.project.ListMyProjects(context.Background(),&project.ListMyProjectReq{UserId: strconv.Itoa(user_id)})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 
@@ -206,7 +206,7 @@ func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /projects/buy/{id} [post]
 func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
-	user_id:=c.Locals("User_id").(int64)
+	user_id:=c.Locals("User_id").(int)
 	user:=strconv.Itoa(int(user_id))
 	prjt_id:=c.Params("id")
 	res,err:=h.project.OrderProject(context.Background(),&project.BuyProjectReq{UserId: user,ProjectId: prjt_id})

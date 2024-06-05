@@ -50,6 +50,7 @@ type AuthServiceClient interface {
 	GetFreelancers(ctx context.Context, in *GetTalentReq, opts ...grpc.CallOption) (*GetTalentRes, error)
 	AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error)
 	GetFreelancerReviews(ctx context.Context, in *GetReviewReq, opts ...grpc.CallOption) (*GetReviewRes, error)
+	GetNotifications(ctx context.Context, in *GetNotificationReq, opts ...grpc.CallOption) (*GetNotificationRes, error)
 }
 
 type authServiceClient struct {
@@ -312,6 +313,15 @@ func (c *authServiceClient) GetFreelancerReviews(ctx context.Context, in *GetRev
 	return out, nil
 }
 
+func (c *authServiceClient) GetNotifications(ctx context.Context, in *GetNotificationReq, opts ...grpc.CallOption) (*GetNotificationRes, error) {
+	out := new(GetNotificationRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/GetNotifications", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -344,6 +354,7 @@ type AuthServiceServer interface {
 	GetFreelancers(context.Context, *GetTalentReq) (*GetTalentRes, error)
 	AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error)
 	GetFreelancerReviews(context.Context, *GetReviewReq) (*GetReviewRes, error)
+	GetNotifications(context.Context, *GetNotificationReq) (*GetNotificationRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -434,6 +445,9 @@ func (UnimplementedAuthServiceServer) AddPaymentEmail(context.Context, *AddPayme
 }
 func (UnimplementedAuthServiceServer) GetFreelancerReviews(context.Context, *GetReviewReq) (*GetReviewRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFreelancerReviews not implemented")
+}
+func (UnimplementedAuthServiceServer) GetNotifications(context.Context, *GetNotificationReq) (*GetNotificationRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNotifications not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -952,6 +966,24 @@ func _AuthService_GetFreelancerReviews_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNotificationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/GetNotifications",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetNotifications(ctx, req.(*GetNotificationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1070,6 +1102,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFreelancerReviews",
 			Handler:    _AuthService_GetFreelancerReviews_Handler,
+		},
+		{
+			MethodName: "GetNotifications",
+			Handler:    _AuthService_GetNotifications_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

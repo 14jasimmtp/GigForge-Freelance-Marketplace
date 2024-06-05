@@ -1,8 +1,14 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Freelance Marketplace.",
+        "title": "GigForge",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "gigforge.jasim.online",
+    "basePath": "/",
     "paths": {
         "/admin/category": {
             "post": {
@@ -2813,6 +2819,23 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "AdminAccessToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "ClientAccessToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "FreelancerAccessToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

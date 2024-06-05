@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/project-svc/pb"
@@ -79,33 +80,53 @@ func (r *Repo) DeleteProject(req *pb.RemProjectReq) error {
 
 func (r *Repo) ListProjects() ([]*pb.Project, error) {
 	var project []domain.Project
-	var singleProject domain.SingleProject
 	var res []*pb.Project
 
-	query := r.db.Raw(`SELECT * from projects `).Scan(&project)
+	query := r.db.Raw(`SELECT * from projects`).Scan(&project)
 	if query.Error != nil {
 		return nil, errors.New(`something went wrong`)
 	}
 
-	for _, p := range project {
-		query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
-		if query2.Error != nil {
-			return nil, errors.New(`something went wrong`)
-		}
-		h := pb.Project{
-			ID:                int32(p.ID),
-			Title:             p.Title,
-			Description:       p.Description,
-			Price:             singleProject.Price,
-			DeliveryDays:      int32(singleProject.DeliverDays),
-			NumberOfRevisions: int32(singleProject.NumberOfRevisions),
-		}
-		res = append(res, &h)
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(project))
 
+	for _, p := range project {
+		wg.Add(1)
+		go func(p domain.Project) {
+			defer wg.Done()
+			var singleProject domain.SingleProject
+
+			query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
+			if query2.Error != nil {
+				errChan <- errors.New(`something went wrong`)
+				return
+			}
+
+			h := pb.Project{
+				ID:                int32(p.ID),
+				Title:             p.Title,
+				Description:       p.Description,
+				Price:             singleProject.Price,
+				DeliveryDays:      int32(singleProject.DeliverDays),
+				NumberOfRevisions: int32(singleProject.NumberOfRevisions),
+			}
+
+			mu.Lock()
+			res = append(res, &h)
+			mu.Unlock()
+		}(p)
 	}
+
+	wg.Wait()
+	close(errChan)
+
+	if len(errChan) > 0 {
+		return nil, <-errChan
+	}
+
 	return res, nil
 }
-
 func (r *Repo) ListOneProject(id string) (*pb.Project, error) {
 	var project domain.Project
 	var singleProject domain.SingleProject
@@ -137,22 +158,35 @@ func (r *Repo) ListMyProject(user_id string) ([]*pb.Project, error) {
 	if query.Error != nil {
 		return nil, errors.New(`something went wrong`)
 	}
-
+	errchan:=make(chan error,len(project))
+	var wg sync.WaitGroup
+	var mu sync.Mutex
 	for _, p := range project {
-		query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
-		if query2.Error != nil {
-			return nil, errors.New(`something went wrong`)
-		}
-		h := pb.Project{
-			ID:                int32(p.ID),
-			Title:             p.Title,
-			Description:       p.Description,
-			Price:             singleProject.Price,
-			DeliveryDays:      int32(singleProject.DeliverDays),
-			NumberOfRevisions: int32(singleProject.NumberOfRevisions),
-		}
-		res = append(res, &h)
-
+		wg.Add(1)
+		go func(p domain.Project){
+			defer wg.Done()
+			query2 := r.db.Raw(`SELECT * from single_projects where project_id = ?`, p.ID).Scan(&singleProject)
+			if query2.Error != nil {
+				errchan <- errors.New(`something went wrong`)
+				return
+			}
+			h := pb.Project{
+				ID:                int32(p.ID),
+				Title:             p.Title,
+				Description:       p.Description,
+				Price:             singleProject.Price,
+				DeliveryDays:      int32(singleProject.DeliverDays),
+				NumberOfRevisions: int32(singleProject.NumberOfRevisions),
+			}
+			mu.Lock()
+			res = append(res, &h)
+			mu.Unlock()
+		}(p)
+	}
+	wg.Wait()
+	close(errchan)
+	if len(errchan) > 0{
+		return nil, <-errchan
 	}
 	return res, nil
 }
@@ -210,7 +244,7 @@ func (r *Repo) CheckProjectActiveAndExist(projectID string) (*domain.SingleProje
 }
 
 func (r *Repo) OrderProject(project *domain.SingleProject, pro *domain.Project, userId string) error {
-	uid,err:=strconv.Atoi(userId)
+	uid, err := strconv.Atoi(userId)
 	if err != nil {
 		return errors.New(`error in userid`)
 	}

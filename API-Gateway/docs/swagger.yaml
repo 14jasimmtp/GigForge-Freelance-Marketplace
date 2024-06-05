@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   Job.AcceptOfferRes:
     properties:
@@ -627,8 +628,13 @@ definitions:
       status:
         type: string
     type: object
+host: gigforge.jasim.online
 info:
   contact: {}
+  description: Freelance Marketplace.
+  termsOfService: http://swagger.io/terms/
+  title: GigForge
+  version: "1.0"
 paths:
   /admin/category:
     post:
@@ -1816,4 +1822,17 @@ paths:
       summary: Remove a project
       tags:
       - projects
+securityDefinitions:
+  AdminAccessToken:
+    in: header
+    name: Authorization
+    type: apiKey
+  ClientAccessToken:
+    in: header
+    name: Authorization
+    type: apiKey
+  FreelancerAccessToken:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
