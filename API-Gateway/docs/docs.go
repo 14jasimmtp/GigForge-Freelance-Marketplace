@@ -549,6 +549,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/chat": {
+            "get": {
+                "description": "Establish a WebSocket connection for real-time chat messaging. This endpoint allows users to send and receive messages in real time.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "WebSocket Chat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "User_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/chat/messages/{receiver_id}": {
+            "get": {
+                "description": "Retrieve chat messages between the logged-in user and the specified receiver.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Get Chat Messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sender User ID",
+                        "name": "User_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receiver User ID",
+                        "name": "receiver_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
         "/client/contracts": {
             "get": {
                 "security": [
@@ -577,6 +648,49 @@ const docTemplate = `{
                         "description": "Successfully retrieved contracts",
                         "schema": {
                             "$ref": "#/definitions/Job.GetAllContractsForClientRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client/contracts/invoices/{contractID}": {
+            "get": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
+                "description": "Get all invoices for a specific contract",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contracts"
+                ],
+                "summary": "Get all invoices of a contract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contract ID",
+                        "name": "contractID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved invoices",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetInvoiceContractRes"
                         }
                     },
                     "500": {
@@ -869,35 +983,35 @@ const docTemplate = `{
                 }
             }
         },
-        "/contracts/invoices/{contractID}": {
-            "get": {
+        "/client/projects/buy/{id}": {
+            "post": {
                 "security": [
                     {
                         "ClientAccessToken": []
                     }
                 ],
-                "description": "Get all invoices for a specific contract",
+                "description": "Buy a specific project",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "contracts"
+                    "projects"
                 ],
-                "summary": "Get all invoices of a contract",
+                "summary": "Buy a project",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Contract ID",
-                        "name": "contractID",
+                        "description": "Project ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved invoices",
+                        "description": "Successfully bought project",
                         "schema": {
-                            "$ref": "#/definitions/Job.GetInvoiceContractRes"
+                            "$ref": "#/definitions/project.BuyProjectRes"
                         }
                     },
                     "500": {
@@ -1102,6 +1216,213 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/projects": {
+            "get": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Get a list of projects posted by the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "List my projects",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved projects",
+                        "schema": {
+                            "$ref": "#/definitions/project.ListMyProjectRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Create a new project listing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Add a single project",
+                "parameters": [
+                    {
+                        "description": "Project details",
+                        "name": "project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.AddSingleProject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added project",
+                        "schema": {
+                            "$ref": "#/definitions/project.AddSingleProjectRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error parsing request body",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Validation errors",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/projects/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Edit an existing project listing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Edit a project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Project details",
+                        "name": "project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.AddSingleProject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully edited project",
+                        "schema": {
+                            "$ref": "#/definitions/project.EditSingleProjectRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Error parsing request body",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Validation errors",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/freelancer/projects/{projectID}": {
+            "delete": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
+                "description": "Remove an existing project listing",
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Remove a project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully removed project",
+                        "schema": {
+                            "$ref": "#/definitions/project.RemProjectRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -1429,6 +1750,724 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile/client": {
+            "get": {
+                "description": "Get the profile of a client",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get client profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/company": {
+            "put": {
+                "description": "Update the company details for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update company details",
+                "parameters": [
+                    {
+                        "description": "Company Details",
+                        "name": "CompanyDetails",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UpdateCompanyDetails"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/company/contact": {
+            "put": {
+                "description": "Update the company contact details for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update company contact details",
+                "parameters": [
+                    {
+                        "description": "Company Contact Details",
+                        "name": "CompanyContact",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UpdateCompanyContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/description": {
+            "put": {
+                "description": "Update profile description for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update profile description",
+                "parameters": [
+                    {
+                        "description": "Profile Details",
+                        "name": "Profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Profile"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add profile description for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Add profile description",
+                "parameters": [
+                    {
+                        "description": "Profile Details",
+                        "name": "Profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Profile"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/education": {
+            "post": {
+                "description": "Add education details for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Add education details",
+                "parameters": [
+                    {
+                        "description": "Education Details",
+                        "name": "Education",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Education"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/education/{id}": {
+            "put": {
+                "description": "Update education details for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update education details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Education ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Education Details",
+                        "name": "Education",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Education"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete education details for the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Delete education details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Education ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/experience": {
+            "post": {
+                "description": "Add experience for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Add experience",
+                "parameters": [
+                    {
+                        "description": "Experience Details",
+                        "name": "Experience",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Experience"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/experience/{id}": {
+            "put": {
+                "description": "Update experience for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update experience",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Experience ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Experience Details",
+                        "name": "Experience",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Experience"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove experience for the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Remove experience",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Experience ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/freelancer": {
+            "get": {
+                "description": "Get the profile of a freelancer",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get freelancer profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/notifications": {
+            "get": {
+                "description": "Get notifications for the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get user notifications",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/payment/paypal": {
+            "post": {
+                "description": "Add a PayPal payment email for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Add PayPal payment email",
+                "parameters": [
+                    {
+                        "description": "Payment Details",
+                        "name": "Payment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.AddPayment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/photo": {
+            "put": {
+                "description": "Update profile photo for the user",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update profile photo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Profile Photo",
+                        "name": "profile-photo",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/review": {
+            "post": {
+                "description": "Add a review for a freelancer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Add review for freelancer",
+                "parameters": [
+                    {
+                        "description": "Review Details",
+                        "name": "Review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.AddReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/reviews/{freelancer_id}": {
+            "get": {
+                "description": "Get reviews for a freelancer",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get freelancer reviews",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Freelancer ID",
+                        "name": "freelancer_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/skills": {
+            "put": {
+                "description": "Update skills for the user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update skills",
+                "parameters": [
+                    {
+                        "description": "Skills Details",
+                        "name": "Skills",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.Skills"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/talents": {
+            "get": {
+                "description": "Get a list of talents",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get talents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Query",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Experience",
+                        "name": "exp",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    }
+                }
+            }
+        },
         "/projects": {
             "get": {
                 "description": "Get a list of all projects",
@@ -1444,218 +2483,6 @@ const docTemplate = `{
                         "description": "Successfully retrieved projects",
                         "schema": {
                             "$ref": "#/definitions/project.ListProjectsRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/add": {
-            "post": {
-                "security": [
-                    {
-                        "FreelancerAccessToken": []
-                    }
-                ],
-                "description": "Create a new project listing",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "projects"
-                ],
-                "summary": "Add a single project",
-                "parameters": [
-                    {
-                        "description": "Project details",
-                        "name": "project",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.AddSingleProject"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully added project",
-                        "schema": {
-                            "$ref": "#/definitions/project.AddSingleProjectRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error parsing request body",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Validation errors",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/buy/{id}": {
-            "post": {
-                "security": [
-                    {
-                        "ClientAccessToken": []
-                    }
-                ],
-                "description": "Buy a specific project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "projects"
-                ],
-                "summary": "Buy a project",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully bought project",
-                        "schema": {
-                            "$ref": "#/definitions/project.BuyProjectRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/edit/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "FreelancerAccessToken": []
-                    }
-                ],
-                "description": "Edit an existing project listing",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "projects"
-                ],
-                "summary": "Edit a project",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Project details",
-                        "name": "project",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.AddSingleProject"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully edited project",
-                        "schema": {
-                            "$ref": "#/definitions/project.EditSingleProjectRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Error parsing request body",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Validation errors",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/my": {
-            "get": {
-                "security": [
-                    {
-                        "FreelancerAccessToken": []
-                    }
-                ],
-                "description": "Get a list of projects posted by the authenticated user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "projects"
-                ],
-                "summary": "List my projects",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved projects",
-                        "schema": {
-                            "$ref": "#/definitions/project.ListMyProjectRes"
                         }
                     },
                     "500": {
@@ -1768,46 +2595,6 @@ const docTemplate = `{
                         "description": "Successfully executed payment",
                         "schema": {
                             "$ref": "#/definitions/project.ExecutePaymentRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/remove/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "FreelancerAccessToken": []
-                    }
-                ],
-                "description": "Remove an existing project listing",
-                "tags": [
-                    "projects"
-                ],
-                "summary": "Remove a project",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully removed project",
-                        "schema": {
-                            "$ref": "#/definitions/project.RemProjectRes"
                         }
                     },
                     "500": {
@@ -2617,6 +3404,38 @@ const docTemplate = `{
                 }
             }
         },
+        "req.AddPayment": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.AddReview": {
+            "type": "object",
+            "required": [
+                "freelancer_id",
+                "rating",
+                "review"
+            ],
+            "properties": {
+                "freelancer_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                },
+                "review": {
+                    "type": "string"
+                }
+            }
+        },
         "req.AddSingleProject": {
             "type": "object",
             "required": [
@@ -2656,6 +3475,92 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "skill": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.Address": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "pinCode": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.Education": {
+            "type": "object",
+            "required": [
+                "Course",
+                "area_of_study",
+                "date_ended",
+                "date_started",
+                "description",
+                "school"
+            ],
+            "properties": {
+                "Course": {
+                    "type": "string"
+                },
+                "area_of_study": {
+                    "type": "string"
+                },
+                "date_ended": {
+                    "type": "string"
+                },
+                "date_started": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.Experience": {
+            "type": "object",
+            "required": [
+                "city",
+                "company",
+                "country",
+                "description",
+                "from-date",
+                "title",
+                "to-date"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "from-date": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "to-date": {
                     "type": "string"
                 }
             }
@@ -2712,6 +3617,25 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "req.Profile": {
+            "type": "object",
+            "required": [
+                "Title",
+                "description",
+                "hourly_rate"
+            ],
+            "properties": {
+                "Title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "hourly_rate": {
+                    "type": "integer"
                 }
             }
         },
@@ -2796,6 +3720,54 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.Skills": {
+            "type": "object",
+            "required": [
+                "skills"
+            ],
+            "properties": {
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "req.UpdateCompanyContact": {
+            "type": "object",
+            "properties": {
+                "OwnerName": {
+                    "type": "string"
+                },
+                "address": {
+                    "$ref": "#/definitions/req.Address"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.UpdateCompanyDetails": {
+            "type": "object",
+            "properties": {
+                "NumberOfEmployees": {
+                    "type": "integer"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "industry": {
+                    "type": "string"
+                },
+                "tagline": {
+                    "type": "string"
+                },
+                "website": {
                     "type": "string"
                 }
             }

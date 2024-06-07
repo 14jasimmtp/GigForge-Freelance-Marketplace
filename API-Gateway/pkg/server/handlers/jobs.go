@@ -540,7 +540,7 @@ func (h *JobsHandler) GetOneContract(c *fiber.Ctx) error {
 // @Param contractID path string true "Contract ID"
 // @Success 200 {object} Job.GetInvoiceContractRes "Successfully retrieved invoices"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /contracts/invoices/{contractID} [get]
+// @Router /client/contracts/invoices/{contractID} [get]
 func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
 	userID := c.Locals("User_id").(int)
 	cid := c.Params("contractID")

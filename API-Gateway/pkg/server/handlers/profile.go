@@ -22,7 +22,16 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 	return &ProfileHandler{profile: profile}
 }
 
-
+// AddEducationDetails adds education details for the user.
+// @Summary Add education details
+// @Description Add education details for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Education body req.Education true "Education Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/education [post]
 func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	var req req.Education
 	user_id, _ := c.Locals("User_id").(int)
@@ -57,6 +66,17 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// UpdateEducation updates education details for the user.
+// @Summary Update education details
+// @Description Update education details for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param id path string true "Education ID"
+// @Param Education body req.Education true "Education Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/education/{id} [put]
 func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 	var req req.Education
 	user_id := c.Locals("User_id").(int)
@@ -92,6 +112,15 @@ func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// DeleteEducation deletes education details for the user.
+// @Summary Delete education details
+// @Description Delete education details for the user
+// @Tags Profile
+// @Produce json
+// @Param id path string true "Education ID"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/education/{id} [delete]
 func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int)
 	e_id := c.Params("id")
@@ -106,6 +135,16 @@ func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// AddProfileDescription adds a profile description for the user.
+// @Summary Add profile description
+// @Description Add profile description for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Profile body req.Profile true "Profile Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/description [post]
 func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 	var req req.Profile
 	user_id := c.Locals("User_id").(int)
@@ -136,6 +175,16 @@ func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// EditProfileDescription updates the profile description for the user.
+// @Summary Update profile description
+// @Description Update profile description for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Profile body req.Profile true "Profile Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/description [put]
 func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 	var req req.Profile
 	user_id := c.Locals("User_id").(int)
@@ -166,6 +215,16 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// UpdateSkilltoProfile updates skills for the user profile.
+// @Summary Update skills
+// @Description Update skills for the user profile
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Skills body req.Skills true "Skills Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/skills [put]
 func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 	var skill req.Skills
 	user_id := c.Locals("User_id").(int)
@@ -194,6 +253,17 @@ func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+
+// UpdateProfilePhoto updates the profile photo for the user.
+// @Summary Update profile photo
+// @Description Update profile photo for the user
+// @Tags Profile
+// @Accept multipart/form-data
+// @Produce json
+// @Param profile-photo formData file true "Profile Photo"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/photo [put]
 func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 	userID := c.Locals("User_id").(int)
 	file, err := c.FormFile("profile-photo")
@@ -225,6 +295,16 @@ func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// AddExperience adds an experience entry for the user.
+// @Summary Add experience
+// @Description Add experience for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Experience body req.Experience true "Experience Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/experience [post]
 func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 	var req req.Experience
 	user_id := c.Locals("User_id").(int)
@@ -252,6 +332,17 @@ func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// UpdateExperience updates an experience entry for the user.
+// @Summary Update experience
+// @Description Update experience for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param id path string true "Experience ID"
+// @Param Experience body req.Experience true "Experience Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/experience/{id} [put]
 func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 	var req req.Experience
 	user_id := c.Locals("User_id").(int)
@@ -281,6 +372,15 @@ func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// RemoveExperience deletes an experience entry for the user.
+// @Summary Remove experience
+// @Description Remove experience for the user
+// @Tags Profile
+// @Produce json
+// @Param id path string true "Experience ID"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/experience/{id} [delete]
 func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int)
 	exp_id := c.Params(":id")
@@ -295,6 +395,14 @@ func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetFreelancerProfile retrieves the profile of a freelancer.
+// @Summary Get freelancer profile
+// @Description Get the profile of a freelancer
+// @Tags Profile
+// @Produce json
+// @Success 200 {object} res.CommonRes
+// @Failure 403 {object} res.CommonRes
+// @Router /profile/freelancer [get]
 func (h *ProfileHandler) GetFreelancerProfile(c *fiber.Ctx) error {
 	user_id := c.Locals("User_id").(int)
 	res, err := h.profile.GetProfile(context.Background(), &auth.GetProfileReq{UserId: strconv.Itoa(user_id)})
@@ -313,6 +421,16 @@ func (h *ProfileHandler) OnboardFreelancersToPaypal(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// ReviewFreelancer adds a review for a freelancer.
+// @Summary Add review for freelancer
+// @Description Add a review for a freelancer
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Review body req.AddReview true "Review Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/review [post]
 func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
 	user_id:=c.Locals("User_id").(int)
 	var req req.AddReview
@@ -327,6 +445,16 @@ func (h *ProfileHandler) ReviewFreelancer(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetTalents retrieves a list of talents.
+// @Summary Get talents
+// @Description Get a list of talents
+// @Tags Profile
+// @Produce json
+// @Param q query string false "Query"
+// @Param exp query string false "Experience"
+// @Success 200 {object} res.CommonRes
+// @Failure 500 {object} res.CommonRes
+// @Router /profile/talents [get]
 func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 	query:=c.Query("q")
 	exp:=c.Query("exp")
@@ -337,6 +465,16 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 	return c.Status(int(talents.Status)).JSON(talents)
 }
 
+// AddPaymentEmailPaypal adds a PayPal payment email for the user.
+// @Summary Add PayPal payment email
+// @Description Add a PayPal payment email for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param Payment body req.AddPayment true "Payment Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/payment/paypal [post]
 func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 	user_id:=c.Locals("User_id").(string)
 	var req req.AddPayment
@@ -355,6 +493,16 @@ func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 
 // }
 
+// UpdateCompanyDetails updates the company details for the user.
+// @Summary Update company details
+// @Description Update the company details for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param CompanyDetails body req.UpdateCompanyDetails true "Company Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/company [put]
 func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
 	var req req.UpdateCompanyDetails
 	user_id:=c.Locals("User_id").(int)
@@ -380,6 +528,14 @@ func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetClientProfile retrieves the profile of a client.
+// @Summary Get client profile
+// @Description Get the profile of a client
+// @Tags Profile
+// @Produce json
+// @Success 200 {object} res.CommonRes
+// @Failure 403 {object} res.CommonRes
+// @Router /profile/client [get]
 func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
 	user_id := c.Locals("User_id").(int)
 	
@@ -391,6 +547,16 @@ func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// UpdateCompanyContacts updates the company contact details for the user.
+// @Summary Update company contact details
+// @Description Update the company contact details for the user
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param CompanyContact body req.UpdateCompanyContact true "Company Contact Details"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Router /profile/company/contact [put]
 func (h *ProfileHandler) UpdateCompanyContacts(c *fiber.Ctx) error{
 	var req req.UpdateCompanyContact
 	user_id:=c.Locals("User_id").(int)
@@ -420,6 +586,15 @@ func (h *ProfileHandler) UpdateCompanyContacts(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetFreelancerReviews retrieves reviews for a freelancer.
+// @Summary Get freelancer reviews
+// @Description Get reviews for a freelancer
+// @Tags Profile
+// @Produce json
+// @Param freelancer_id path string true "Freelancer ID"
+// @Success 200 {object} res.CommonRes
+// @Failure 500 {object} res.CommonRes
+// @Router /profile/reviews/{freelancer_id} [get]
 func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 	fid:=c.Params("Fid")
 	res,err:=h.profile.GetFreelancerReviews(context.Background(),&auth.GetReviewReq{UserID:fid })
@@ -429,6 +604,15 @@ func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// GetNotifications retrieves notifications for the user.
+// @Summary Get user notifications
+// @Description Get notifications for the user
+// @Tags Profile
+// @Produce json
+// @Param UserId path int true "User ID"
+// @Success 200 {object} res.CommonRes
+// @Failure 500 {object} res.CommonRes
+// @Router /profile/notifications [get]
 func (h *ProfileHandler) GetNotifications(c *fiber.Ctx) error{
 	userID:=c.Locals("UserId").(int)
 	notifications,err:=h.profile.GetNotifications(context.Background(),&auth.GetNotificationReq{UserID: strconv.Itoa(userID)})
@@ -437,10 +621,3 @@ func (h *ProfileHandler) GetNotifications(c *fiber.Ctx) error{
 	}
 	return c.Status(int(notifications.Status)).JSON(notifications)
 }
-
-
-
-
-// func (h *ProfileHandler) GetPaymentHistory(c *fiber.Ctx) error{
-	
-// }

@@ -33,7 +33,8 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	contract.Get("/attachment/:contractID",job.GetAttachments)
 	
 
-	projects:=api.Group("/project")
+	projects:=api.Group("/projects")
+	projects.Post("/buy/:id",project.BuyProject)
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)
 	projects.Post("/order/:id",middlewares.AuthClient,project.BuyProject)

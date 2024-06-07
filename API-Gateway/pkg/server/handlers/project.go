@@ -32,7 +32,7 @@ func NewProjectHandler(p project.ProjectServiceClient) *ProjectHandler {
 // @Failure 400 {object} map[string]string "Error parsing request body"
 // @Failure 401 {object} map[string]interface{} "Validation errors"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /projects/add [post]
+// @Router /freelancer/projects [post]
 func (h *ProjectHandler) AddSingleProject(c *fiber.Ctx) error {
 	var req req.AddSingleProject
 	user_id:=c.Locals("User_id").(int)
@@ -91,7 +91,7 @@ func (h *ProjectHandler) AddTieredProject(c *fiber.Ctx) error {
 // @Failure 400 {object} map[string]string "Error parsing request body"
 // @Failure 401 {object} map[string]interface{} "Validation errors"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /projects/edit/{id} [put]
+// @Router /freelancer/projects/{id} [patch]
 func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 	var req req.AddSingleProject
 	prjt_id:=c.Params("id")
@@ -129,9 +129,9 @@ func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 // @Param id path string true "Project ID"
 // @Success 200 {object} project.RemProjectRes "Successfully removed project"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /projects/remove/{id} [delete]
+// @Router /freelancer/projects/{projectID} [delete]
 func (h *ProjectHandler) RemoveProject(c *fiber.Ctx) error {
-	prjt_id:=c.Params("id")
+	prjt_id:=c.Params("projectID")
 	user_id:=c.Locals("User_id").(int)
 
 	res,err:=h.project.RemoveProject(context.Background(),&project.RemProjectReq{UserId: strconv.Itoa(user_id),ProjectId: prjt_id})
@@ -184,7 +184,7 @@ func (h *ProjectHandler) ListProjectWithID(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} project.ListMyProjectRes "Successfully retrieved projects"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /projects/my [get]
+// @Router /freelancer/projects [get]
 func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 	user_id:=c.Locals("User_id").(int)
 	res,err:=h.project.ListMyProjects(context.Background(),&project.ListMyProjectReq{UserId: strconv.Itoa(user_id)})
@@ -204,7 +204,7 @@ func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 // @Param id path string true "Project ID"
 // @Success 200 {object} project.BuyProjectRes "Successfully bought project"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /projects/buy/{id} [post]
+// @Router /client/projects/buy/{id} [post]
 func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	user_id:=c.Locals("User_id").(int)
 	user:=strconv.Itoa(int(user_id))

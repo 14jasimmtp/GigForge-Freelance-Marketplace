@@ -48,18 +48,15 @@ func Freelancer(
 		}
 	}
 
-	projects := api.Group("/project")
+	projects := api.Group("/projects")
 	{
 		projects.Use(middlewares.AuthFreelancer)
 		{
 			projects.Post("",project.AddSingleProject)
 			projects.Patch("/:id",project.EditProject)
-			projects.Delete("/:id",project.RemoveProject)
-			projects.Get("",project.ListProjects)
-			projects.Get("/:id",project.ListProjectWithID)
-			projects.Post("/buy/:id",project.BuyProject)
+			projects.Delete("/:projectID",project.RemoveProject)
 			// projects.Get("/payment/:id",project.ExecutePaymentForProject)
-			projects.Get("/user/only",project.ListMyProjects)
+			projects.Get("",project.ListMyProjects)
 		}
 	}
 	payment:=api.Group("/payment")

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/docs"
+	_"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/docs"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/config"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/di"
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +34,7 @@ import (
 
 func main() {
 
-	docs.SwaggerInfo.Host = "gigforge.jasim.online"
+	// docs.SwaggerInfo.Host = "gigforge.jasim.online"
 	err := config.LoadConfig()
 	if err != nil {
 		log.Print("error loading configurations : ", err)
