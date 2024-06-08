@@ -28,6 +28,9 @@ import (
 // @securityDefinitions.apikey ClientAccessToken
 // @in                         header
 // @name                       Authorization
+// @securityDefinitions.apikey Authorization
+// @in                         header
+// @name                       Authorization
 // @securityDefinitions.apikey AdminAccessToken
 // @in                         header
 // @name                       Authorization

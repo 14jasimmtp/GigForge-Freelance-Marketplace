@@ -31,7 +31,6 @@ var (
 // Chat handles the WebSocket connection for real-time chat messaging.
 // @Summary WebSocket Chat
 // @Description Establish a WebSocket connection for real-time chat messaging. This endpoint allows users to send and receive messages in real time.
-// @Param Authorization header string true "Authentication token"
 // @security Authorization
 // @Tags Chat
 // @Param User_id path int true "User ID"
@@ -100,7 +99,7 @@ func (h *ChatHandler) SendMessageToUser(User map[int]*websocket.Conn, msg []byte
 
 
 func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
-	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		return err
 	}
@@ -160,6 +159,7 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 func (h *ChatHandler) GetMessages(c *fiber.Ctx) error {
 	sender_id := c.Locals("User_id").(int)
 	receiver_id := c.Params("receiver_id")
+	fmt.Println(receiver_id,sender_id)
 	res, err := h.chat.GetChats(context.Background(), &chat.GetChatReq{SenderId: strconv.Itoa(sender_id), RecieverId: receiver_id})
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": err.Error()})

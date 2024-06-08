@@ -1120,11 +1120,6 @@ paths:
       description: Establish a WebSocket connection for real-time chat messaging.
         This endpoint allows users to send and receive messages in real time.
       parameters:
-      - description: Authentication token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: User ID
         in: path
         name: User_id
@@ -2568,6 +2563,10 @@ paths:
       - Profile
 securityDefinitions:
   AdminAccessToken:
+    in: header
+    name: Authorization
+    type: apiKey
+  Authorization:
     in: header
     name: Authorization
     type: apiKey

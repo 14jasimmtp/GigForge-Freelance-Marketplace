@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pb"
@@ -35,10 +37,18 @@ func (r *Repo) SaveMessage(msg []byte) error {
 }
 
 func (r *Repo) GetChats(req *pb.GetChatReq) ([]*pb.Message, error) {
-
+	fmt.Println("hi")
+	senderID,err:=strconv.Atoi(req.SenderId)
+	if err != nil {
+		return nil,err
+	}
+	recieverID,err:=strconv.Atoi(req.RecieverId)
+	if err != nil {
+		return nil,err
+	}
 	var messages []*pb.Message
 
-	filter := bson.M{"senderid": bson.M{"$in": bson.A{req.SenderId, req.RecieverId}}, "recipientid": bson.M{"$in": bson.A{req.RecieverId, req.SenderId}}}
+	filter := bson.M{"senderid": bson.M{"$in": bson.A{senderID, recieverID}}, "recipientid": bson.M{"$in": bson.A{senderID, recieverID}}}
 
 	cursor, err := r.Coll.Find(context.TODO(), filter, options.Find().SetSort(bson.D{{"timestamp", -1}}))
 	if err != nil {
@@ -49,16 +59,18 @@ func (r *Repo) GetChats(req *pb.GetChatReq) ([]*pb.Message, error) {
 	for cursor.Next(context.TODO()) {
 		var message domain.Message
 		if err := cursor.Decode(&message); err != nil {
+			fmt.Println("hi")
 			return nil, err
 		}
-		m:=&pb.Message{
-			SenderId: message.SenderID,
-			RecipientId: message.RecipientID,
-			Content: message.Content,
-			Timestamp: message.Timestamp.String(),
-			Type: message.Type,
-			Status: message.Status,
+		m := &pb.Message{
+			SenderId:    strconv.Itoa(message.SenderID),
+			RecipientId: strconv.Itoa(message.RecipientID),
+			Content:     message.Content,
+			Timestamp:   message.Timestamp.String(),
+			Type:        message.Type,
+			Status:      message.Status,
 		}
+		fmt.Println(message,"hi")
 
 		messages = append(messages, m)
 	}

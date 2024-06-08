@@ -6,8 +6,8 @@ import (
 )
 
 type Message struct {
-	SenderID    string    `json:"SenderID" validate:"required"`
-	RecipientID string    `json:"RecipientID" validate:"required"`
+	SenderID    int    `json:"SenderID" validate:"required"`
+	RecipientID int    `json:"RecipientID" validate:"required"`
 	Content     string    `json:"Content" validate:"required"`
 	Timestamp   time.Time `json:"TimeStamp" validate:"required"`
 	Type        string    `json:"Type" validate:"required"`

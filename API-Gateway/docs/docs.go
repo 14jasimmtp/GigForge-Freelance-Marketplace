@@ -566,13 +566,6 @@ const docTemplate = `{
                 "summary": "WebSocket Chat",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Authentication token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "User ID",
                         "name": "User_id",
@@ -3984,6 +3977,11 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "AdminAccessToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "Authorization": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
