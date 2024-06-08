@@ -2442,7 +2442,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/payment/paypal": {
+        "/payment/add": {
             "post": {
                 "description": "Add a PayPal payment email for the user",
                 "consumes": [
@@ -3682,6 +3682,15 @@ const docTemplate = `{
         },
         "req.PostJob": {
             "type": "object",
+            "required": [
+                "Description",
+                "budget",
+                "category",
+                "skills",
+                "time-period",
+                "title",
+                "type"
+            ],
             "properties": {
                 "Description": {
                     "type": "string"

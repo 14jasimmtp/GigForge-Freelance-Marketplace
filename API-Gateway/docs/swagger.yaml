@@ -635,6 +635,14 @@ definitions:
         type: string
       type:
         type: string
+    required:
+    - Description
+    - budget
+    - category
+    - skills
+    - time-period
+    - title
+    - type
     type: object
   req.Profile:
     properties:
@@ -2331,7 +2339,7 @@ paths:
       summary: Get user notifications
       tags:
       - Profile
-  /payment/paypal:
+  /payment/add:
     post:
       consumes:
       - application/json

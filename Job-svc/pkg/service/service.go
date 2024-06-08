@@ -187,6 +187,10 @@ func (s *Service) SendWeeklyInvoice(ctx context.Context, req *job.InvoiceReq) (*
 	if err != nil {
 		return &job.InvoiceRes{Status: 400, Error: err.Error()}, nil
 	}
+	if contract.Type != "hourly"{
+		return &job.InvoiceRes{Status: 400, Error: "can't send invoice. The contract is fixed"}, nil
+
+	}
 	if strconv.Itoa(contract.Freelancer_id) != req.SuserId {
 		return &job.InvoiceRes{Status: 400, Error: "Not your contract. Check Contract ID is correct"}, nil
 	}
