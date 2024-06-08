@@ -46,4 +46,5 @@ type RepoIfc interface {
 	GetCompanyDetails(userID int32) (*auth.UpdCompDtlReq,error)
 	ContactDetails(userID int32) (*auth.UpdCompContReq,error)
 	GetReviews(userID string) ([]*auth.Reviews,error)
+	GetTalents(q string) ([]*auth.Talents,error)
 }

@@ -1214,6 +1214,83 @@ paths:
       summary: Get a contract
       tags:
       - contracts
+  /client/contracts/attachment:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Add an attachment to a contract
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Contract Attachment
+        in: formData
+        name: attachment
+        required: true
+        type: file
+      - description: Contract ID
+        in: formData
+        name: ContractID
+        required: true
+        type: integer
+      - description: Attachment Description
+        in: formData
+        name: Description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add Contract Attachment
+      tags:
+      - Jobs
+  /client/contracts/attachment/{contractID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all attachments for a contract
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Contract ID
+        in: path
+        name: contractID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Attachments
+      tags:
+      - Jobs
   /client/contracts/invoices/{contractID}:
     get:
       description: Get all invoices for a specific contract
@@ -2047,81 +2124,6 @@ paths:
       summary: Remove a project
       tags:
       - projects
-  /job/{id}:
-    get:
-      description: Get details of a specific job
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved job
-          schema:
-            $ref: '#/definitions/Job.GetJobRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get a job
-      tags:
-      - jobs
-  /job/{job_id}/proposals:
-    get:
-      description: Get all proposals for a specific job
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved proposals
-          schema:
-            $ref: '#/definitions/Job.GJPRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get job proposals
-      tags:
-      - jobs
-  /job/categories:
-    get:
-      description: Get job categories based on a query
-      parameters:
-      - description: Query string
-        in: query
-        name: q
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved categories
-          schema:
-            $ref: '#/definitions/Job.GetCategoryRes'
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get categories
-      tags:
-      - jobs
   /job/payment/execute:
     post:
       description: Execute payment for a contract invoice
@@ -2164,6 +2166,56 @@ paths:
               type: string
             type: object
       summary: Get all jobs
+      tags:
+      - jobs
+  /jobs/{id}:
+    get:
+      description: Get details of a specific job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved job
+          schema:
+            $ref: '#/definitions/Job.GetJobRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a job
+      tags:
+      - jobs
+  /jobs/categories:
+    get:
+      description: Get job categories based on a query
+      parameters:
+      - description: Query string
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved categories
+          schema:
+            $ref: '#/definitions/Job.GetCategoryRes'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get categories
       tags:
       - jobs
   /jobs/payment:

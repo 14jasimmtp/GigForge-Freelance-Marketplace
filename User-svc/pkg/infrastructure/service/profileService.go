@@ -319,3 +319,11 @@ func (s *Service) GetFreelancerReviews(ctx context.Context,req *auth.GetReviewRe
 // func (s *Service) ReviewFreelancer(ctx context.Context,){
 // 	c.Params()
 // }
+
+func (s *Service) GetFreelancers(ctx context.Context, req *auth.GetTalentReq) (*auth.GetTalentRes, error){
+	talents,err:=s.repo.GetTalents(req.Query)
+	if err != nil {
+		return &auth.GetTalentRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &auth.GetTalentRes{Status: http.StatusOK,Freelancers: talents},nil
+}

@@ -33,7 +33,7 @@ func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq) (*job.Postjo
 	if !res.Exist{
 		return &job.PostjobRes{Status: int64(res.Status),Error: "add payment email before adding a job post"},nil
 	}
-	
+
 	err = s.repo.PostJob(req)
 	if err != nil {
 		return &job.PostjobRes{
@@ -149,8 +149,16 @@ func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq) (*job.Se
 }
 
 func (s *Service) AcceptOffer(ctx context.Context, req *job.AcceptOfferReq) (*job.AcceptOfferRes, error) {
+	uid,err:=strconv.Atoi(req.UserId)
+	res,err := s.user.CheckPaypalEmailAdded(context.Background(),&user.CReq{UserId: int64(uid)})
+	if err != nil {
+		return &job.AcceptOfferRes{Status: http.StatusInternalServerError,Error: err.Error()},nil
+	}
+	if !res.Exist{
+		return &job.AcceptOfferRes{Status: http.StatusBadRequest,Error: res.Error},nil
+	}
 
-	err := s.repo.AcceptOffer(req.OfferID)
+	err = s.repo.AcceptOffer(req.OfferID)
 	if err != nil {
 		return &job.AcceptOfferRes{
 			Status: 400,

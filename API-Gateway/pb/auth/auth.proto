@@ -124,8 +124,11 @@ message GetTalentReq{
 
 message Talents{
     string Name = 1;
-    string Hourly_rate = 2;
-    
+    string Title = 2;
+    string Description = 3;
+    string Hourly_rate = 4;
+    repeated string skills = 5;
+    int32 freelancer_id = 6;
 }
 
 message GetTalentRes{

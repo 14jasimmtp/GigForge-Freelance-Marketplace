@@ -634,3 +634,34 @@ func (r *Repo) CheckPaypalEmailAdded(ctx context.Context,req *job.CReq) (*job.CR
 	}
 	return &job.CRes{Status: http.StatusOK,Exist: true},nil
 }
+
+func (r *Repo) GetTalents(q string) ([]*auth.Talents,error){
+	var users []domain.User
+	query:=r.db.Raw(`SELECT * FROM users WHERE role = 'freelancer'`).Scan(&users)
+	if query.Error != nil {
+		return nil,errors.New(`something went wrong`)
+	}
+	var talents []*auth.Talents
+	for _,u:=range users{
+		var d domain.Freelancer_Description
+		var sk []int
+		var sh string
+		var skill []string
+		r.db.Raw(`select * From freelancer_descriptions Where user_id = ?`,u.ID).Scan(&d)
+		r.db.Raw(`select skill_id From freelancer_skills Where freelancer_id = ?`,u.ID).Scan(&sk)
+		for _,s:=range sk{
+		r.db.Raw(`select skill From skills Where id = ?`,s).Scan(&sh)
+		skill = append(skill, sh)
+		}
+
+		talents = append(talents, &auth.Talents{
+			FreelancerId: int32(u.ID),
+			Name: u.FirstName,
+			Title: d.Title,
+			Description: d.Description,
+			HourlyRate: fmt.Sprintf("%d",d.Hourly_rate),
+			Skills: skill,
+		})
+	}
+	return talents,nil
+}

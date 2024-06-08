@@ -167,7 +167,7 @@ func (h *JobsHandler) GetMyJobs(c *fiber.Ctx) error {
 // @Param q query string true "Query string"
 // @Success 200 {object} Job.GetCategoryRes "Successfully retrieved categories"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /job/categories [get]
+// @Router /jobs/categories [get]
 func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
 	query := c.Query("q")
 	category, err := h.job.GetCategory(context.Background(), &Job.GetCategoryReq{Query: query})
@@ -177,15 +177,7 @@ func (h *JobsHandler) GetCategories(c *fiber.Ctx) error {
 	return c.Status(int(category.Status)).JSON(category)
 }
 
-// GetJobProposals godoc
-// @Summary Get job proposals
-// @Description Get all proposals for a specific job
-// @Tags jobs
-// @Produce json
-// @Param job_id path string true "Job ID"
-// @Success 200 {object} Job.GJPRes "Successfully retrieved proposals"
-// @Failure 500 {object} map[string]string "Internal server error"
-// @Router /job/{job_id}/proposals [get]
+
 func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
 	user_id := c.Locals("User_id").(int)
@@ -341,7 +333,7 @@ func (h *JobsHandler) GetJobs(c *fiber.Ctx) error {
 // @Param id path string true "Job ID"
 // @Success 200 {object} Job.GetJobRes "Successfully retrieved job"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /job/{id} [get]
+// @Router /jobs/{id} [get]
 func (h *JobsHandler) GetJob(c *fiber.Ctx) error {
 	job_id := c.Params("id")
 	println(job_id)
@@ -552,6 +544,19 @@ func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
 	return c.Status(int(contracts.Status)).JSON(contracts)
 }
 
+// @Summary Add Contract Attachment
+// @Description Add an attachment to a contract
+// @Tags Jobs
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param Authorization header string true "Authorization"
+// @Param attachment formData file true "Contract Attachment"
+// @Param ContractID formData int true "Contract ID"
+// @Param Description formData string false "Attachment Description"
+// @Success 200 {object} res.CommonRes
+// @Failure 400 {object} res.CommonRes
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /client/contracts/attachment [post]
 func (h *JobsHandler) AddContractAttachment(c *fiber.Ctx) error {
 	var req req.AddContractAttachment
 	if err := c.BodyParser(&req); err != nil {
@@ -590,6 +595,16 @@ func (h *JobsHandler) AddContractAttachment(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
+// @Summary Get Attachments
+// @Description Get all attachments for a contract
+// @Tags Jobs
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Authorization"
+// @Param contractID path string true "Contract ID"
+// @Success 200 {object} res.CommonRes
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /client/contracts/attachment/{contractID} [get]
 func (h *JobsHandler) GetAttachments(c *fiber.Ctx) error{
 	cid:=c.Params("contractID")
 	res,err:=h.job.GetAttachments(context.Background(),&Job.GetAttachmentReq{ContractID: cid})

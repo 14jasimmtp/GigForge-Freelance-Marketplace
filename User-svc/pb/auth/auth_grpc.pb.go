@@ -47,6 +47,7 @@ type AuthServiceClient interface {
 	UpdateProfilePhoto(ctx context.Context, in *PhotoReq, opts ...grpc.CallOption) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(ctx context.Context, in *OnboardToPaypalReq, opts ...grpc.CallOption) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(ctx context.Context, in *ReviewFlancerReq, opts ...grpc.CallOption) (*ReviewFlancerRes, error)
+	GetFreelancers(ctx context.Context, in *GetTalentReq, opts ...grpc.CallOption) (*GetTalentRes, error)
 	AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error)
 	GetFreelancerReviews(ctx context.Context, in *GetReviewReq, opts ...grpc.CallOption) (*GetReviewRes, error)
 }
@@ -284,6 +285,15 @@ func (c *authServiceClient) ReviewFreelancer(ctx context.Context, in *ReviewFlan
 	return out, nil
 }
 
+func (c *authServiceClient) GetFreelancers(ctx context.Context, in *GetTalentReq, opts ...grpc.CallOption) (*GetTalentRes, error) {
+	out := new(GetTalentRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/GetFreelancers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AddPaymentEmail(ctx context.Context, in *AddPaymentEmailReq, opts ...grpc.CallOption) (*AddPaymentEmailRes, error) {
 	out := new(AddPaymentEmailRes)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AddPaymentEmail", in, out, opts...)
@@ -331,6 +341,7 @@ type AuthServiceServer interface {
 	UpdateProfilePhoto(context.Context, *PhotoReq) (*PhotoRes, error)
 	OnboardFreelancerToPaypal(context.Context, *OnboardToPaypalReq) (*OnboardToPaypalRes, error)
 	ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error)
+	GetFreelancers(context.Context, *GetTalentReq) (*GetTalentRes, error)
 	AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error)
 	GetFreelancerReviews(context.Context, *GetReviewReq) (*GetReviewRes, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -414,6 +425,9 @@ func (UnimplementedAuthServiceServer) OnboardFreelancerToPaypal(context.Context,
 }
 func (UnimplementedAuthServiceServer) ReviewFreelancer(context.Context, *ReviewFlancerReq) (*ReviewFlancerRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewFreelancer not implemented")
+}
+func (UnimplementedAuthServiceServer) GetFreelancers(context.Context, *GetTalentReq) (*GetTalentRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFreelancers not implemented")
 }
 func (UnimplementedAuthServiceServer) AddPaymentEmail(context.Context, *AddPaymentEmailReq) (*AddPaymentEmailRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPaymentEmail not implemented")
@@ -884,6 +898,24 @@ func _AuthService_ReviewFreelancer_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetFreelancers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTalentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetFreelancers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/GetFreelancers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetFreelancers(ctx, req.(*GetTalentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AddPaymentEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddPaymentEmailReq)
 	if err := dec(in); err != nil {
@@ -1026,6 +1058,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewFreelancer",
 			Handler:    _AuthService_ReviewFreelancer_Handler,
+		},
+		{
+			MethodName: "GetFreelancers",
+			Handler:    _AuthService_GetFreelancers_Handler,
 		},
 		{
 			MethodName: "AddPaymentEmail",

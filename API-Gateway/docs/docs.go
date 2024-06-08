@@ -672,6 +672,121 @@ const docTemplate = `{
                 }
             }
         },
+        "/client/contracts/attachment": {
+            "post": {
+                "description": "Add an attachment to a contract",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Add Contract Attachment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Contract Attachment",
+                        "name": "attachment",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Contract ID",
+                        "name": "ContractID",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Attachment Description",
+                        "name": "Description",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client/contracts/attachment/{contractID}": {
+            "get": {
+                "description": "Get all attachments for a contract",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get Attachments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Contract ID",
+                        "name": "contractID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CommonRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/client/contracts/invoices/{contractID}": {
             "get": {
                 "security": [
@@ -2013,44 +2128,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/job/categories": {
-            "get": {
-                "description": "Get job categories based on a query",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get categories",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Query string",
-                        "name": "q",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved categories",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetCategoryRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/job/payment/execute": {
             "post": {
                 "description": "Execute payment for a contract invoice",
@@ -2089,82 +2166,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/job/{id}": {
-            "get": {
-                "description": "Get details of a specific job",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get a job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved job",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GetJobRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/job/{job_id}/proposals": {
-            "get": {
-                "description": "Get all proposals for a specific job",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jobs"
-                ],
-                "summary": "Get job proposals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved proposals",
-                        "schema": {
-                            "$ref": "#/definitions/Job.GJPRes"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/jobs": {
             "get": {
                 "description": "Get a list of all jobs",
@@ -2180,6 +2181,44 @@ const docTemplate = `{
                         "description": "Successfully retrieved jobs",
                         "schema": {
                             "$ref": "#/definitions/Job.GetJobsRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/categories": {
+            "get": {
+                "description": "Get job categories based on a query",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Query string",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved categories",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetCategoryRes"
                         }
                     },
                     "500": {
@@ -2316,6 +2355,44 @@ const docTemplate = `{
                         "description": "Successfully retrieved search results",
                         "schema": {
                             "$ref": "#/definitions/Job.SearchJobsRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/{id}": {
+            "get": {
+                "description": "Get details of a specific job",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get a job",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved job",
+                        "schema": {
+                            "$ref": "#/definitions/Job.GetJobRes"
                         }
                     },
                     "500": {
