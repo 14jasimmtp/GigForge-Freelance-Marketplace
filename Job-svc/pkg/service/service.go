@@ -357,6 +357,17 @@ func (s *Service) GetInvoiceContract(ctx context.Context, req *job.GetInvoiceCon
 	}
 	var inv []*job.Invoices
 	for _, i := range invoices {
+		if i.Start_date.IsZero(){
+			in := &job.Invoices{
+				InvoiceID:      int32(i.ID),
+				ContractID:     int32(i.ContractID),
+				PaymentStatus:  i.Status,
+				FreelancerFee:  float32(i.Freelancer_fee),
+				MarketPlaceFee: float32(i.MarketPlace_fee),
+			}
+			inv = append(inv, in)
+			continue
+		}
 		in := &job.Invoices{
 			InvoiceID:      int32(i.ID),
 			ContractID:     int32(i.ContractID),
