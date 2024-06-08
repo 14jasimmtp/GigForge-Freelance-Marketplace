@@ -1,4 +1,4 @@
-3name: GigForge CI/CD Pipeline
+name: GigForge CI/CD Pipeline
 
 on:
   push:
@@ -72,3 +72,5 @@ jobs:
         kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.2.3 -n gigforge
         kubectl rollout restart deployment -n gigforge
 
+
+        
