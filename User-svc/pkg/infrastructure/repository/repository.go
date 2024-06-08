@@ -190,7 +190,7 @@ func (r *Repo) AddProfileDescription(req *auth.APDReq) (*domain.Freelancer_Descr
 
 func (r *Repo) UpdateProfileDescription(req *auth.UPDReq) (*domain.Freelancer_Description, error) {
 	var res domain.Freelancer_Description
-	query := `UPDATE freelancer_descriptions SET updated_at = ?, Title = ?,description = ?,Hourly_rate = ?)WHERE user_id = ?`
+	query := `UPDATE freelancer_descriptions SET updated_at = ?, Title = ?,description = ?,Hourly_rate = ? WHERE user_id = ?`
 	err := r.db.Exec(query, time.Now(), req.Title, req.Description, req.HourlyRate, req.UserId).Scan(&res).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -538,7 +538,7 @@ func (r *Repo) UpdateCmpDtails(details *auth.UpdCompDtlReq) error{
 		Tagline: details.Tagline,
 		Industry: details.Industry,
 	}
-	query:=r.db.Where("ClientID = ?",details.UserId).Attrs(Dtls).FirstOrCreate(Dtls)
+	query:=r.db.Where("client_id = ?",details.UserId).Attrs(Dtls).FirstOrCreate(Dtls)
 	if query.Error != nil{
 		return errors.New(`something went wrong`)
 	}
@@ -556,7 +556,7 @@ func (r *Repo) UpdateCompContact(details *auth.UpdCompContReq) error{
 		City: details.Address.City,
 		Pincode: details.Address.Pincode,
 	}
-	query:=r.db.Where("ClientID = ?",details.UserId).Attrs(Cont).FirstOrCreate(&domain.CompanyAddress{})
+	query:=r.db.Where("client_id = ?",details.UserId).Attrs(Cont).FirstOrCreate(&domain.CompanyAddress{})
 	if query.Error != nil{
 		return errors.New(`something went wrong`)
 	}

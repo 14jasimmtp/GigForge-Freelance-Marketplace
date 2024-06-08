@@ -480,7 +480,7 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 // AddPaymentEmailPaypal adds a PayPal payment email for the user.
 // @Summary Add PayPal payment email
 // @Description Add a PayPal payment email for the user
-// @security Authorization
+// @Param Authorization header string true "Authorization"
 // @Tags Profile
 // @Accept json
 // @Produce json

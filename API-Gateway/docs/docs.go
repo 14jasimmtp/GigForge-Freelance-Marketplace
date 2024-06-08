@@ -2492,11 +2492,6 @@ const docTemplate = `{
         },
         "/payment/add": {
             "post": {
-                "security": [
-                    {
-                        "Authorization": []
-                    }
-                ],
                 "description": "Add a PayPal payment email for the user",
                 "consumes": [
                     "application/json"
@@ -2509,6 +2504,13 @@ const docTemplate = `{
                 ],
                 "summary": "Add PayPal payment email",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Payment Details",
                         "name": "Payment",

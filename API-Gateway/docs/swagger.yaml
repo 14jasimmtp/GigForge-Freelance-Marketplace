@@ -2355,6 +2355,11 @@ paths:
       - application/json
       description: Add a PayPal payment email for the user
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Payment Details
         in: body
         name: Payment
@@ -2372,8 +2377,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/res.CommonRes'
-      security:
-      - Authorization: []
       summary: Add PayPal payment email
       tags:
       - Profile
