@@ -47,6 +47,36 @@ func (r *Repo) PostJob(req *job.PostjobReq) error {
 	return nil
 }
 
+func (r *Repo) CheckJobExist(job_id string,userID int64) error{
+	var count int
+	query:=r.DB.Raw(`SELECT count(*) FROM jobs WHERE id = ? AND client_id = ?`,job_id,userID).Scan(&count)
+	if query.Error != nil {
+		fmt.Println(query.Error)
+		return errors.New(`something went wrong`)
+	}
+	if count < 1{
+		return errors.New(`no jobs found with the given id`)
+	}
+	return nil
+}
+
+func (r *Repo) EditJobPost(Post *job.EditjobReq) error{
+	JobPost:=domain.Jobs{
+		Title: Post.Title,
+		Description: Post.Description,
+		TimePeriod: Post.TimePeriod,
+		Type: Post.Type,
+		Category: Post.Category,
+		Budget: Post.Budget,
+		Client_id: int(Post.UserId),
+	}
+	query:=r.DB.Model(&domain.Jobs{}).Where("id = ?",Post.JobID).Updates(JobPost)
+	if query.Error != nil {
+		fmt.Println(query.Error)
+		return errors.New(`something went wrong`)
+	}
+	return nil
+}
 func (r *Repo) ViewProposalsForFreelancer(userID int) (*[]domain.Proposals, error) {
 	var proposals []domain.Proposals
 	query := `SELECT * From proposals where user_id = ?`

@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JobServiceClient interface {
 	PostJob(ctx context.Context, in *PostjobReq, opts ...grpc.CallOption) (*PostjobRes, error)
+	EditJob(ctx context.Context, in *EditjobReq, opts ...grpc.CallOption) (*EditjobRes, error)
 	SendProposal(ctx context.Context, in *ProposalReq, opts ...grpc.CallOption) (*ProposalRes, error)
 	SendOffer(ctx context.Context, in *SendOfferReq, opts ...grpc.CallOption) (*SendOfferRes, error)
 	AcceptOffer(ctx context.Context, in *AcceptOfferReq, opts ...grpc.CallOption) (*AcceptOfferRes, error)
@@ -57,6 +58,15 @@ func NewJobServiceClient(cc grpc.ClientConnInterface) JobServiceClient {
 func (c *jobServiceClient) PostJob(ctx context.Context, in *PostjobReq, opts ...grpc.CallOption) (*PostjobRes, error) {
 	out := new(PostjobRes)
 	err := c.cc.Invoke(ctx, "/job.JobService/PostJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobServiceClient) EditJob(ctx context.Context, in *EditjobReq, opts ...grpc.CallOption) (*EditjobRes, error) {
+	out := new(EditjobRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/EditJob", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -257,6 +267,7 @@ func (c *jobServiceClient) GetAttachments(ctx context.Context, in *GetAttachment
 // for forward compatibility
 type JobServiceServer interface {
 	PostJob(context.Context, *PostjobReq) (*PostjobRes, error)
+	EditJob(context.Context, *EditjobReq) (*EditjobRes, error)
 	SendProposal(context.Context, *ProposalReq) (*ProposalRes, error)
 	SendOffer(context.Context, *SendOfferReq) (*SendOfferRes, error)
 	AcceptOffer(context.Context, *AcceptOfferReq) (*AcceptOfferRes, error)
@@ -287,6 +298,9 @@ type UnimplementedJobServiceServer struct {
 
 func (UnimplementedJobServiceServer) PostJob(context.Context, *PostjobReq) (*PostjobRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PostJob not implemented")
+}
+func (UnimplementedJobServiceServer) EditJob(context.Context, *EditjobReq) (*EditjobRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditJob not implemented")
 }
 func (UnimplementedJobServiceServer) SendProposal(context.Context, *ProposalReq) (*ProposalRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendProposal not implemented")
@@ -378,6 +392,24 @@ func _JobService_PostJob_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(JobServiceServer).PostJob(ctx, req.(*PostjobReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JobService_EditJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditjobReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).EditJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/EditJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).EditJob(ctx, req.(*EditjobReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -770,6 +802,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PostJob",
 			Handler:    _JobService_PostJob_Handler,
+		},
+		{
+			MethodName: "EditJob",
+			Handler:    _JobService_EditJob_Handler,
 		},
 		{
 			MethodName: "SendProposal",

@@ -204,7 +204,7 @@ func (h *ProjectHandler) ListMyProjects(c *fiber.Ctx) error {
 // @Param id path string true "Project ID"
 // @Success 200 {object} project.BuyProjectRes "Successfully bought project"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /client/projects/buy/{id} [post]
+// @Router /client/projects/order/{id} [post]
 func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	user_id:=c.Locals("User_id").(int)
 	user:=strconv.Itoa(int(user_id))
@@ -215,6 +215,24 @@ func (h *ProjectHandler) BuyProject(c *fiber.Ctx) error {
 	}
 	return c.Status(int(res.Status)).JSON(res)
 }
+
+// func (h *ProjectHandler) GetProjectOrdersForClient(c *fiber.Ctx) error{
+// 	user_id:=c.Locals("User_id").(int)
+// 	Orders,err:=h.project.GetOrdersForClient(context.Background(),&project.GetOrdersReq{UserId: user_id})
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+// 	}
+// 	return c.Status(int(Orders.Status)).JSON(Orders)
+// }
+
+// func (h *ProjectHandler) GetProjectOrdersForFreelancer(c *fiber.Ctx) error{
+// 	user_id:=c.Locals("User_id").(int)
+// 	Orders,err:=h.project.GetOrdersForFreelancer(context.Background(),&project.GetOrdersReq{UserId: user_id})
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
+// 	}
+// 	return c.Status(int(Orders.Status)).JSON(Orders)
+// }
 
 // ExecutePaymentProject godoc
 // @Summary Execute project payment

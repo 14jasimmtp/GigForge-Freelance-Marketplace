@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -620,4 +621,16 @@ func (r *Repo) GetReviews(userID string) ([]*auth.Reviews,error){
 		})
 	}
 	return rr,nil
+}
+
+func (r *Repo) CheckPaypalEmailAdded(ctx context.Context,req *job.CReq) (*job.CRes, error) {
+	var count int
+	query:=r.db.Raw(`SELECT count(*) FROM freelancer_paypals WHERE user_id = ?`,req.UserId).Scan(&count)
+	if query.Error != nil {
+		return &job.CRes{Status: http.StatusFailedDependency,Error: "something went wrong",Exist: false},nil
+	}
+	if count < 1{
+		return &job.CRes{Status: http.StatusNotFound,Error: "add payment email to post a job",Exist: false},nil
+	}
+	return &job.CRes{Status: http.StatusOK,Exist: true},nil
 }

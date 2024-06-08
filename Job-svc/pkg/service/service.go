@@ -26,7 +26,15 @@ func NewJobService(repo repository.Repo, user user.JobserviceClient) *Service {
 }
 
 func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq) (*job.PostjobRes, error) {
-	err := s.repo.PostJob(req)
+	res,err:=s.user.CheckPaypalEmailAdded(context.Background(),&user.CReq{UserId: req.UserId})
+	if err != nil {
+		return &job.PostjobRes{Status: int64(res.Status),Error: "error fetching user paypal"},nil
+	}
+	if !res.Exist{
+		return &job.PostjobRes{Status: int64(res.Status),Error: "add payment email before adding a job post"},nil
+	}
+	
+	err = s.repo.PostJob(req)
 	if err != nil {
 		return &job.PostjobRes{
 			Status:   500,
@@ -38,6 +46,19 @@ func (s *Service) PostJob(ctx context.Context, req *job.PostjobReq) (*job.Postjo
 		Status:   200,
 		Response: "job posted successfully",
 	}, nil
+}
+
+func (s *Service) EditJob(ctx context.Context, req *job.EditjobReq) (*job.EditjobRes, error){
+	err:=s.repo.CheckJobExist(req.JobID,req.UserId)
+	if err != nil {
+		return &job.EditjobRes{	Error: err.Error(),Status: http.StatusNotFound},nil
+	}
+
+	err = s.repo.EditJobPost(req)
+	if err != nil {
+		return &job.EditjobRes{	Error: err.Error(),Status: http.StatusFailedDependency},nil
+	}
+	return &job.EditjobRes{Response: "Job updated successfully",Status: http.StatusOK},nil
 }
 
 func (s *Service) GetMyJobs(ctx context.Context, req *job.GetMyJobsReq) (*job.GetMyJobsRes, error) {
@@ -112,7 +133,10 @@ func (s *Service) SendOffer(ctx context.Context, req *job.SendOfferReq) (*job.Se
 	if err != nil {
 		return &job.SendOfferRes{Status: http.StatusBadRequest, Error: err.Error()}, nil
 	}
-	// s.repo.CheckJobExist(req.JobId)
+	err = s.repo.CheckJobExist(strconv.Itoa(int(req.JobId)),int64(req.ClientId))
+	if err != nil {
+		return &job.SendOfferRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
 	// s.repo.CheckFreelancerExist(req.FreelancerId)
 	res, err := s.repo.SendOffer(req)
 	if err != nil {

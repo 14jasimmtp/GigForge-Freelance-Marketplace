@@ -18,11 +18,11 @@ func Freelancer(
 		{
 			profiles.Get("", profile.GetFreelancerProfile)
 			profiles.Post("/education", profile.AddEducationDetails)
-			profiles.Patch("/education", profile.UpdateEducation)
+			profiles.Patch("/education/:id", profile.UpdateEducation)
 			profiles.Post("/experience", profile.AddExperience)
-			profiles.Patch("/experience", profile.UpdateExperience)
-			profiles.Delete("/experience", profile.RemoveExperience)
-			profiles.Delete("/education", profile.DeleteEducation)
+			profiles.Patch("/experience/:id", profile.UpdateExperience)
+			profiles.Delete("/experience/:id", profile.RemoveExperience)
+			profiles.Delete("/education/:id", profile.DeleteEducation)
 			profiles.Post("/description", profile.AddProfileDescription)
 			profiles.Patch("/description", profile.EditProfileDescription)
 			profiles.Put("/photo", profile.UpdateProfilePhoto)
@@ -59,8 +59,6 @@ func Freelancer(
 			projects.Get("",project.ListMyProjects)
 		}
 	}
-	payment:=api.Group("/payment")
-	payment.Post("/onboard-freelancers",profile.OnboardFreelancersToPaypal)
-	api.Post("/payment/add",profile.AddPaymentEmailPaypal)
+	
 
 }

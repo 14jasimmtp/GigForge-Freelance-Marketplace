@@ -14,6 +14,20 @@ service ProjectService {
     rpc OrderProject(BuyProjectReq) returns (BuyProjectRes) {};
     rpc ExecutePaymentProject(ExecutePaymentReq) returns (ExecutePaymentRes) {};
     rpc CapturePaymentProject(CapturePaymentReq) returns (CapturePaymentRes) {};
+    rpc GetProjectOrdersForClient(GetOrdersReq) returns (GetOrdersClientRes) {};
+    rpc GetProjectOrdersForFreelancer(GetOrdersReq) returns (GetOrdersFreelancerRes) {};
+}
+
+message GetOrdersReq{
+    int32 UserId = 1;
+}
+
+message GetOrdersClientRes{
+
+}
+
+message GetOrdersFreelancerRes{
+    
 }
 
 message ExecutePaymentReq{

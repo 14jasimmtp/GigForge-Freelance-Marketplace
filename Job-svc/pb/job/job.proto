@@ -6,6 +6,7 @@ option go_package = "./pb/job/";
 
 service JobService{
     rpc PostJob(postjobReq) returns (postjobRes) {};
+    rpc EditJob(editjobReq) returns (editjobRes) {};
     rpc SendProposal(ProposalReq) returns (ProposalRes) {};
     rpc SendOffer(SendOfferReq) returns (SendOfferRes) {};
     rpc AcceptOffer(AcceptOfferReq) returns (AcceptOfferRes) {};
@@ -283,6 +284,24 @@ message AddCategoryReq{
 }
 
 message AddCategoryRes{
+    int64 status = 1;
+    string Error = 2;
+    string Response = 3;
+}
+
+message editjobReq{
+    string Title = 1;
+    string Description = 2;
+    int64 category = 3;
+    repeated int64 skills =4;
+    string timePeriod = 5;
+    string Type = 6;
+    float budget = 7;
+    int64 user_id = 8;
+    string jobID = 9;
+}
+
+message editjobRes{
     int64 status = 1;
     string Error = 2;
     string Response = 3;

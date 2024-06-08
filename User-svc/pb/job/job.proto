@@ -7,6 +7,17 @@ option go_package="./pb/job/";
 service Jobservice{
     rpc GetJobsSkills(req) returns (res) {};
     rpc GetFreelancerPaypalEmail(Preq) returns (Pres) {};
+    rpc CheckPaypalEmailAdded(CReq) returns (CRes) {};
+}
+
+message CReq{
+   int64 user_id = 1;
+}
+
+message CRes{
+    int32 Status = 1;
+    string Error = 2;
+    bool Exist = 3;
 }
 
 message Preq{

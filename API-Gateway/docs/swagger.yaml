@@ -1125,6 +1125,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Authorization: []
       summary: WebSocket Chat
       tags:
       - Chat
@@ -1154,6 +1156,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/res.CommonRes'
+      security:
+      - Authorization: []
       summary: Get Chat Messages
       tags:
       - Chat
@@ -1291,6 +1295,7 @@ paths:
       summary: Post a job
       tags:
       - jobs
+  /client/job/{jobID}:
     put:
       consumes:
       - application/json
@@ -1385,7 +1390,76 @@ paths:
       summary: Send a job offer
       tags:
       - jobs
-  /client/projects/buy/{id}:
+  /client/profile:
+    get:
+      description: Get the profile of a client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Get client profile
+      tags:
+      - Profile
+  /client/profile/company-contacts:
+    put:
+      consumes:
+      - application/json
+      description: Update the company contact details for the user
+      parameters:
+      - description: Company Contact Details
+        in: body
+        name: CompanyContact
+        required: true
+        schema:
+          $ref: '#/definitions/req.UpdateCompanyContact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update company contact details
+      tags:
+      - Profile
+  /client/profile/company-details:
+    put:
+      consumes:
+      - application/json
+      description: Update the company details for the user
+      parameters:
+      - description: Company Details
+        in: body
+        name: CompanyDetails
+        required: true
+        schema:
+          $ref: '#/definitions/req.UpdateCompanyDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update company details
+      tags:
+      - Profile
+  /client/projects/order/{id}:
     post:
       description: Buy a specific project
       parameters:
@@ -1412,6 +1486,32 @@ paths:
       summary: Buy a project
       tags:
       - projects
+  /client/review-freelancer:
+    post:
+      consumes:
+      - application/json
+      description: Add a review for a freelancer
+      parameters:
+      - description: Review Details
+        in: body
+        name: Review
+        required: true
+        schema:
+          $ref: '#/definitions/req.AddReview'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Add review for freelancer
+      tags:
+      - Profile
   /freelancer/job/accept-offer/{offer_id}:
     post:
       description: Accept a job offer from a client
@@ -1538,6 +1638,283 @@ paths:
       summary: Send a proposal
       tags:
       - jobs
+  /freelancer/profile:
+    get:
+      description: Get the profile of a freelancer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Get freelancer profile
+      tags:
+      - Profile
+  /freelancer/profile/description:
+    patch:
+      consumes:
+      - application/json
+      description: Update profile description for the user
+      parameters:
+      - description: Profile Details
+        in: body
+        name: Profile
+        required: true
+        schema:
+          $ref: '#/definitions/req.Profile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update profile description
+      tags:
+      - Profile
+    post:
+      consumes:
+      - application/json
+      description: Add profile description for the user
+      parameters:
+      - description: Profile Details
+        in: body
+        name: Profile
+        required: true
+        schema:
+          $ref: '#/definitions/req.Profile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Add profile description
+      tags:
+      - Profile
+  /freelancer/profile/education:
+    post:
+      consumes:
+      - application/json
+      description: Add education details for the user
+      parameters:
+      - description: Education Details
+        in: body
+        name: Education
+        required: true
+        schema:
+          $ref: '#/definitions/req.Education'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Add education details
+      tags:
+      - Profile
+  /freelancer/profile/education/{id}:
+    delete:
+      description: Delete education details for the user
+      parameters:
+      - description: Education ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Delete education details
+      tags:
+      - Profile
+    patch:
+      consumes:
+      - application/json
+      description: Update education details for the user
+      parameters:
+      - description: Education ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Education Details
+        in: body
+        name: Education
+        required: true
+        schema:
+          $ref: '#/definitions/req.Education'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update education details
+      tags:
+      - Profile
+  /freelancer/profile/experience:
+    post:
+      consumes:
+      - application/json
+      description: Add experience for the user
+      parameters:
+      - description: Experience Details
+        in: body
+        name: Experience
+        required: true
+        schema:
+          $ref: '#/definitions/req.Experience'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Add experience
+      tags:
+      - Profile
+  /freelancer/profile/experience/{id}:
+    delete:
+      description: Remove experience for the user
+      parameters:
+      - description: Experience ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Remove experience
+      tags:
+      - Profile
+    patch:
+      consumes:
+      - application/json
+      description: Update experience for the user
+      parameters:
+      - description: Experience ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Experience Details
+        in: body
+        name: Experience
+        required: true
+        schema:
+          $ref: '#/definitions/req.Experience'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update experience
+      tags:
+      - Profile
+  /freelancer/profile/photo:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update profile photo for the user
+      parameters:
+      - description: Profile Photo
+        in: formData
+        name: profile-photo
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update profile photo
+      tags:
+      - Profile
+  /freelancer/profile/skill:
+    post:
+      consumes:
+      - application/json
+      description: Update skills for the user profile
+      parameters:
+      - description: Skills Details
+        in: body
+        name: Skills
+        required: true
+        schema:
+          $ref: '#/definitions/req.Skills'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Update skills
+      tags:
+      - Profile
   /freelancer/projects:
     get:
       description: Get a list of projects posted by the authenticated user
@@ -1879,302 +2256,7 @@ paths:
       summary: Search jobs
       tags:
       - jobs
-  /profile/client:
-    get:
-      description: Get the profile of a client
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Get client profile
-      tags:
-      - Profile
-  /profile/company:
-    put:
-      consumes:
-      - application/json
-      description: Update the company details for the user
-      parameters:
-      - description: Company Details
-        in: body
-        name: CompanyDetails
-        required: true
-        schema:
-          $ref: '#/definitions/req.UpdateCompanyDetails'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update company details
-      tags:
-      - Profile
-  /profile/company/contact:
-    put:
-      consumes:
-      - application/json
-      description: Update the company contact details for the user
-      parameters:
-      - description: Company Contact Details
-        in: body
-        name: CompanyContact
-        required: true
-        schema:
-          $ref: '#/definitions/req.UpdateCompanyContact'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update company contact details
-      tags:
-      - Profile
-  /profile/description:
-    post:
-      consumes:
-      - application/json
-      description: Add profile description for the user
-      parameters:
-      - description: Profile Details
-        in: body
-        name: Profile
-        required: true
-        schema:
-          $ref: '#/definitions/req.Profile'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Add profile description
-      tags:
-      - Profile
-    put:
-      consumes:
-      - application/json
-      description: Update profile description for the user
-      parameters:
-      - description: Profile Details
-        in: body
-        name: Profile
-        required: true
-        schema:
-          $ref: '#/definitions/req.Profile'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update profile description
-      tags:
-      - Profile
-  /profile/education:
-    post:
-      consumes:
-      - application/json
-      description: Add education details for the user
-      parameters:
-      - description: Education Details
-        in: body
-        name: Education
-        required: true
-        schema:
-          $ref: '#/definitions/req.Education'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Add education details
-      tags:
-      - Profile
-  /profile/education/{id}:
-    delete:
-      description: Delete education details for the user
-      parameters:
-      - description: Education ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Delete education details
-      tags:
-      - Profile
-    put:
-      consumes:
-      - application/json
-      description: Update education details for the user
-      parameters:
-      - description: Education ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Education Details
-        in: body
-        name: Education
-        required: true
-        schema:
-          $ref: '#/definitions/req.Education'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update education details
-      tags:
-      - Profile
-  /profile/experience:
-    post:
-      consumes:
-      - application/json
-      description: Add experience for the user
-      parameters:
-      - description: Experience Details
-        in: body
-        name: Experience
-        required: true
-        schema:
-          $ref: '#/definitions/req.Experience'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Add experience
-      tags:
-      - Profile
-  /profile/experience/{id}:
-    delete:
-      description: Remove experience for the user
-      parameters:
-      - description: Experience ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Remove experience
-      tags:
-      - Profile
-    put:
-      consumes:
-      - application/json
-      description: Update experience for the user
-      parameters:
-      - description: Experience ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Experience Details
-        in: body
-        name: Experience
-        required: true
-        schema:
-          $ref: '#/definitions/req.Experience'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update experience
-      tags:
-      - Profile
-  /profile/freelancer:
-    get:
-      description: Get the profile of a freelancer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Get freelancer profile
-      tags:
-      - Profile
-  /profile/notifications:
+  /notifications:
     get:
       description: Get notifications for the user
       parameters:
@@ -2197,7 +2279,7 @@ paths:
       summary: Get user notifications
       tags:
       - Profile
-  /profile/payment/paypal:
+  /payment/paypal:
     post:
       consumes:
       - application/json
@@ -2221,132 +2303,6 @@ paths:
           schema:
             $ref: '#/definitions/res.CommonRes'
       summary: Add PayPal payment email
-      tags:
-      - Profile
-  /profile/photo:
-    put:
-      consumes:
-      - multipart/form-data
-      description: Update profile photo for the user
-      parameters:
-      - description: Profile Photo
-        in: formData
-        name: profile-photo
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update profile photo
-      tags:
-      - Profile
-  /profile/review:
-    post:
-      consumes:
-      - application/json
-      description: Add a review for a freelancer
-      parameters:
-      - description: Review Details
-        in: body
-        name: Review
-        required: true
-        schema:
-          $ref: '#/definitions/req.AddReview'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Add review for freelancer
-      tags:
-      - Profile
-  /profile/reviews/{freelancer_id}:
-    get:
-      description: Get reviews for a freelancer
-      parameters:
-      - description: Freelancer ID
-        in: path
-        name: freelancer_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Get freelancer reviews
-      tags:
-      - Profile
-  /profile/skills:
-    put:
-      consumes:
-      - application/json
-      description: Update skills for the user profile
-      parameters:
-      - description: Skills Details
-        in: body
-        name: Skills
-        required: true
-        schema:
-          $ref: '#/definitions/req.Skills'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Update skills
-      tags:
-      - Profile
-  /profile/talents:
-    get:
-      description: Get a list of talents
-      parameters:
-      - description: Query
-        in: query
-        name: q
-        type: string
-      - description: Experience
-        in: query
-        name: exp
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/res.CommonRes'
-      summary: Get talents
       tags:
       - Profile
   /projects:
@@ -2467,6 +2423,55 @@ paths:
       summary: Execute project payment
       tags:
       - projects
+  /reviews/{freelancer_id}:
+    get:
+      description: Get reviews for a freelancer
+      parameters:
+      - description: Freelancer ID
+        in: path
+        name: freelancer_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Get freelancer reviews
+      tags:
+      - Profile
+  /talents:
+    get:
+      description: Get a list of talents
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - description: Experience
+        in: query
+        name: exp
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/res.CommonRes'
+      summary: Get talents
+      tags:
+      - Profile
 securityDefinitions:
   AdminAccessToken:
     in: header

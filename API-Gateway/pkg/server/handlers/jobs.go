@@ -110,7 +110,6 @@ func (h *JobsHandler) SendProposal(c *fiber.Ctx) error {
 		CoverLetter: req.Coverletter,
 		UserId:      strconv.Itoa(user_id),
 		JobId:       job_id,
-		// Attachments: attachments,
 	})
 
 	if err != nil {
@@ -208,8 +207,9 @@ func (h *JobsHandler) GetJobProposals(c *fiber.Ctx) error {
 // @Success 200 {object} Job.PostjobRes "Successfully edited job"
 // @Failure 400 {object} res.CommonRes "Error validating request body"
 // @Failure 403 {object} map[string]string "Forbidden"
-// @Router /client/job [put]
+// @Router /client/job/{jobID} [put]
 func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
+	job_id:=c.Params("jobID")
 	var req req.PostJob
 	user_id := c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
@@ -225,10 +225,10 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error":Error})
 	}
 
-	res, err := h.job.PostJob(context.Background(), &Job.PostjobReq{
+	res, err := h.job.EditJob(context.Background(), &Job.EditjobReq{
 		Title:       req.Title,
 		Description: req.Description,
 		Category:    req.Category,
@@ -237,6 +237,7 @@ func (h *JobsHandler) EditJob(c *fiber.Ctx) error {
 		Type:        req.Type,
 		Budget:      float32(req.Budget),
 		UserId:      int64(user_id),
+		JobID: job_id,
 	})
 	if err != nil {
 		return c.Status(403).JSON(err.Error())

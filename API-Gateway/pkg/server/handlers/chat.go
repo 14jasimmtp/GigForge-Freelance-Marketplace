@@ -31,6 +31,7 @@ var (
 // @Summary WebSocket Chat
 // @Description Establish a WebSocket connection for real-time chat messaging. This endpoint allows users to send and receive messages in real time.
 // @Param Authorization header string true "Authentication token"
+// @security Authorization
 // @Tags Chat
 // @Param User_id path int true "User ID"
 // @Produce json
@@ -147,6 +148,7 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 // GetMessages retrieves chat messages between the sender and receiver.
 // @Summary Get Chat Messages
 // @Description Retrieve chat messages between the logged-in user and the specified receiver.
+// @security Authorization
 // @Tags Chat
 // @Produce json
 // @Param User_id path string true "Sender User ID"

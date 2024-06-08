@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type JobserviceClient interface {
 	GetJobsSkills(ctx context.Context, in *Req, opts ...grpc.CallOption) (*Res, error)
 	GetFreelancerPaypalEmail(ctx context.Context, in *Preq, opts ...grpc.CallOption) (*Pres, error)
+	CheckPaypalEmailAdded(ctx context.Context, in *CReq, opts ...grpc.CallOption) (*CRes, error)
 }
 
 type jobserviceClient struct {
@@ -52,12 +53,22 @@ func (c *jobserviceClient) GetFreelancerPaypalEmail(ctx context.Context, in *Pre
 	return out, nil
 }
 
+func (c *jobserviceClient) CheckPaypalEmailAdded(ctx context.Context, in *CReq, opts ...grpc.CallOption) (*CRes, error) {
+	out := new(CRes)
+	err := c.cc.Invoke(ctx, "/job.Jobservice/CheckPaypalEmailAdded", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobserviceServer is the server API for Jobservice service.
 // All implementations must embed UnimplementedJobserviceServer
 // for forward compatibility
 type JobserviceServer interface {
 	GetJobsSkills(context.Context, *Req) (*Res, error)
 	GetFreelancerPaypalEmail(context.Context, *Preq) (*Pres, error)
+	CheckPaypalEmailAdded(context.Context, *CReq) (*CRes, error)
 	mustEmbedUnimplementedJobserviceServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedJobserviceServer) GetJobsSkills(context.Context, *Req) (*Res,
 }
 func (UnimplementedJobserviceServer) GetFreelancerPaypalEmail(context.Context, *Preq) (*Pres, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFreelancerPaypalEmail not implemented")
+}
+func (UnimplementedJobserviceServer) CheckPaypalEmailAdded(context.Context, *CReq) (*CRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckPaypalEmailAdded not implemented")
 }
 func (UnimplementedJobserviceServer) mustEmbedUnimplementedJobserviceServer() {}
 
@@ -120,6 +134,24 @@ func _Jobservice_GetFreelancerPaypalEmail_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Jobservice_CheckPaypalEmailAdded_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobserviceServer).CheckPaypalEmailAdded(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.Jobservice/CheckPaypalEmailAdded",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobserviceServer).CheckPaypalEmailAdded(ctx, req.(*CReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Jobservice_ServiceDesc is the grpc.ServiceDesc for Jobservice service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Jobservice_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFreelancerPaypalEmail",
 			Handler:    _Jobservice_GetFreelancerPaypalEmail_Handler,
+		},
+		{
+			MethodName: "CheckPaypalEmailAdded",
+			Handler:    _Jobservice_CheckPaypalEmailAdded_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

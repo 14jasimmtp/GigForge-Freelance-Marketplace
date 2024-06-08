@@ -19,7 +19,7 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 
 	jobs.Post("", middlewares.AuthAdmin, job.AcceptOffer)
 	jobs.Post("", middlewares.AuthClient, job.PostJob)
-	jobs.Put("", middlewares.AuthClient, job.EditJob)
+	jobs.Put("/:jobID", middlewares.AuthClient, job.EditJob)
 	jobs.Get("", middlewares.AuthClient, job.GetMyJobs)
 	jobs.Post("/send-offer", middlewares.AuthClient, job.SendOffer)
 
@@ -34,11 +34,10 @@ func Client(api fiber.Router, profile *handler.ProfileHandler,
 	
 
 	projects:=api.Group("/projects")
-	projects.Post("/buy/:id",project.BuyProject)
 	projects.Get("",project.ListProjects)
 	projects.Get("/:id",project.ListProjectWithID)
 	projects.Post("/order/:id",middlewares.AuthClient,project.BuyProject)
-	// projects.Get("/orders",middlewares.AuthClient,project.GetOrders)
+	// projects.Get("/orders",middlewares.AuthClient,project.GetProjectOrdersForClient)
 	
 	
 	api.Post("/review-freelancer",middlewares.AuthClient,profile.ReviewFreelancer)
