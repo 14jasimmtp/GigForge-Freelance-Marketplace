@@ -33,7 +33,6 @@ var (
 // @Description Establish a WebSocket connection for real-time chat messaging. This endpoint allows users to send and receive messages in real time.
 // @security Authorization
 // @Tags Chat
-// @Param User_id path int true "User ID"
 // @Produce json
 // @Router /chat [get]
 func (h *ChatHandler) Chat(c *websocket.Conn) {
@@ -99,7 +98,7 @@ func (h *ChatHandler) SendMessageToUser(User map[int]*websocket.Conn, msg []byte
 
 
 func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 	if err != nil {
 		return err
 	}
@@ -151,8 +150,6 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 // @security Authorization
 // @Tags Chat
 // @Produce json
-// @Param User_id path string true "Sender User ID"
-// @Param receiver_id path string true "Receiver User ID"
 // @Success 200 {object} res.CommonRes
 // @Failure 400 {object} res.CommonRes
 // @Router /chat/messages/{receiver_id} [get]

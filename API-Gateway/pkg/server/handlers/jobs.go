@@ -568,6 +568,7 @@ func (h *JobsHandler) GetAllInvoicesOfContract(c *fiber.Ctx) error {
 // @Router /client/contracts/attachment [post]
 func (h *JobsHandler) AddContractAttachment(c *fiber.Ctx) error {
 	var req req.AddContractAttachment
+	userID:=c.Locals("User_id").(int)
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(
 			res.CommonRes{
@@ -597,7 +598,7 @@ func (h *JobsHandler) AddContractAttachment(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	res,err:=h.job.AddAttachmentToContract(context.Background(),&Job.AddAttachmentReq{Attachment: fileBytes,Filename: file.Filename,ContractID: strconv.Itoa(req.ContractID),Description: req.Description})
+	res,err:=h.job.AddAttachmentToContract(context.Background(),&Job.AddAttachmentReq{Attachment: fileBytes,Filename: file.Filename,ContractID: strconv.Itoa(req.ContractID),Description: req.Description,UserID: strconv.Itoa(userID)})
 	if err != nil {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error":err.Error()})
 	}
