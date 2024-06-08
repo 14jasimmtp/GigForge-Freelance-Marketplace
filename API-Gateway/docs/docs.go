@@ -564,15 +564,6 @@ const docTemplate = `{
                     "Chat"
                 ],
                 "summary": "WebSocket Chat",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "User_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {}
             }
         },
@@ -591,22 +582,6 @@ const docTemplate = `{
                     "Chat"
                 ],
                 "summary": "Get Chat Messages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Sender User ID",
-                        "name": "User_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Receiver User ID",
-                        "name": "receiver_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

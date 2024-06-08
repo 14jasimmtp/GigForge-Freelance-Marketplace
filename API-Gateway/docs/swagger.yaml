@@ -1119,12 +1119,6 @@ paths:
     get:
       description: Establish a WebSocket connection for real-time chat messaging.
         This endpoint allows users to send and receive messages in real time.
-      parameters:
-      - description: User ID
-        in: path
-        name: User_id
-        required: true
-        type: integer
       produces:
       - application/json
       responses: {}
@@ -1137,17 +1131,6 @@ paths:
     get:
       description: Retrieve chat messages between the logged-in user and the specified
         receiver.
-      parameters:
-      - description: Sender User ID
-        in: path
-        name: User_id
-        required: true
-        type: string
-      - description: Receiver User ID
-        in: path
-        name: receiver_id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
