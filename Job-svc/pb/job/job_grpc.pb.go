@@ -45,6 +45,7 @@ type JobServiceClient interface {
 	GetInvoiceContract(ctx context.Context, in *GetInvoiceContractReq, opts ...grpc.CallOption) (*GetInvoiceContractRes, error)
 	AddAttachmentToContract(ctx context.Context, in *AddAttachmentReq, opts ...grpc.CallOption) (*AddAttachmentRes, error)
 	GetAttachments(ctx context.Context, in *GetAttachmentReq, opts ...grpc.CallOption) (*GetAttachmentRes, error)
+	CheckInvoiceStatus(ctx context.Context, in *CheckInvoiceStatusReq, opts ...grpc.CallOption) (*CheckInvoiceStatusRes, error)
 }
 
 type jobServiceClient struct {
@@ -262,6 +263,15 @@ func (c *jobServiceClient) GetAttachments(ctx context.Context, in *GetAttachment
 	return out, nil
 }
 
+func (c *jobServiceClient) CheckInvoiceStatus(ctx context.Context, in *CheckInvoiceStatusReq, opts ...grpc.CallOption) (*CheckInvoiceStatusRes, error) {
+	out := new(CheckInvoiceStatusRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/CheckInvoiceStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -289,6 +299,7 @@ type JobServiceServer interface {
 	GetInvoiceContract(context.Context, *GetInvoiceContractReq) (*GetInvoiceContractRes, error)
 	AddAttachmentToContract(context.Context, *AddAttachmentReq) (*AddAttachmentRes, error)
 	GetAttachments(context.Context, *GetAttachmentReq) (*GetAttachmentRes, error)
+	CheckInvoiceStatus(context.Context, *CheckInvoiceStatusReq) (*CheckInvoiceStatusRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -364,6 +375,9 @@ func (UnimplementedJobServiceServer) AddAttachmentToContract(context.Context, *A
 }
 func (UnimplementedJobServiceServer) GetAttachments(context.Context, *GetAttachmentReq) (*GetAttachmentRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachments not implemented")
+}
+func (UnimplementedJobServiceServer) CheckInvoiceStatus(context.Context, *CheckInvoiceStatusReq) (*CheckInvoiceStatusRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckInvoiceStatus not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -792,6 +806,24 @@ func _JobService_GetAttachments_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_CheckInvoiceStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckInvoiceStatusReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).CheckInvoiceStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/CheckInvoiceStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).CheckInvoiceStatus(ctx, req.(*CheckInvoiceStatusReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -890,6 +922,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttachments",
 			Handler:    _JobService_GetAttachments_Handler,
+		},
+		{
+			MethodName: "CheckInvoiceStatus",
+			Handler:    _JobService_CheckInvoiceStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

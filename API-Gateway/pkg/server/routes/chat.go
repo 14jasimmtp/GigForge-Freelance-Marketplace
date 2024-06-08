@@ -8,7 +8,7 @@ import (
 )
 
 func Chat(api fiber.Router,chat *handler.ChatHandler){
-	api.Get("",middlewares.AuthFreelancer,websocket.New(chat.Chat))
+	api.Get("",middlewares.AuthChat,websocket.New(chat.Chat))
 	api.Get("/messages/:receiver_id",middlewares.AuthChat,chat.GetMessages)
 	// api.Delete("/messages/:message_id",chat.DeleteMessage)
 }

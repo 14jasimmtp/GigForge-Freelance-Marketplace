@@ -202,11 +202,17 @@ func (s *Service) SendWeeklyInvoice(ctx context.Context, req *job.InvoiceReq) (*
 	if err != nil {
 		return &job.InvoiceRes{Status: 400, Error: err.Error()}, nil
 	}
+	if contract.Start_date.After(StartDate){
+		return &job.InvoiceRes{Status: http.StatusConflict, Error: "contract is not started in this start time"}, nil
+	}
 	if LastInvoice.End_date.After(StartDate) {
 		return &job.InvoiceRes{Status: http.StatusConflict, Error: "start date already covered in last invoice.Give the correct start date"}, nil
 	}
+	if EndDate.After(time.Now()){
+		return &job.InvoiceRes{Status: http.StatusConflict, Error: "you can only send invoices after the end of the week"}, nil
+	}
 
-	if EndDate.After(StartDate) {
+	if StartDate.After(EndDate) {
 		return &job.InvoiceRes{Status: http.StatusBadRequest, Error: "End date is before start date. Enter date correctly"}, nil
 	}
 
@@ -390,4 +396,12 @@ func (s *Service) GetAttachments(ctx context.Context, req *job.GetAttachmentReq)
 
 	} 
 	return &job.GetAttachmentRes{Status: http.StatusOK,Attachment: attachments},nil
+}
+
+func (s *Service) CheckInvoiceStatus(ctx context.Context, req *job.CheckInvoiceStatusReq) (*job.CheckInvoiceStatusRes,error){
+	status,err:=s.repo.CheckInvoiceStatus(req.InvoiceID)
+	if err != nil {
+		return &job.CheckInvoiceStatusRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &job.CheckInvoiceStatusRes{Status: http.StatusOK,PaymenStatus: status},nil
 }

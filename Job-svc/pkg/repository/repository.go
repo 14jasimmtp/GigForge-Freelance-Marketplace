@@ -265,6 +265,7 @@ func (r *Repo) CreateContract(id string) (int, string, float32, error) {
 		Start_date:     start_date,
 		Freelancer_id:  offer.Freelancer_id,
 		Job_id:         offer.Job_id,
+		Budget: offer.Budget,
 		Paid_amount:    0,
 		Pending_amount: int(offer.Budget),
 		Type:           Type,
@@ -320,8 +321,10 @@ func (r *Repo) GetLastInvoiceDetails(contract_id int32) (domain.Invoice, error) 
 
 func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours float32, Start_date, End_date time.Time) error {
 	amount := budget * Hours
+	fmt.Println(amount,budget,Hours)
 	f:=round.RoundToTwoDecimalPlaces(float64(amount) * 0.80)
 	m:=round.RoundToTwoDecimalPlaces(float64(budget) * 0.20)
+	fmt.Println("fee",f,m)
 	invoice := &domain.Invoice{
 		Freelancer_fee:  f,
 		MarketPlace_fee: m,
@@ -330,7 +333,7 @@ func (r *Repo) SendHourlyInvoice(id int, types string, budget float32, Hours flo
 		Status:          "unpaid",
 		ContractID:      id,
 	}
-	err := r.DB.Create(invoice)
+	err := r.DB.Create(invoice).Error
 	if err != nil {
 		return errors.New(`something went wrong`)
 	}
@@ -594,4 +597,16 @@ func (r *Repo) GetAttachments(contractId string) ([]*job.Attachment,error){
 		})
 	}
 	return aa,nil
+}
+
+func (r *Repo) CheckInvoiceStatus(InvId string) (string,error){
+	var status string
+	q:=r.DB.Raw(`SELECT status from invoices WHERE id = ?`,InvId).Scan(&status)
+	if q.RowsAffected == 0 || q.RowsAffected < 1{
+		return "notfound",nil
+	}
+	if q.Error != nil {
+		return "",errors.New(`something went wrong`)
+	}
+	return status,nil
 }

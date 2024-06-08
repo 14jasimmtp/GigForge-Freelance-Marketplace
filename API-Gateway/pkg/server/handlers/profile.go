@@ -487,7 +487,7 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 // @Param Payment body req.AddPayment true "Payment Details"
 // @Success 200 {object} res.CommonRes
 // @Failure 400 {object} res.CommonRes
-// @Router /payment/paypal [post]
+// @Router /payment/add [post]
 func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 	user_id:=c.Locals("User_id").(int)
 	var req req.AddPayment

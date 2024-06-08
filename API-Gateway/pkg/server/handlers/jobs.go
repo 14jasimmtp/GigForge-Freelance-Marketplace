@@ -50,7 +50,7 @@ func (h *JobsHandler) PostJob(c *fiber.Ctx) error {
 
 	Error, err := validation.Validation(req)
 	if err != nil {
-		return c.Status(400).JSON(fmt.Sprintf(`{"error": %v}`, Error))
+		return c.Status(400).JSON(fiber.Map{"error":Error})
 	}
 
 	res, err := h.job.PostJob(context.Background(), &Job.PostjobReq{
@@ -264,7 +264,7 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 			},
 		)
 	}
-	startDate, err := time.Parse("2-1-2006", req.Starting_time)
+	startDate, err := time.Parse("02-01-2006", req.Starting_time)
 	if err != nil {
 		c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -275,7 +275,7 @@ func (h *JobsHandler) SendOffer(c *fiber.Ctx) error {
 	res, err := h.job.SendOffer(context.Background(), &Job.SendOfferReq{
 		Budget:       req.Budget,
 		OfferLetter:  req.Offer_letter,
-		StartingTime: startDate.Format("2-1-2006"),
+		StartingTime: startDate.Format("02-01-2006"),
 		JobId:        int32(req.Job_id),
 		FreelancerId: int32(req.Freelancer_id),
 		ClientId:     int32(user_id),
@@ -389,7 +389,7 @@ func (h *JobsHandler) SendInvoice(c *fiber.Ctx) error {
 			},
 		)
 	}
-	res, err := h.job.SendWeeklyInvoice(context.Background(), &Job.InvoiceReq{ContractID: int32(req.ContractId), TotalHourWorked: float32(req.TotalHoursWorked), SuserId: strconv.Itoa(user_id)})
+	res, err := h.job.SendWeeklyInvoice(context.Background(), &Job.InvoiceReq{ContractID: int32(req.ContractId), TotalHourWorked: float32(req.TotalHoursWorked), SuserId: strconv.Itoa(user_id),StartDate: req.Start_date,EndDate: req.End_date})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err})
 	}
@@ -430,7 +430,16 @@ func (h *JobsHandler) ExecutePaymentContract(c *fiber.Ctx) error {
 // @Router /jobs/payment [get]
 func (h *JobsHandler) GetPaymentContract(c *fiber.Ctx) error {
 	invoiceID := c.Query("invoiceID")
-	fmt.Println(invoiceID)
+	res,err:=h.job.CheckInvoiceStatus(context.Background(),&Job.CheckInvoiceStatusReq{InvoiceID: invoiceID})
+	if err != nil {
+		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
+	}
+	if res.PaymenStatus == "notfound"{
+		return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/notfound.html",nil)
+	}
+	if res.PaymenStatus == "paid"{
+		return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/pay.html",nil)
+	}
 	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html", nil)
 }
 
