@@ -1112,6 +1112,11 @@ const docTemplate = `{
         },
         "/client/profile": {
             "get": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Get the profile of a client",
                 "produces": [
                     "application/json"
@@ -1138,6 +1143,11 @@ const docTemplate = `{
         },
         "/client/profile/company-contacts": {
             "put": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Update the company contact details for the user",
                 "consumes": [
                     "application/json"
@@ -1178,6 +1188,11 @@ const docTemplate = `{
         },
         "/client/profile/company-details": {
             "put": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Update the company details for the user",
                 "consumes": [
                     "application/json"
@@ -1261,6 +1276,11 @@ const docTemplate = `{
         },
         "/client/review-freelancer": {
             "post": {
+                "security": [
+                    {
+                        "ClientAccessToken": []
+                    }
+                ],
                 "description": "Add a review for a freelancer",
                 "consumes": [
                     "application/json"
@@ -1501,6 +1521,11 @@ const docTemplate = `{
         },
         "/freelancer/profile": {
             "get": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Get the profile of a freelancer",
                 "produces": [
                     "application/json"
@@ -1527,6 +1552,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/description": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Add profile description for the user",
                 "consumes": [
                     "application/json"
@@ -1565,6 +1595,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Update profile description for the user",
                 "consumes": [
                     "application/json"
@@ -1605,6 +1640,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/education": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Add education details for the user",
                 "consumes": [
                     "application/json"
@@ -1645,6 +1685,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/education/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Delete education details for the user",
                 "produces": [
                     "application/json"
@@ -1678,6 +1723,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Update education details for the user",
                 "consumes": [
                     "application/json"
@@ -1725,6 +1775,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/experience": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Add experience for the user",
                 "consumes": [
                     "application/json"
@@ -1765,6 +1820,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/experience/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Remove experience for the user",
                 "produces": [
                     "application/json"
@@ -1798,6 +1858,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Update experience for the user",
                 "consumes": [
                     "application/json"
@@ -1845,6 +1910,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/photo": {
             "put": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Update profile photo for the user",
                 "consumes": [
                     "multipart/form-data"
@@ -1883,6 +1953,11 @@ const docTemplate = `{
         },
         "/freelancer/profile/skill": {
             "post": {
+                "security": [
+                    {
+                        "FreelancerAccessToken": []
+                    }
+                ],
                 "description": "Update skills for the user profile",
                 "consumes": [
                     "application/json"
@@ -2409,6 +2484,11 @@ const docTemplate = `{
         },
         "/notifications": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "Get notifications for the user",
                 "produces": [
                     "application/json"
@@ -2444,6 +2524,11 @@ const docTemplate = `{
         },
         "/payment/add": {
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "Add a PayPal payment email for the user",
                 "consumes": [
                     "application/json"
