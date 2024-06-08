@@ -99,7 +99,7 @@ func (h *ChatHandler) SendMessageToUser(User map[int]*websocket.Conn, msg []byte
 
 
 func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 	if err != nil {
 		return err
 	}
