@@ -71,4 +71,3 @@ jobs:
         kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:3.2.4 -n gigforge
         kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.2.4 -n gigforge
         kubectl rollout restart deployment -n gigforge
-4
