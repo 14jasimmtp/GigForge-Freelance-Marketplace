@@ -25,7 +25,7 @@ func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
 // AddEducationDetails adds education details for the user.
 // @Summary Add education details
 // @Description Add education details for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -70,7 +70,7 @@ func (h *ProfileHandler) AddEducationDetails(c *fiber.Ctx) error {
 // UpdateEducation updates education details for the user.
 // @Summary Update education details
 // @Description Update education details for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -117,7 +117,7 @@ func (h *ProfileHandler) UpdateEducation(c *fiber.Ctx) error {
 // DeleteEducation deletes education details for the user.
 // @Summary Delete education details
 // @Description Delete education details for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Produce json
 // @Param id path string true "Education ID"
@@ -141,7 +141,7 @@ func (h *ProfileHandler) DeleteEducation(c *fiber.Ctx) error {
 // AddProfileDescription adds a profile description for the user.
 // @Summary Add profile description
 // @Description Add profile description for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -182,7 +182,7 @@ func (h *ProfileHandler) AddProfileDescription(c *fiber.Ctx) error {
 // EditProfileDescription updates the profile description for the user.
 // @Summary Update profile description
 // @Description Update profile description for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -223,7 +223,7 @@ func (h *ProfileHandler) EditProfileDescription(c *fiber.Ctx) error {
 // UpdateSkilltoProfile updates skills for the user profile.
 // @Summary Update skills
 // @Description Update skills for the user profile
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -263,7 +263,7 @@ func (h *ProfileHandler) UpdateSkilltoProfile(c *fiber.Ctx) error {
 // UpdateProfilePhoto updates the profile photo for the user.
 // @Summary Update profile photo
 // @Description Update profile photo for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept multipart/form-data
 // @Produce json
@@ -305,7 +305,7 @@ func (h *ProfileHandler) UpdateProfilePhoto(c *fiber.Ctx) error {
 // AddExperience adds an experience entry for the user.
 // @Summary Add experience
 // @Description Add experience for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -343,7 +343,7 @@ func (h *ProfileHandler) AddExperience(c *fiber.Ctx) error {
 // UpdateExperience updates an experience entry for the user.
 // @Summary Update experience
 // @Description Update experience for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -384,7 +384,7 @@ func (h *ProfileHandler) UpdateExperience(c *fiber.Ctx) error {
 // RemoveExperience deletes an experience entry for the user.
 // @Summary Remove experience
 // @Description Remove experience for the user
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Produce json
 // @Param id path string true "Experience ID"
@@ -408,7 +408,7 @@ func (h *ProfileHandler) RemoveExperience(c *fiber.Ctx) error {
 // GetFreelancerProfile retrieves the profile of a freelancer.
 // @Summary Get freelancer profile
 // @Description Get the profile of a freelancer
-// @securtiy FreelancerAccessToken
+// @security FreelancerAccessToken
 // @Tags Profile
 // @Produce json
 // @Success 200 {object} res.CommonRes
@@ -435,7 +435,7 @@ func (h *ProfileHandler) OnboardFreelancersToPaypal(c *fiber.Ctx) error{
 // ReviewFreelancer adds a review for a freelancer.
 // @Summary Add review for freelancer
 // @Description Add a review for a freelancer
-// @securtiy ClientAccessToken
+// @security ClientAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -480,7 +480,7 @@ func (h *ProfileHandler) GetTalents(c *fiber.Ctx) error{
 // AddPaymentEmailPaypal adds a PayPal payment email for the user.
 // @Summary Add PayPal payment email
 // @Description Add a PayPal payment email for the user
-// @securtiy Authorization
+// @security Authorization
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -507,7 +507,7 @@ func (h *ProfileHandler) AddPaymentEmailPaypal(c *fiber.Ctx) error{
 // UpdateCompanyDetails updates the company details for the user.
 // @Summary Update company details
 // @Description Update the company details for the user
-// @securtiy ClientAccessToken
+// @security ClientAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -543,7 +543,7 @@ func (h *ProfileHandler) UpdateCompanyDetails(c *fiber.Ctx) error{
 // GetClientProfile retrieves the profile of a client.
 // @Summary Get client profile
 // @Description Get the profile of a client
-// @securtiy ClientAccessToken
+// @security ClientAccessToken
 // @Tags Profile
 // @Produce json
 // @Success 200 {object} res.CommonRes
@@ -563,7 +563,7 @@ func (h *ProfileHandler) GetClientProfile(c *fiber.Ctx) error{
 // UpdateCompanyContacts updates the company contact details for the user.
 // @Summary Update company contact details
 // @Description Update the company contact details for the user
-// @securtiy ClientAccessToken
+// @security ClientAccessToken
 // @Tags Profile
 // @Accept json
 // @Produce json
@@ -621,7 +621,7 @@ func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 // GetNotifications retrieves notifications for the user.
 // @Summary Get user notifications
 // @Description Get notifications for the user
-// @securtiy Authorization
+// @security Authorization
 // @Tags Profile
 // @Produce json
 // @Param UserId path int true "User ID"

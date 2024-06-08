@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/chat"
@@ -157,9 +158,9 @@ func (h *ChatHandler) RabbitmqSender(msg req.Message) error {
 // @Failure 400 {object} res.CommonRes
 // @Router /chat/messages/{receiver_id} [get]
 func (h *ChatHandler) GetMessages(c *fiber.Ctx) error {
-	sender_id := c.Locals("User_id").(string)
+	sender_id := c.Locals("User_id").(int)
 	receiver_id := c.Params("receiver_id")
-	res, err := h.chat.GetChats(context.Background(), &chat.GetChatReq{SenderId: sender_id, RecieverId: receiver_id})
+	res, err := h.chat.GetChats(context.Background(), &chat.GetChatReq{SenderId: strconv.Itoa(sender_id), RecieverId: receiver_id})
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
