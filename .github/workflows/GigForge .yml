@@ -69,8 +69,7 @@ jobs:
         kubectl set image deployment/chat-svc-deployment gigforge-chat-svc=muhamedjasim/gigforge-chat_svc:3.3.6 -n gigforge
         kubectl set image deployment/user-svc-deployment gigforge-user-svc=muhamedjasim/gigforge-user_svc:3.3.6 -n gigforge
         kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:3.3.6 -n gigforge
-        kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.3.6 -n gigforg6
+        kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.3.6 -n gigforge
         kubectl rollout restart deployment -n gigforge 
 
 
-        
