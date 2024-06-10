@@ -46,6 +46,7 @@ type JobServiceClient interface {
 	AddAttachmentToContract(ctx context.Context, in *AddAttachmentReq, opts ...grpc.CallOption) (*AddAttachmentRes, error)
 	GetAttachments(ctx context.Context, in *GetAttachmentReq, opts ...grpc.CallOption) (*GetAttachmentRes, error)
 	CheckInvoiceStatus(ctx context.Context, in *CheckInvoiceStatusReq, opts ...grpc.CallOption) (*CheckInvoiceStatusRes, error)
+	AdminContractDashboard(ctx context.Context, in *ACDReq, opts ...grpc.CallOption) (*ACDRes, error)
 }
 
 type jobServiceClient struct {
@@ -272,6 +273,15 @@ func (c *jobServiceClient) CheckInvoiceStatus(ctx context.Context, in *CheckInvo
 	return out, nil
 }
 
+func (c *jobServiceClient) AdminContractDashboard(ctx context.Context, in *ACDReq, opts ...grpc.CallOption) (*ACDRes, error) {
+	out := new(ACDRes)
+	err := c.cc.Invoke(ctx, "/job.JobService/AdminContractDashboard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility
@@ -300,6 +310,7 @@ type JobServiceServer interface {
 	AddAttachmentToContract(context.Context, *AddAttachmentReq) (*AddAttachmentRes, error)
 	GetAttachments(context.Context, *GetAttachmentReq) (*GetAttachmentRes, error)
 	CheckInvoiceStatus(context.Context, *CheckInvoiceStatusReq) (*CheckInvoiceStatusRes, error)
+	AdminContractDashboard(context.Context, *ACDReq) (*ACDRes, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -378,6 +389,9 @@ func (UnimplementedJobServiceServer) GetAttachments(context.Context, *GetAttachm
 }
 func (UnimplementedJobServiceServer) CheckInvoiceStatus(context.Context, *CheckInvoiceStatusReq) (*CheckInvoiceStatusRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckInvoiceStatus not implemented")
+}
+func (UnimplementedJobServiceServer) AdminContractDashboard(context.Context, *ACDReq) (*ACDRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminContractDashboard not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 
@@ -824,6 +838,24 @@ func _JobService_CheckInvoiceStatus_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_AdminContractDashboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ACDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).AdminContractDashboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/job.JobService/AdminContractDashboard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).AdminContractDashboard(ctx, req.(*ACDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -926,6 +958,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckInvoiceStatus",
 			Handler:    _JobService_CheckInvoiceStatus_Handler,
+		},
+		{
+			MethodName: "AdminContractDashboard",
+			Handler:    _JobService_AdminContractDashboard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

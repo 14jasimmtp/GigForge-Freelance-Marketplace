@@ -29,7 +29,18 @@ service JobService{
     rpc AddAttachmentToContract(AddAttachmentReq) returns (AddAttachmentRes) {};
     rpc GetAttachments(GetAttachmentReq) returns (GetAttachmentRes) {};
     rpc CheckInvoiceStatus(CheckInvoiceStatusReq) returns (CheckInvoiceStatusRes) {};
+    rpc AdminContractDashboard(ACDReq) returns (ACDRes) {};
 }  
+
+message ACDReq{}
+
+message ACDRes{
+    int32 TotalHourlyContracts = 1;
+    int32 TotalFixedContracts = 2;
+    float TotalMarketPlaceFee = 3;
+    string Error = 4;
+    int32 status = 5;
+}
 
 message CheckInvoiceStatusReq{
     string InvoiceID = 1;

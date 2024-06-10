@@ -31,6 +31,8 @@ type ProjectServiceClient interface {
 	OrderProject(ctx context.Context, in *BuyProjectReq, opts ...grpc.CallOption) (*BuyProjectRes, error)
 	ExecutePaymentProject(ctx context.Context, in *ExecutePaymentReq, opts ...grpc.CallOption) (*ExecutePaymentRes, error)
 	CapturePaymentProject(ctx context.Context, in *CapturePaymentReq, opts ...grpc.CallOption) (*CapturePaymentRes, error)
+	GetProjectOrdersForClient(ctx context.Context, in *GetOrdersReq, opts ...grpc.CallOption) (*GetOrdersClientRes, error)
+	GetProjectOrdersForFreelancer(ctx context.Context, in *GetOrdersReq, opts ...grpc.CallOption) (*GetOrdersFreelancerRes, error)
 }
 
 type projectServiceClient struct {
@@ -122,6 +124,24 @@ func (c *projectServiceClient) CapturePaymentProject(ctx context.Context, in *Ca
 	return out, nil
 }
 
+func (c *projectServiceClient) GetProjectOrdersForClient(ctx context.Context, in *GetOrdersReq, opts ...grpc.CallOption) (*GetOrdersClientRes, error) {
+	out := new(GetOrdersClientRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/GetProjectOrdersForClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) GetProjectOrdersForFreelancer(ctx context.Context, in *GetOrdersReq, opts ...grpc.CallOption) (*GetOrdersFreelancerRes, error) {
+	out := new(GetOrdersFreelancerRes)
+	err := c.cc.Invoke(ctx, "/project.ProjectService/GetProjectOrdersForFreelancer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProjectServiceServer is the server API for ProjectService service.
 // All implementations must embed UnimplementedProjectServiceServer
 // for forward compatibility
@@ -135,6 +155,8 @@ type ProjectServiceServer interface {
 	OrderProject(context.Context, *BuyProjectReq) (*BuyProjectRes, error)
 	ExecutePaymentProject(context.Context, *ExecutePaymentReq) (*ExecutePaymentRes, error)
 	CapturePaymentProject(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error)
+	GetProjectOrdersForClient(context.Context, *GetOrdersReq) (*GetOrdersClientRes, error)
+	GetProjectOrdersForFreelancer(context.Context, *GetOrdersReq) (*GetOrdersFreelancerRes, error)
 	mustEmbedUnimplementedProjectServiceServer()
 }
 
@@ -168,6 +190,12 @@ func (UnimplementedProjectServiceServer) ExecutePaymentProject(context.Context, 
 }
 func (UnimplementedProjectServiceServer) CapturePaymentProject(context.Context, *CapturePaymentReq) (*CapturePaymentRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CapturePaymentProject not implemented")
+}
+func (UnimplementedProjectServiceServer) GetProjectOrdersForClient(context.Context, *GetOrdersReq) (*GetOrdersClientRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProjectOrdersForClient not implemented")
+}
+func (UnimplementedProjectServiceServer) GetProjectOrdersForFreelancer(context.Context, *GetOrdersReq) (*GetOrdersFreelancerRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProjectOrdersForFreelancer not implemented")
 }
 func (UnimplementedProjectServiceServer) mustEmbedUnimplementedProjectServiceServer() {}
 
@@ -344,6 +372,42 @@ func _ProjectService_CapturePaymentProject_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProjectService_GetProjectOrdersForClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOrdersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).GetProjectOrdersForClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/GetProjectOrdersForClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).GetProjectOrdersForClient(ctx, req.(*GetOrdersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_GetProjectOrdersForFreelancer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOrdersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).GetProjectOrdersForFreelancer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/project.ProjectService/GetProjectOrdersForFreelancer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).GetProjectOrdersForFreelancer(ctx, req.(*GetOrdersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProjectService_ServiceDesc is the grpc.ServiceDesc for ProjectService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -386,6 +450,14 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CapturePaymentProject",
 			Handler:    _ProjectService_CapturePaymentProject_Handler,
+		},
+		{
+			MethodName: "GetProjectOrdersForClient",
+			Handler:    _ProjectService_GetProjectOrdersForClient_Handler,
+		},
+		{
+			MethodName: "GetProjectOrdersForFreelancer",
+			Handler:    _ProjectService_GetProjectOrdersForFreelancer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

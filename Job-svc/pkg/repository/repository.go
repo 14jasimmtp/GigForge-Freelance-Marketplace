@@ -610,3 +610,22 @@ func (r *Repo) CheckInvoiceStatus(InvId string) (string,error){
 	}
 	return status,nil
 }
+
+func (r *Repo) ActiveContractCount() (int,int,error){
+	var HourlyCount,FixedCount int
+	if r.DB.Raw(`select count(*) from contracts where type = 'hourly'`).Scan(&HourlyCount).Error != nil {
+		return 0,0,errors.New(`something went wrong`)
+	}
+	if r.DB.Raw(`select count(*) from contracts where type = 'fixed'`).Scan(&FixedCount).Error != nil {
+		return 0,0,errors.New(`something went wrong`)
+	}
+	return HourlyCount,FixedCount,nil
+}
+
+func (r *Repo) TotalMarketPlaceFee() (float32,error){
+	var fee float32
+	if r.DB.Raw(`SELECT sum(market_place_fee) FROM invoices`).Scan(&fee).Error != nil{
+		return fee,errors.New(`something went wrong`)
+	}
+	return fee,nil
+}

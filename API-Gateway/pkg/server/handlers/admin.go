@@ -157,9 +157,10 @@ func (h *AdminHandler) AddCategory(c *fiber.Ctx) error {
 	return c.Status(int(res.Status)).JSON(res)
 }
 
-// func (h *AdminHandler) AdminDashboard(c *fiber.Ctx) error{
-// 	dashboard,err:=h.auth.AdminDashboard()
-// 	if err != nil {
-// 		return
-// 	}
-// }
+func (h *AdminHandler) AdminContractDashboard(c *fiber.Ctx) error{
+	dashboard,err:=h.job.AdminContractDashboard(context.Background(),&Job.ACDReq{})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Error": err.Error()})
+	}
+	return c.Status(int(dashboard.Status)).JSON(dashboard)
+}

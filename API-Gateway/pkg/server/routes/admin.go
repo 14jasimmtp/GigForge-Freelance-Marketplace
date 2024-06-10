@@ -8,9 +8,9 @@ import (
 
 func Admin(admin fiber.Router, handler *handler.AdminHandler) {
 	admin.Post("/login", handler.AdminLogin)
-	admin.Post("/skills", handler.AddSkill)
-	admin.Put("/user/block", handler.BlockUser)
-	admin.Put("/user/unblock", handler.UnBlockUser)
-	admin.Post("/category",middlewares.AuthAdmin, handler.AddCategory)
-	// admin.Get("/dashboard",handler.AdminDashboard)
+	admin.Post("/skills",middlewares.AuthAdmin, handler.AddSkill)
+	admin.Put("/user/block",middlewares.AuthAdmin, handler.BlockUser)
+	admin.Put("/user/unblock",middlewares.AuthAdmin, handler.UnBlockUser)
+	admin.Post("/category",middlewares.AuthAdmin,middlewares.AuthAdmin, handler.AddCategory)
+	admin.Get("/Contract-dashboard",middlewares.AuthAdmin,handler.AdminContractDashboard)
 }

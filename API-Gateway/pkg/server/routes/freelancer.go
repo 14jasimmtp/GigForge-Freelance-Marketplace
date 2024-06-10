@@ -57,6 +57,7 @@ func Freelancer(
 			projects.Delete("/:projectID",project.RemoveProject)
 			// projects.Get("/payment/:id",project.ExecutePaymentForProject)
 			projects.Get("",project.ListMyProjects)
+			projects.Get("/orders",middlewares.AuthFreelancer,project.GetProjectOrdersForFreelancer)
 		}
 	}
 	

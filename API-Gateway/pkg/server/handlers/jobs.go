@@ -435,12 +435,12 @@ func (h *JobsHandler) GetPaymentContract(c *fiber.Ctx) error {
 		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
 	}
 	if res.PaymenStatus == "notfound"{
-		return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/notfound.html",nil)
+		return c.Render("template/notfound.html",nil)
 	}
 	if res.PaymenStatus == "paid"{
-		return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/pay.html",nil)
+		return c.Render("template/pay.html",nil)
 	}
-	return c.Render("/home/jasim/GigForge-Freelance-Marketplace/API-Gateway/template/index.html", nil)
+	return c.Render("template/index.html",nil)
 }
 
 // CapturePaymentContract godoc

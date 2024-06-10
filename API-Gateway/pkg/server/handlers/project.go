@@ -289,3 +289,12 @@ func (h *ProjectHandler) CapturePaymentProject(c *fiber.Ctx) error{
 	}
 	return c.Status(int(res.Status)).JSON(res.UserName)
 }
+
+func (h *ProjectHandler) GetProjectOrdersForFreelancer(c *fiber.Ctx) error{
+	user_id:=c.Locals("User_id").(int)
+	res,err:=h.project.GetProjectOrdersForFreelancer(context.Background(),&project.GetOrdersReq{UserId: int32(user_id)})
+	if err != nil {
+		return c.Status(int(res.Status)).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(int(res.Status)).JSON(res)
+}

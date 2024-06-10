@@ -18,6 +18,18 @@ service ProjectService {
     rpc GetProjectOrdersForFreelancer(GetOrdersReq) returns (GetOrdersFreelancerRes) {};
 }
 
+message Order{
+    int32 ProjectID = 1;
+    string ProjectTitle = 2;
+    string ProjectPrice = 3;
+    int32 ClientID = 4;
+    int32 FreelancerID = 5;
+    string PaymentStatus = 6;
+    string ProjectStatus = 9;
+    int32 DeliveryDays = 7;
+    int32 InvoiceID = 8;
+}
+
 message GetOrdersReq{
     int32 UserId = 1;
 }
@@ -27,7 +39,9 @@ message GetOrdersClientRes{
 }
 
 message GetOrdersFreelancerRes{
-    
+    int32 status = 1;
+    string Error = 2;
+    repeated Order Orders = 3;
 }
 
 message ExecutePaymentReq{

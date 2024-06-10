@@ -22,3 +22,15 @@ func (s *Service) AddCategory(ctx context.Context, req *job.AddCategoryReq) (*jo
 	}
 	return categories, nil
 }
+
+func (s *Service) AdminContractDashboard(ctx context.Context,req *job.ACDReq) (*job.ACDRes,error){
+	TotalHourlyContract,TotalFixedContract,err:=s.repo.ActiveContractCount()
+	if err != nil {
+		return &job.ACDRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	MarketPlaceFee,err:=s.repo.TotalMarketPlaceFee()
+	if err != nil {
+		return &job.ACDRes{Status: http.StatusBadRequest,Error: err.Error()},nil
+	}
+	return &job.ACDRes{TotalHourlyContracts: int32(TotalHourlyContract),TotalFixedContracts: int32(TotalFixedContract),TotalMarketPlaceFee: MarketPlaceFee,Status: http.StatusOK},nil
+}

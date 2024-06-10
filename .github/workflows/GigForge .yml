@@ -39,7 +39,7 @@ jobs:
         docker compose -f ImageBuilder.yaml push
 
     - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
+      uses: googl3-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
@@ -65,9 +65,9 @@ jobs:
 
     - name: Update Kubernetes deployments
       run: |
-        kubectl set image deployment/api-gateway-deployment gigforge-api-gateway=muhamedjasim/gigforge-api_gateway:3.3.2 -n gigforge
-        kubectl set image deployment/chat-svc-deployment gigforge-chat-svc=muhamedjasim/gigforge-chat_svc:3.3.2 -n gigforge
-        kubectl set image deployment/user-svc-deployment gigforge-user-svc=muhamedjasim/gigforge-user_svc:3.3.2 -n gigforge
-        kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:3.3.2 -n gigforge
-        kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.3.2 -n gigforge
+        kubectl set image deployment/api-gateway-deployment gigforge-api-gateway=muhamedjasim/gigforge-api_gateway:3.3.3 -n gigforge
+        kubectl set image deployment/chat-svc-deployment gigforge-chat-svc=muhamedjasim/gigforge-chat_svc:3.3.3 -n gigforge
+        kubectl set image deployment/user-svc-deployment gigforge-user-svc=muhamedjasim/gigforge-user_svc:3.3.3 -n gigforge
+        kubectl set image deployment/job-svc-deployment gigforge-job-svc=muhamedjasim/gigforge-job_svc:3.3.3 -n gigforge
+        kubectl set image deployment/project-svc-deployment gigforge-project-svc=muhamedjasim/gigforge-project_svc:3.3.3 -n gigforge
         kubectl rollout restart deployment -n gigforge 
