@@ -15,6 +15,6 @@ WORKDIR /
 
 COPY --from=BaseImage ./API-Gateway/api-gateway /
 COPY --from=BaseImage ./API-Gateway/config.env /
-COPY --from=BaseImage ./API-Gateway/template /
+COPY --from=BaseImage ./API-Gateway/template /template
 
 CMD [ "/api-gateway"]   

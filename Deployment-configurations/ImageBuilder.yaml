@@ -3,14 +3,14 @@ services:
     image: muhamedjasim/gigforge-api_gateway:3.3.5
     build: ../API-Gateway/
   user-svc:
-    image: muhamedjasim/gigforge-user_svc:3.3.5
+    image: muhamedjasim/gigforge-user_svc:3.3.6
     build: ../User-svc/
   job-svc:
-    image: muhamedjasim/gigforge-job_svc:3.3.5
+    image: muhamedjasim/gigforge-job_svc:3.3.6
     build: ../Job-svc/
   project-svc:
-    image: muhamedjasim/gigforge-project_svc:3.3.5
+    image: muhamedjasim/gigforge-project_svc:3.3.6
     build: ../project-svc/
   chat-svc:
-    image: muhamedjasim/gigforge-chat_svc:3.3.5
+    image: muhamedjasim/gigforge-chat_svc:3.3.6
     build: ../chat-svc/
