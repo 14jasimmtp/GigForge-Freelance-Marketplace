@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gigforge-api-gateway
-        image: muhamedjasim/gigforge-api_gateway:latest
+        image: muhamedjasim/gigforge-api_gateway:3.3.3
         ports:
         - containerPort: 3000
         env:
