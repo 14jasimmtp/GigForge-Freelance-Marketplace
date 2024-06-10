@@ -1,6 +1,6 @@
 services:
   api-gateway: 
-    image: muhamedjasim/gigforge-api_gateway:3.3.5
+    image: muhamedjasim/gigforge-api_gateway:3.3.6
     build: ../API-Gateway/
   user-svc:
     image: muhamedjasim/gigforge-user_svc:3.3.6
