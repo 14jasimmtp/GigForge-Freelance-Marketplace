@@ -8,7 +8,7 @@ function renderPayPalButtons() {
   paypal.Buttons({
       createOrder: function(data, actions) {
         const ID = getQueryParam('invoiceID')
-          return fetch(`http://localhost:3000/client/payment/contract/execute?invoiceID=${ID}`, {
+          return fetch(`https://gigforge.jasim.online/client/payment/contract/execute?invoiceID=${ID}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ function renderPayPalButtons() {
       },
       onApprove: function(data, actions) {
         const IvcID = getQueryParam('invoiceID')
-          return fetch(`http://localhost:3000/client/payment/contract/capture?paymentID=${data.orderID}&invoiceID=${IvcID}`, {
+          return fetch(`https://gigforge.jasim.online/client/payment/contract/capture?paymentID=${data.orderID}&invoiceID=${IvcID}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ function loadPayPalSDK(clientId, merchantIDs) {
 
 // Fetch order details and merchant IDs, then load PayPal SDK
 const ID = getQueryParam('invoiceID')
-fetch(`http://localhost:3000/client/payment/contract/execute?invoiceID=${ID}`, {
+fetch(`https://gigforge.jasim.online/client/payment/contract/execute?invoiceID=${ID}`, {
   method: 'POST',
   headers: {
       'Content-Type': 'application/json'
