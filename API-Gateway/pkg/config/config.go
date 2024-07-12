@@ -9,6 +9,7 @@ type Config struct {
 	AUTH_SVC     string `mapstructure:"AUTH_SVC"`
 	ATokenSecret string `mapstructure:"ATokenSecret"`
 	CHAT_SVC     string `mapstructure:"CHAT_SVC"`
+	Notification_SVC string `mapstructure:"Notification_SVC"`
 }
 
 func LoadConfig() (err error) {

@@ -13,10 +13,11 @@ func InitializeAPI(app *fiber.App) {
 	JobsClient := client.InitJobClient()
 	ProjectClient := client.InitProjectClient()
 	chatClient := client.InitChatClient()
+	NotificationClient:=client.InitNotificationClient()
 
 	//handler
 	auth := handler.NewAuthHandler(Authclient)
-	profile := handler.NewProfilehandler(Authclient)
+	profile := handler.NewProfilehandler(Authclient,NotificationClient)
 	jobs := handler.NewJobsHandler(JobsClient)
 	admins := handler.NewAdminHandler(JobsClient, Authclient)
 	project := handler.NewProjectHandler(ProjectClient)

@@ -20,8 +20,8 @@ type ProfileHandler struct {
 	notification notification.NotificationServiceClient
 }
 
-func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
-	return &ProfileHandler{profile: profile}
+func NewProfilehandler(profile auth.AuthServiceClient, notification notification.NotificationServiceClient) *ProfileHandler {
+	return &ProfileHandler{profile: profile,notification: notification}
 }
 
 // AddEducationDetails adds education details for the user.
