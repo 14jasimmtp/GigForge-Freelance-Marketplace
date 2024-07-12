@@ -29,5 +29,6 @@ func main() {
 	pb.RegisterChatServiceServer(grpcServer, svc)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)
+		
 	}
 }

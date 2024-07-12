@@ -1,4 +1,3 @@
-# version: "3"
 services:
   postgres:
     image: postgres:latest
@@ -10,17 +9,27 @@ services:
     networks:
       - GigForge-Network
     volumes:
-      - database-postgres:/var/lib/postgresql/data
+      - database-GigForge:/var/lib/postgresql/data
 
   mongodb:
     image: mongo
+    restart: always
+    networks:
+      - GigForge-Network
+    volumes:
+      - database-GigForge:/data/db
+    ports:
+      - 27018:27017
+  
+  rabbitmq:
+    image: rabbitmq:3.8-management
     restart: on-failure
     networks:
       - GigForge-Network
     volumes:
-      - database-postgres:/data/db
+      - database-GigForge:/data/rabbitmq
     ports:
-      - 27017:27017
+      - 5672:5672
 
   api-gateway: 
     image: muhamedjasim/gigforge-api_gateway
@@ -76,7 +85,7 @@ services:
     build: chat-svc/
     restart: on-failure
     environment:
-      DB_URL: "postgres://postgres:postgres@postgres:5432"
+      mongoURL: mongodb://mongodb:27017
     depends_on:
       - mongodb
     networks:
@@ -84,7 +93,7 @@ services:
  
 
 volumes:
-  database-postgres:
+  database-GigForge:
 
 networks:
   GigForge-Network:

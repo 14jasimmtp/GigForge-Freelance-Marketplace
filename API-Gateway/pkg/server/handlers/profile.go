@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/auth"
+	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pb/notification"
 	req "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/req_models"
 	res "github.com/14jasimmtp/GigForge-Freelancer-Marketplace/pkg/models/res_models"
 	"github.com/14jasimmtp/GigForge-Freelancer-Marketplace/utils/validation"
@@ -16,6 +17,7 @@ import (
 
 type ProfileHandler struct {
 	profile auth.AuthServiceClient
+	notification notification.NotificationServiceClient
 }
 
 func NewProfilehandler(profile auth.AuthServiceClient) *ProfileHandler {
@@ -629,8 +631,11 @@ func (h *ProfileHandler) GetFreelancerReviews(c *fiber.Ctx) error{
 // @Failure 500 {object} res.CommonRes
 // @Router /notifications [get]
 func (h *ProfileHandler) GetNotifications(c *fiber.Ctx) error{
-	userID:=c.Locals("UserId").(int)
-	notifications,err:=h.profile.GetNotifications(context.Background(),&auth.GetNotificationReq{UserID: strconv.Itoa(userID)})
+	userID,exist:=c.Locals("UserId").(int)
+	if !exist{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "login to see notifications"})
+	}
+	notifications,err:=h.notification.GetNotification(context.Background(),&notification.GNReq{UserId: int32(userID)})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":err.Error()})
 	}

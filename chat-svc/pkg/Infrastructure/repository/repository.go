@@ -37,7 +37,6 @@ func (r *Repo) SaveMessage(msg []byte) error {
 }
 
 func (r *Repo) GetChats(req *pb.GetChatReq) ([]*pb.Message, error) {
-	fmt.Println("hi")
 	senderID,err:=strconv.Atoi(req.SenderId)
 	if err != nil {
 		return nil,err
@@ -50,7 +49,7 @@ func (r *Repo) GetChats(req *pb.GetChatReq) ([]*pb.Message, error) {
 
 	filter := bson.M{"senderid": bson.M{"$in": bson.A{senderID, recieverID}}, "recipientid": bson.M{"$in": bson.A{senderID, recieverID}}}
 
-	cursor, err := r.Coll.Find(context.TODO(), filter, options.Find().SetSort(bson.D{{"timestamp", -1}}))
+	cursor, err := r.Coll.Find(context.TODO(), filter, options.Find().SetSort(bson.D{{"TimeStamp", -1}}))
 	if err != nil {
 		return nil, err
 	}

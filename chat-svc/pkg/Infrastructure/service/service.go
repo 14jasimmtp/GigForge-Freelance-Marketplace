@@ -8,27 +8,20 @@ import (
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pb"
 	"github.com/14jasimmtp/GigForge-Freelance-Marketplace/chat-svc/pkg/Infrastructure/repository"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/spf13/viper"
 )
 
 type Service struct{
 	repo *repository.Repo
 	pb.UnimplementedChatServiceServer
+	AmqpConn *amqp.Connection
 }
 
-func NewChatService(repo *repository.Repo) *Service{
-	return &Service{repo: repo}
+func NewChatService(repo *repository.Repo,Conn *amqp.Connection) *Service{
+	return &Service{repo: repo,AmqpConn: Conn}
 }
 
 func (s *Service) ChatReciever() {
-	fmt.Println(viper.GetString("AmqpUrl"),"url")
-	conn, err := amqp.Dial(viper.GetString("AmqpUrl"))
-	if err != nil {
-		fmt.Println("error", err)
-	}
-	defer conn.Close()
-
-	ch, err := conn.Channel()
+	ch, err := s.AmqpConn.Channel()
 	if err != nil {
 		fmt.Println("error", err)
 	}

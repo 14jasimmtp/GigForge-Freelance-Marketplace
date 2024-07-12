@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "./pb/notification/";
+
+service NotificationService{
+    rpc GetNotification(GNReq) returns (GNRes) {}
+}
+
+message GNReq{
+   int32 user_id = 1;
+   string content= 2;
+}
+
+message Notification{
+    string NotificationID = 1;
+    string userID = 2;
+    string Content = 3;
+    string Type = 4;   
+}
+
+message GNRes{
+    int32 status = 1;
+    string Error = 2;
+    repeated Notification Notification = 3;
+}
